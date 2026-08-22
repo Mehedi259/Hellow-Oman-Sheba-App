@@ -16,6 +16,10 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Sheba App'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.warning, color: Colors.red),
+            onPressed: () => context.push('/emergency'),
+          ),
           authState.when(
             data: (user) {
               if (user != null) {
