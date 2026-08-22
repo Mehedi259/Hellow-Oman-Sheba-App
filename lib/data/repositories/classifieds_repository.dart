@@ -47,4 +47,12 @@ class ClassifiedsRepository {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load services');
     }
   }
+
+  Future<void> applyForJob(int jobId) async {
+    try {
+      await apiClient.dio.post('/classifieds/jobs/$jobId/apply/');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to apply for job');
+    }
+  }
 }

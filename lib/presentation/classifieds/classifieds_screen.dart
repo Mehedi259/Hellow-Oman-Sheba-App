@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'classifieds_provider.dart';
+import 'classifieds_detail_screens.dart';
 
 class ClassifiedsScreen extends StatelessWidget {
   const ClassifiedsScreen({super.key});
@@ -54,6 +55,12 @@ class JobsView extends ConsumerWidget {
                 title: Text(job.title),
                 subtitle: Text('${job.company} - ${job.location}'),
                 trailing: Text(job.salary),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => JobDetailScreen(job: job)),
+                  );
+                },
               ),
             );
           },
@@ -84,6 +91,12 @@ class PropertiesView extends ConsumerWidget {
                 title: Text(item.title),
                 subtitle: Text('${item.location} - ${item.type}'),
                 trailing: Text('\$${item.price}'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PropertyDetailScreen(property: item)),
+                  );
+                },
               ),
             );
           },
@@ -114,6 +127,12 @@ class VehiclesView extends ConsumerWidget {
                 title: Text(item.title),
                 subtitle: Text('${item.make} ${item.model} (${item.year})'),
                 trailing: Text('\$${item.price}'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => VehicleDetailScreen(vehicle: item)),
+                  );
+                },
               ),
             );
           },
@@ -144,6 +163,12 @@ class ServicesView extends ConsumerWidget {
                 title: Text(item.title),
                 subtitle: Text(item.category),
                 trailing: Text(item.contactInfo),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ServiceDetailScreen(service: item)),
+                  );
+                },
               ),
             );
           },

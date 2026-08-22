@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'community_provider.dart';
+import 'post_detail_screen.dart';
 
 class CommunityScreen extends ConsumerWidget {
   const CommunityScreen({super.key});
@@ -38,17 +39,25 @@ class CommunityScreen extends ConsumerWidget {
                 final post = posts[index];
                 return Card(
                   margin: const EdgeInsets.only(bottom: 16),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(post.title, style: Theme.of(context).textTheme.titleLarge),
-                        const SizedBox(height: 8),
-                        Text(post.content),
-                        const SizedBox(height: 16),
-                        Text('By ${post.authorName}', style: Theme.of(context).textTheme.bodySmall),
-                      ],
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => PostDetailScreen(post: post)),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(post.title, style: Theme.of(context).textTheme.titleLarge),
+                          const SizedBox(height: 8),
+                          Text(post.content),
+                          const SizedBox(height: 16),
+                          Text('By ${post.authorName}', style: Theme.of(context).textTheme.bodySmall),
+                        ],
+                      ),
                     ),
                   ),
                 );

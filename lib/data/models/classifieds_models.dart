@@ -4,7 +4,9 @@ class Property {
   final String description;
   final String price;
   final String location;
-  final String type; // Rent or Sale
+  final String type;
+  final String? imageUrl;
+  final String contactInfo;
   final DateTime createdAt;
 
   Property({
@@ -15,6 +17,8 @@ class Property {
     required this.location,
     required this.type,
     required this.createdAt,
+    this.imageUrl,
+    this.contactInfo = 'Contact owner',
   });
 
   factory Property.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,8 @@ class Property {
       location: json['location'] ?? '',
       type: json['property_type'] ?? '',
       createdAt: DateTime.parse(json['created_at']),
+      imageUrl: json['image_url'],
+      contactInfo: json['contact_info'] ?? 'Contact owner',
     );
   }
 }
@@ -38,6 +44,9 @@ class Vehicle {
   final String model;
   final String price;
   final int year;
+  final String? imageUrl;
+  final String mileage;
+  final String contactInfo;
   final DateTime createdAt;
 
   Vehicle({
@@ -49,6 +58,9 @@ class Vehicle {
     required this.price,
     required this.year,
     required this.createdAt,
+    this.imageUrl,
+    this.mileage = '0',
+    this.contactInfo = 'Contact seller',
   });
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
@@ -61,6 +73,9 @@ class Vehicle {
       price: json['price']?.toString() ?? '',
       year: json['year'] ?? 0,
       createdAt: DateTime.parse(json['created_at']),
+      imageUrl: json['image_url'],
+      mileage: json['mileage'] ?? '0',
+      contactInfo: json['contact_info'] ?? 'Contact seller',
     );
   }
 }
@@ -71,6 +86,7 @@ class Service {
   final String description;
   final String category;
   final String contactInfo;
+  final String? imageUrl;
   final DateTime createdAt;
 
   Service({
@@ -80,6 +96,7 @@ class Service {
     required this.category,
     required this.contactInfo,
     required this.createdAt,
+    this.imageUrl,
   });
 
   factory Service.fromJson(Map<String, dynamic> json) {

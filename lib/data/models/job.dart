@@ -6,6 +6,7 @@ class Job {
   final String location;
   final String salary;
   final String type;
+  final String jobType;
   final DateTime createdAt;
 
   Job({
@@ -16,6 +17,7 @@ class Job {
     required this.location,
     required this.salary,
     required this.type,
+    this.jobType = 'Full-time',
     required this.createdAt,
   });
 

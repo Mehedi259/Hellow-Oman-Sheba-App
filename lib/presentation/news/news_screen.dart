@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/phase3_models.dart';
 import '../../data/repositories/phase3_repository.dart';
 import '../auth/auth_provider.dart';
+import 'news_detail_screen.dart';
 
 final phase3RepositoryProvider = Provider((ref) {
   final apiClient = ref.watch(apiClientProvider);
@@ -32,23 +33,31 @@ class NewsScreen extends ConsumerWidget {
               final news = newsList[index];
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (news.imageUrl != null)
-                      Image.network(news.imageUrl!, height: 200, width: double.infinity, fit: BoxFit.cover),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(news.title, style: Theme.of(context).textTheme.titleLarge),
-                          const SizedBox(height: 8),
-                          Text(news.content, maxLines: 3, overflow: TextOverflow.ellipsis),
-                        ],
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => NewsDetailScreen(news: news)),
+                    );
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (news.imageUrl != null)
+                        Image.network(news.imageUrl!, height: 200, width: double.infinity, fit: BoxFit.cover),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(news.title, style: Theme.of(context).textTheme.titleLarge),
+                            const SizedBox(height: 8),
+                            Text(news.content, maxLines: 3, overflow: TextOverflow.ellipsis),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },

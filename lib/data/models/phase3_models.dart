@@ -1,15 +1,19 @@
 class News {
   final int id;
   final String title;
+  final String summary;
   final String content;
   final String? imageUrl;
+  final String publishedAt;
   final DateTime createdAt;
 
   News({
     required this.id,
     required this.title,
+    required this.summary,
     required this.content,
     this.imageUrl,
+    this.publishedAt = 'Recently',
     required this.createdAt,
   });
 
@@ -17,6 +21,7 @@ class News {
     return News(
       id: json['id'],
       title: json['title'] ?? '',
+      summary: json['summary'] ?? '',
       content: json['content'] ?? '',
       imageUrl: json['image_url'],
       createdAt: DateTime.parse(json['created_at']),
