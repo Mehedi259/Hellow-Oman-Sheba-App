@@ -1,0 +1,19 @@
+import 'package:dio/dio.dart';
+import '../models/job.dart';
+import '../../core/api/api_client.dart';
+
+class ClassifiedsRepository {
+  final ApiClient apiClient;
+
+  ClassifiedsRepository(this.apiClient);
+
+  Future<List<Job>> getJobs() async {
+    try {
+      final response = await apiClient.dio.get('/classifieds/jobs/');
+      final results = response.data['results'] as List? ?? response.data as List;
+      return results.map((json) => Job.fromJson(json)).toList();
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to load jobs');
+    }
+  }
+}
