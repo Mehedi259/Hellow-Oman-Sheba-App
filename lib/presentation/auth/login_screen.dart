@@ -78,6 +78,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               onPressed: () => context.push('/register'),
               child: const Text('Don\'t have an account? Register here.'),
             ),
+            const Divider(),
+            ElevatedButton.icon(
+              onPressed: () {
+                // Future: launch google sign in
+              },
+              icon: const Icon(Icons.login),
+              label: const Text('Login with Google'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
+            ),
           ],
         ),
       ),

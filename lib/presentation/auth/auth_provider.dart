@@ -68,6 +68,11 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
     }
   }
 
+  Future<void> loginWithGoogle(String token) async {
+    // Placeholder for actual google OAuth token exchange
+    // Usually we send idToken to backend and get access token
+  }
+
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');

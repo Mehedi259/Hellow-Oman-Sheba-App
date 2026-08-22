@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../auth/auth_provider.dart';
 import '../classifieds/classifieds_provider.dart';
+import 'system_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -11,6 +12,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
     final jobsState = ref.watch(jobsProvider);
+    final slidersState = ref.watch(slidersProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -55,6 +57,52 @@ class HomeScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(16.0),
           children: [
+            slidersState.when(
+              data: (sliders) {
+                if (sliders.isEmpty) return const SizedBox();
+                return SizedBox(
+                  height: 200,
+                  child: PageView.builder(
+                    itemCount: sliders.length,
+                    itemBuilder: (context, index) {
+                      final slider = sliders[index];
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          image: DecorationImage(
+                            image: NetworkImage(slider.imageUrl),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            gradient: LinearGradient(
+                              colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
+                          ),
+                          padding: const EdgeInsets.all(16),
+                          alignment: Alignment.bottomLeft,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(slider.title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                              Text(slider.subtitle, style: const TextStyle(color: Colors.white70)),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => const SizedBox(),
+            ),
             Text(
               'Latest Jobs',
               style: Theme.of(context).textTheme.headlineSmall,

@@ -1,72 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../auth/auth_provider.dart';
-import '../../data/models/job.dart';
-import '../../data/models/classifieds_models.dart';
 
-// Mock favorites provider for demonstration since backend favorite endpoints aren't fully defined yet.
-final favoriteJobsProvider = Provider<List<Job>>((ref) => []);
-final favoritePropertiesProvider = Provider<List<Property>>((ref) => []);
-
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  int _selectedIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Profile')),
+      appBar: AppBar(title: const Text('My Dashboard')),
       body: authState.when(
         data: (user) {
           if (user == null) {
             return const Center(child: Text('Please log in to view your profile.'));
           }
-          return DefaultTabController(
-            length: 2,
-            child: Column(
-              children: [
-                const SizedBox(height: 24),
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: user.profilePicture != null
-                      ? NetworkImage(user.profilePicture!)
-                      : null,
-                  child: user.profilePicture == null ? const Icon(Icons.person, size: 50) : null,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim().isEmpty 
-                      ? 'Sheba User' 
-                      : '${user.firstName} ${user.lastName}',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                Text(user.email, style: Theme.of(context).textTheme.bodyLarge),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () {
-                    ref.read(authStateProvider.notifier).logout();
-                  },
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  child: const Text('Logout', style: TextStyle(color: Colors.white)),
-                ),
-                const SizedBox(height: 24),
-                const TabBar(
-                  tabs: [
-                    Tab(text: 'Favorite Jobs'),
-                    Tab(text: 'Favorite Properties'),
-                  ],
-                ),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      _FavoriteJobsList(),
-                      _FavoritePropertiesList(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+          return Row(
+            children: [
+              NavigationRail(
+                selectedIndex: _selectedIndex,
+                onDestinationSelected: (int index) {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                },
+                labelType: NavigationRailLabelType.all,
+                destinations: const [
+                  NavigationRailDestination(icon: Icon(Icons.person), label: Text('Profile')),
+                  NavigationRailDestination(icon: Icon(Icons.article), label: Text('My Posts')),
+                  NavigationRailDestination(icon: Icon(Icons.favorite), label: Text('Favorites')),
+                  NavigationRailDestination(icon: Icon(Icons.work), label: Text('Applications')),
+                  NavigationRailDestination(icon: Icon(Icons.security), label: Text('Security')),
+                ],
+              ),
+              const VerticalDivider(thickness: 1, width: 1),
+              Expanded(
+                child: _buildContent(user),
+              ),
+            ],
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -74,34 +53,182 @@ class ProfileScreen extends ConsumerWidget {
       ),
     );
   }
+
+  Widget _buildContent(user) {
+    switch (_selectedIndex) {
+      case 0:
+        return _ProfileInfoTab(user: user);
+      case 1:
+        return const _MyPostsTab();
+      case 2:
+        return const _FavoritesTab();
+      case 3:
+        return const _ApplicationsTab();
+      case 4:
+        return const _SecurityTab();
+      default:
+        return const Center(child: Text('Unknown tab'));
+    }
+  }
 }
 
-class _FavoriteJobsList extends ConsumerWidget {
+class _ProfileInfoTab extends ConsumerStatefulWidget {
+  final user;
+  const _ProfileInfoTab({required this.user});
+
+  @override
+  ConsumerState<_ProfileInfoTab> createState() => _ProfileInfoTabState();
+}
+
+class _ProfileInfoTabState extends ConsumerState<_ProfileInfoTab> {
+  late TextEditingController _nameController;
+  late TextEditingController _phoneController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.user.firstName);
+    _phoneController = TextEditingController(text: widget.user.phone);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Text('Profile Information', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 16),
+        TextField(controller: _nameController, decoration: const InputDecoration(labelText: 'Name')),
+        const SizedBox(height: 16),
+        TextField(controller: _phoneController, decoration: const InputDecoration(labelText: 'Phone')),
+        const SizedBox(height: 24),
+        ElevatedButton(
+          onPressed: () async {
+            // Update profile
+            try {
+              final repo = ref.read(authRepositoryProvider);
+              await repo.updateProfile({
+                'first_name': _nameController.text,
+                'phone': _phoneController.text,
+              });
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile Updated')));
+              ref.refresh(authStateProvider);
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+            }
+          },
+          child: const Text('Save Changes'),
+        ),
+        const SizedBox(height: 48),
+        ElevatedButton(
+          onPressed: () {
+            ref.read(authStateProvider.notifier).logout();
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          child: const Text('Logout', style: TextStyle(color: Colors.white)),
+        ),
+      ],
+    );
+  }
+}
+
+class _MyPostsTab extends ConsumerWidget {
+  const _MyPostsTab();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final favorites = ref.watch(favoriteJobsProvider);
-    if (favorites.isEmpty) return const Center(child: Text('No favorite jobs.'));
-    return ListView.builder(
-      itemCount: favorites.length,
-      itemBuilder: (context, index) {
-        final job = favorites[index];
-        return ListTile(title: Text(job.title), subtitle: Text(job.company));
+    // Ideally this uses a FutureProvider, but we keep it simple for now
+    return FutureBuilder(
+      future: ref.read(authRepositoryProvider).getMyPosts(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+        final posts = snapshot.data as List? ?? [];
+        if (posts.isEmpty) return const Center(child: Text('No posts found.'));
+        return ListView.builder(
+          itemCount: posts.length,
+          itemBuilder: (context, index) {
+            final post = posts[index];
+            return ListTile(
+              title: Text(post['title'] ?? 'Untitled'),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () {
+                  ref.read(authRepositoryProvider).deleteMyPost('post', post['id']);
+                },
+              ),
+            );
+          },
+        );
       },
     );
   }
 }
 
-class _FavoritePropertiesList extends ConsumerWidget {
+class _FavoritesTab extends StatelessWidget {
+  const _FavoritesTab();
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: Text('Favorites list will appear here.'));
+  }
+}
+
+class _ApplicationsTab extends ConsumerWidget {
+  const _ApplicationsTab();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final favorites = ref.watch(favoritePropertiesProvider);
-    if (favorites.isEmpty) return const Center(child: Text('No favorite properties.'));
-    return ListView.builder(
-      itemCount: favorites.length,
-      itemBuilder: (context, index) {
-        final prop = favorites[index];
-        return ListTile(title: Text(prop.title), subtitle: Text(prop.location));
+    return FutureBuilder(
+      future: ref.read(authRepositoryProvider).getJobApplications(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+        final apps = snapshot.data as List? ?? [];
+        if (apps.isEmpty) return const Center(child: Text('No applications found.'));
+        return ListView.builder(
+          itemCount: apps.length,
+          itemBuilder: (context, index) {
+            final app = apps[index];
+            return ListTile(
+              title: Text(app['job_title'] ?? 'Job'),
+              subtitle: Text(app['status'] ?? 'PENDING'),
+            );
+          },
+        );
       },
+    );
+  }
+}
+
+class _SecurityTab extends ConsumerStatefulWidget {
+  const _SecurityTab();
+  @override
+  ConsumerState<_SecurityTab> createState() => _SecurityTabState();
+}
+
+class _SecurityTabState extends ConsumerState<_SecurityTab> {
+  final _oldController = TextEditingController();
+  final _newController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Text('Change Password', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 16),
+        TextField(controller: _oldController, decoration: const InputDecoration(labelText: 'Old Password'), obscureText: true),
+        const SizedBox(height: 16),
+        TextField(controller: _newController, decoration: const InputDecoration(labelText: 'New Password'), obscureText: true),
+        const SizedBox(height: 24),
+        ElevatedButton(
+          onPressed: () async {
+            try {
+              await ref.read(authRepositoryProvider).changePassword(_oldController.text, _newController.text);
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password Changed Successfully')));
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+            }
+          },
+          child: const Text('Update Password'),
+        ),
+      ],
     );
   }
 }

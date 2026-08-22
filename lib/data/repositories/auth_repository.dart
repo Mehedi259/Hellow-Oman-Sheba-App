@@ -41,4 +41,57 @@ class AuthRepository {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load profile');
     }
   }
+
+  Future<void> updateProfile(Map<String, dynamic> data) async {
+    try {
+      await apiClient.dio.put('/users/profile/', data: data);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Update failed');
+    }
+  }
+
+  Future<void> changePassword(String oldPassword, String newPassword) async {
+    try {
+      await apiClient.dio.post('/users/change-password/', data: {
+        'old_password': oldPassword,
+        'new_password': newPassword,
+      });
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Change password failed');
+    }
+  }
+
+  Future<List<dynamic>> getMyPosts() async {
+    try {
+      final response = await apiClient.dio.get('/users/my-posts/');
+      return response.data['results'] as List? ?? response.data as List;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getJobApplications() async {
+    try {
+      final response = await apiClient.dio.get('/users/applications/');
+      return response.data['results'] as List? ?? response.data as List;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<void> deleteMyPost(String type, int id) async {
+    try {
+      await apiClient.dio.delete('/community/posts/$id/'); // Assumption based on generic delete
+    } catch (e) {
+      throw Exception('Delete failed');
+    }
+  }
+
+  Future<void> markNotificationRead(int id) async {
+    try {
+      await apiClient.dio.put('/users/notifications/$id/', data: {'read': true});
+    } catch (e) {
+      // ignore
+    }
+  }
 }

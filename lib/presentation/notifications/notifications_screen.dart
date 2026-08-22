@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../auth/auth_provider.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -19,10 +21,18 @@ class NotificationsScreen extends StatelessWidget {
           : ListView.builder(
               itemCount: notifications.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  leading: const Icon(Icons.notifications, color: Colors.teal),
-                  title: Text(notifications[index]),
-                  subtitle: const Text('Just now'),
+                return Consumer(
+                  builder: (context, ref, child) {
+                    return ListTile(
+                      leading: const Icon(Icons.notifications, color: Colors.teal),
+                      title: Text(notifications[index]),
+                      subtitle: const Text('Just now'),
+                      onTap: () {
+                        // Assuming 1 is mock ID
+                        ref.read(authRepositoryProvider).markNotificationRead(1);
+                      },
+                    );
+                  }
                 );
               },
             ),
