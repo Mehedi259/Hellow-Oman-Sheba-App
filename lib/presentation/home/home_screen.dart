@@ -17,6 +17,14 @@ class HomeScreen extends ConsumerWidget {
         title: const Text('Sheba App'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () => context.push('/search'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () => context.push('/notifications'),
+          ),
+          IconButton(
             icon: const Icon(Icons.warning, color: Colors.red),
             onPressed: () => context.push('/emergency'),
           ),

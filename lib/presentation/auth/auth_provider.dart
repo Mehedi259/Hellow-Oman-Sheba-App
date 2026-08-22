@@ -53,6 +53,21 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
     }
   }
 
+  Future<void> register(String email, String password, String firstName, String lastName) async {
+    state = const AsyncValue.loading();
+    try {
+      final token = await repository.register(email, password, firstName, lastName);
+      if (token != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', token);
+        final user = await repository.getProfile();
+        state = AsyncValue.data(user);
+      }
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');

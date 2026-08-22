@@ -19,6 +19,20 @@ class AuthRepository {
     }
   }
 
+  Future<String?> register(String email, String password, String firstName, String lastName) async {
+    try {
+      final response = await apiClient.dio.post('/users/register/', data: {
+        'email': email,
+        'password': password,
+        'first_name': firstName,
+        'last_name': lastName,
+      });
+      return response.data['token'];
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Registration failed');
+    }
+  }
+
   Future<User> getProfile() async {
     try {
       final response = await apiClient.dio.get('/users/profile/');

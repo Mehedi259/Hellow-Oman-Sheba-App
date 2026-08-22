@@ -9,6 +9,33 @@ class MainScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Color(0xFF0D9488)),
+              child: Text('Sheba Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
+            ),
+            ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text('About Us'),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/about');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.public),
+              title: const Text('About Oman'),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/about-oman');
+              },
+            ),
+          ],
+        ),
+      ),
       body: child,
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
