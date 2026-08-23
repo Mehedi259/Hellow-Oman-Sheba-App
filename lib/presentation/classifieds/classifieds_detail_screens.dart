@@ -23,6 +23,21 @@ class JobDetailScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (job.images.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    job.images[0].startsWith('http') ? job.images[0] : 'http://188.245.212.240${job.images[0]}',
+                    height: 250,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        Container(height: 250, color: Colors.grey[200], child: const Icon(Icons.broken_image, color: Colors.grey, size: 50)),
+                  ),
+                ),
+              ),
             Text(job.title, style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
             Text('${job.company} - ${job.location}', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey)),
@@ -76,7 +91,14 @@ class PropertyDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (property.imageUrl != null)
-              Image.network(property.imageUrl!, height: 250, width: double.infinity, fit: BoxFit.cover),
+              Image.network(
+                property.imageUrl!.startsWith('http') ? property.imageUrl! : 'http://188.245.212.240${property.imageUrl}',
+                height: 250,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    Container(height: 250, color: Colors.grey[200], child: const Icon(Icons.broken_image, color: Colors.grey, size: 50)),
+              ),
             const SizedBox(height: 16),
             Text(property.title, style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
@@ -112,7 +134,14 @@ class VehicleDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (vehicle.imageUrl != null)
-              Image.network(vehicle.imageUrl!, height: 250, width: double.infinity, fit: BoxFit.cover),
+              Image.network(
+                vehicle.imageUrl!.startsWith('http') ? vehicle.imageUrl! : 'http://188.245.212.240${vehicle.imageUrl}',
+                height: 250,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    Container(height: 250, color: Colors.grey[200], child: const Icon(Icons.broken_image, color: Colors.grey, size: 50)),
+              ),
             const SizedBox(height: 16),
             Text(vehicle.title, style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
@@ -148,7 +177,14 @@ class ServiceDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (service.imageUrl != null)
-              Image.network(service.imageUrl!, height: 250, width: double.infinity, fit: BoxFit.cover),
+              Image.network(
+                service.imageUrl!.startsWith('http') ? service.imageUrl! : 'http://188.245.212.240${service.imageUrl}',
+                height: 250,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    Container(height: 250, color: Colors.grey[200], child: const Icon(Icons.broken_image, color: Colors.grey, size: 50)),
+              ),
             const SizedBox(height: 16),
             Text(service.title, style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),

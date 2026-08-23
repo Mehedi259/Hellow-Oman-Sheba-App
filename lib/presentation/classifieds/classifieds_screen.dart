@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'classifieds_provider.dart';
 import 'classifieds_detail_screens.dart';
+import 'widgets/job_card.dart';
 
 class ClassifiedsScreen extends StatelessWidget {
   const ClassifiedsScreen({super.key});
@@ -45,24 +46,17 @@ class JobsView extends ConsumerWidget {
     return jobsState.when(
       data: (jobs) {
         if (jobs.isEmpty) return const Center(child: Text('No jobs found.'));
-        return ListView.builder(
+        return GridView.builder(
+          padding: const EdgeInsets.all(16.0),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 0.75,
+          ),
           itemCount: jobs.length,
           itemBuilder: (context, index) {
-            final job = jobs[index];
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: ListTile(
-                title: Text(job.title),
-                subtitle: Text('${job.company} - ${job.location}'),
-                trailing: Text(job.salary),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => JobDetailScreen(job: job)),
-                  );
-                },
-              ),
-            );
+            return JobCardWidget(job: jobs[index]);
           },
         );
       },

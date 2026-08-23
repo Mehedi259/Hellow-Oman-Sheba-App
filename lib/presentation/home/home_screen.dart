@@ -6,6 +6,7 @@ import '../classifieds/classifieds_provider.dart';
 import 'system_provider.dart';
 import 'widgets/hero_slider.dart';
 import 'widgets/category_grid.dart';
+import 'widgets/latest_jobs.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -55,34 +56,11 @@ class HomeScreen extends ConsumerWidget {
               error: (e, _) => Center(child: Text('Slider Error: $e')),
             ),
             const CategoryGridWidget(),
-            Text(
-              'Latest Jobs',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
             const SizedBox(height: 16),
             jobsState.when(
-              data: (jobs) {
-                if (jobs.isEmpty) {
-                  return const Text('No jobs found.');
-                }
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: jobs.length,
-                  itemBuilder: (context, index) {
-                    final job = jobs[index];
-                    return Card(
-                      child: ListTile(
-                        title: Text(job.title),
-                        subtitle: Text('${job.company} - ${job.location}'),
-                        trailing: Text(job.salary),
-                      ),
-                    );
-                  },
-                );
-              },
+              data: (jobs) => LatestJobsWidget(jobs: jobs),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Text('Error: $error'),
+              error: (error, stack) => Text('Jobs Error: $error'),
             ),
           ],
         ),
