@@ -23,13 +23,13 @@ class Job {
 
   factory Job.fromJson(Map<String, dynamic> json) {
     return Job(
-      id: json['id'],
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      company: json['company'] ?? '',
-      location: json['location'] ?? '',
-      salary: json['salary'] ?? '',
-      type: json['job_type'] ?? '',
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      company: json['company']?.toString() ?? '',
+      location: json['location']?.toString() ?? '',
+      salary: json['salary']?.toString() ?? '',
+      type: json['job_type']?.toString() ?? '',
       createdAt: DateTime.parse(json['created_at']),
     );
   }

@@ -8,6 +8,8 @@ class Property {
   final String? imageUrl;
   final String contactInfo;
   final DateTime createdAt;
+  final double rating;
+  final int reviewCount;
 
   Property({
     required this.id,
@@ -19,19 +21,23 @@ class Property {
     required this.createdAt,
     this.imageUrl,
     this.contactInfo = 'Contact owner',
+    this.rating = 0.0,
+    this.reviewCount = 0,
   });
 
   factory Property.fromJson(Map<String, dynamic> json) {
     return Property(
       id: json['id'],
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
       price: json['price']?.toString() ?? '',
-      location: json['location'] ?? '',
-      type: json['property_type'] ?? '',
+      location: json['location']?.toString() ?? '',
+      type: json['property_type']?.toString() ?? '',
       createdAt: DateTime.parse(json['created_at']),
-      imageUrl: json['image_url'],
-      contactInfo: json['contact_info'] ?? 'Contact owner',
+      imageUrl: json['image_url']?.toString(),
+      contactInfo: json['contact_info']?.toString() ?? 'Contact owner',
+      rating: (json['rating'] ?? 0.0).toDouble(),
+      reviewCount: json['review_count'] ?? 0,
     );
   }
 }
@@ -48,6 +54,8 @@ class Vehicle {
   final String mileage;
   final String contactInfo;
   final DateTime createdAt;
+  final double rating;
+  final int reviewCount;
 
   Vehicle({
     required this.id,
@@ -61,21 +69,25 @@ class Vehicle {
     this.imageUrl,
     this.mileage = '0',
     this.contactInfo = 'Contact seller',
+    this.rating = 0.0,
+    this.reviewCount = 0,
   });
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
     return Vehicle(
       id: json['id'],
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      make: json['make'] ?? '',
-      model: json['model'] ?? '',
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      make: json['make']?.toString() ?? '',
+      model: json['model']?.toString() ?? '',
       price: json['price']?.toString() ?? '',
       year: json['year'] ?? 0,
       createdAt: DateTime.parse(json['created_at']),
-      imageUrl: json['image_url'],
-      mileage: json['mileage'] ?? '0',
-      contactInfo: json['contact_info'] ?? 'Contact seller',
+      imageUrl: json['image_url']?.toString(),
+      mileage: json['mileage']?.toString() ?? '0',
+      contactInfo: json['contact_info']?.toString() ?? 'Contact seller',
+      rating: (json['rating'] ?? 0.0).toDouble(),
+      reviewCount: json['review_count'] ?? 0,
     );
   }
 }
@@ -88,6 +100,8 @@ class Service {
   final String contactInfo;
   final String? imageUrl;
   final DateTime createdAt;
+  final double rating;
+  final int reviewCount;
 
   Service({
     required this.id,
@@ -97,15 +111,52 @@ class Service {
     required this.contactInfo,
     required this.createdAt,
     this.imageUrl,
+    this.rating = 0.0,
+    this.reviewCount = 0,
   });
 
   factory Service.fromJson(Map<String, dynamic> json) {
     return Service(
       id: json['id'],
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      category: json['category'] ?? '',
-      contactInfo: json['contact_info'] ?? '',
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      category: json['category']?.toString() ?? '',
+      contactInfo: json['contact_info']?.toString() ?? '',
+      createdAt: DateTime.parse(json['created_at']),
+      imageUrl: json['image_url']?.toString(),
+      rating: (json['rating'] ?? 0.0).toDouble(),
+      reviewCount: json['review_count'] ?? 0,
+    );
+  }
+}
+
+class Review {
+  final int id;
+  final String contentId;
+  final String contentType;
+  final String userName;
+  final int rating;
+  final String comment;
+  final DateTime createdAt;
+
+  Review({
+    required this.id,
+    required this.contentId,
+    required this.contentType,
+    required this.userName,
+    required this.rating,
+    required this.comment,
+    required this.createdAt,
+  });
+
+  factory Review.fromJson(Map<String, dynamic> json) {
+    return Review(
+      id: json['id'],
+      contentId: json['content_id'].toString(),
+      contentType: json['content_type'].toString(),
+      userName: json['user_name']?.toString() ?? 'Unknown User',
+      rating: json['rating'] ?? 0,
+      comment: json['comment']?.toString() ?? '',
       createdAt: DateTime.parse(json['created_at']),
     );
   }

@@ -15,10 +15,10 @@ class SliderItem {
 
   factory SliderItem.fromJson(Map<String, dynamic> json) {
     return SliderItem(
-      id: json['id'],
-      title: json['title'] ?? '',
-      subtitle: json['subtitle'] ?? '',
-      imageUrl: json['image_url'] ?? '',
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
+      title: json['title_bn'] ?? json['title'] ?? '',
+      subtitle: json['subtitle_bn'] ?? json['subtitle'] ?? '',
+      imageUrl: json['image'] ?? json['image_url'] ?? '',
       link: json['link'],
     );
   }

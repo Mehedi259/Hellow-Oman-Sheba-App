@@ -9,7 +9,7 @@ class MainScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
+      endDrawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -37,16 +37,27 @@ class MainScaffold extends StatelessWidget {
         ),
       ),
       body: child,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // TODO: Navigate to add post
+        },
+        backgroundColor: Colors.blue,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _calculateSelectedIndex(context),
         onTap: (int idx) => _onItemTapped(idx, context),
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'Classifieds'),
-          BottomNavigationBarItem(icon: Icon(Icons.forum), label: 'Community'),
-          BottomNavigationBarItem(icon: Icon(Icons.article), label: 'News'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'হোম'),
+          BottomNavigationBarItem(icon: Icon(Icons.grid_view_outlined), activeIcon: Icon(Icons.grid_view), label: 'ক্যাটাগরি'),
+          BottomNavigationBarItem(icon: Icon(Icons.add, color: Colors.transparent), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.notifications_none_outlined), activeIcon: Icon(Icons.notifications), label: 'নোটিফিকেশন'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: 'প্রোফাইল'),
         ],
       ),
     );
@@ -54,9 +65,8 @@ class MainScaffold extends StatelessWidget {
 
   static int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.path;
-    if (location.startsWith('/classifieds')) return 1;
-    if (location.startsWith('/community')) return 2;
-    if (location.startsWith('/news')) return 3;
+    if (location.startsWith('/categories')) return 1;
+    if (location.startsWith('/notifications')) return 3;
     if (location.startsWith('/profile')) return 4;
     return 0; // default to Home
   }
@@ -67,13 +77,13 @@ class MainScaffold extends StatelessWidget {
         context.go('/');
         break;
       case 1:
-        context.go('/classifieds');
+        context.go('/categories');
         break;
       case 2:
-        context.go('/community');
+        // Handled by FAB
         break;
       case 3:
-        context.go('/news');
+        context.go('/notifications');
         break;
       case 4:
         context.go('/profile');

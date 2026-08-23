@@ -10,7 +10,8 @@ class SystemRepository {
   Future<List<SliderItem>> getSliders() async {
     try {
       final response = await apiClient.dio.get('/system/sliders/');
-      final results = response.data['results'] as List? ?? response.data as List;
+      final data = response.data;
+      final results = data is List ? data : (data['results'] as List? ?? []);
       return results.map((json) => SliderItem.fromJson(json)).toList();
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load sliders');
@@ -21,7 +22,8 @@ class SystemRepository {
     if (query.isEmpty) return [];
     try {
       final response = await apiClient.dio.get('/system/search/', queryParameters: {'q': query});
-      final results = response.data['results'] as List? ?? response.data as List;
+      final data = response.data;
+      final results = data is List ? data : (data['results'] as List? ?? []);
       return results.map((json) => SearchResult.fromJson(json)).toList();
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Search failed');

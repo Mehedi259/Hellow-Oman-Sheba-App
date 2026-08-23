@@ -11,7 +11,8 @@ class ClassifiedsRepository {
   Future<List<Job>> getJobs() async {
     try {
       final response = await apiClient.dio.get('/classifieds/jobs/');
-      final results = response.data['results'] as List? ?? response.data as List;
+      final data = response.data;
+      final results = data is List ? data : (data['results'] as List? ?? []);
       return results.map((json) => Job.fromJson(json)).toList();
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load jobs');
@@ -21,7 +22,8 @@ class ClassifiedsRepository {
   Future<List<Property>> getProperties() async {
     try {
       final response = await apiClient.dio.get('/classifieds/properties/');
-      final results = response.data['results'] as List? ?? response.data as List;
+      final data = response.data;
+      final results = data is List ? data : (data['results'] as List? ?? []);
       return results.map((json) => Property.fromJson(json)).toList();
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load properties');
@@ -31,7 +33,8 @@ class ClassifiedsRepository {
   Future<List<Vehicle>> getVehicles() async {
     try {
       final response = await apiClient.dio.get('/classifieds/vehicles/');
-      final results = response.data['results'] as List? ?? response.data as List;
+      final data = response.data;
+      final results = data is List ? data : (data['results'] as List? ?? []);
       return results.map((json) => Vehicle.fromJson(json)).toList();
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load vehicles');
@@ -41,7 +44,8 @@ class ClassifiedsRepository {
   Future<List<Service>> getServices() async {
     try {
       final response = await apiClient.dio.get('/classifieds/services/');
-      final results = response.data['results'] as List? ?? response.data as List;
+      final data = response.data;
+      final results = data is List ? data : (data['results'] as List? ?? []);
       return results.map((json) => Service.fromJson(json)).toList();
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load services');
@@ -53,6 +57,40 @@ class ClassifiedsRepository {
       await apiClient.dio.post('/classifieds/jobs/$jobId/apply/');
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to apply for job');
+    }
+  }
+
+  Future<List<Review>> getReviews(String contentType, int contentId) async {
+    try {
+      final response = await apiClient.dio.get(
+        '/classifieds/reviews/',
+        queryParameters: {
+          'content_type': contentType,
+          'content_id': contentId,
+        },
+      );
+      final data = response.data;
+      final results = data is List ? data : (data['results'] as List? ?? []);
+      return results.map((json) => Review.fromJson(json)).toList();
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to load reviews');
+    }
+  }
+
+  Future<Review> postReview(String contentType, int contentId, int rating, String comment) async {
+    try {
+      final response = await apiClient.dio.post(
+        '/classifieds/reviews/',
+        data: {
+          'content_type': contentType,
+          'content_id': contentId,
+          'rating': rating,
+          'comment': comment,
+        },
+      );
+      return Review.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to post review');
     }
   }
 }
