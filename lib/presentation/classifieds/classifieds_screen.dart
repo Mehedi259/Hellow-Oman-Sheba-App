@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'classifieds_provider.dart';
 import 'classifieds_detail_screens.dart';
 import 'widgets/job_card.dart';
+import 'widgets/market_card.dart';
 
 class ClassifiedsScreen extends StatelessWidget {
   const ClassifiedsScreen({super.key});
@@ -10,13 +11,14 @@ class ClassifiedsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Classifieds'),
           bottom: const TabBar(
             isScrollable: true,
             tabs: [
+              Tab(text: 'Market'),
               Tab(text: 'Jobs'),
               Tab(text: 'Properties'),
               Tab(text: 'Vehicles'),
@@ -26,6 +28,7 @@ class ClassifiedsScreen extends StatelessWidget {
         ),
         body: const TabBarView(
           children: [
+            MarketView(),
             JobsView(),
             PropertiesView(),
             VehiclesView(),
@@ -165,6 +168,35 @@ class ServicesView extends ConsumerWidget {
                 },
               ),
             );
+          },
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(child: Text('Error: $e')),
+    );
+  }
+}
+
+class MarketView extends ConsumerWidget {
+  const MarketView({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(marketItemsProvider);
+    return state.when(
+      data: (items) {
+        if (items.isEmpty) return const Center(child: Text('No market items found.'));
+        return GridView.builder(
+          padding: const EdgeInsets.all(16.0),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 0.72,
+          ),
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            return MarketCardWidget(item: items[index]);
           },
         );
       },

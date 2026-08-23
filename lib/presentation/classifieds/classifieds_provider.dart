@@ -28,3 +28,8 @@ final servicesProvider = FutureProvider<List<Service>>((ref) async {
   final repository = ref.watch(classifiedsRepositoryProvider);
   return repository.getServices();
 });
+
+final marketItemsProvider = FutureProvider<List<MarketItem>>((ref) async {
+  final repository = ref.watch(classifiedsRepositoryProvider);
+  return repository.getMarketItems();
+});

@@ -7,6 +7,7 @@ import 'system_provider.dart';
 import 'widgets/hero_slider.dart';
 import 'widgets/category_grid.dart';
 import 'widgets/latest_jobs.dart';
+import 'widgets/market_widget.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -46,6 +47,7 @@ class HomeScreen extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(jobsProvider);
+          ref.invalidate(marketItemsProvider);
         },
         child: ListView(
           padding: const EdgeInsets.all(16.0),
@@ -58,9 +60,15 @@ class HomeScreen extends ConsumerWidget {
             const CategoryGridWidget(),
             const SizedBox(height: 16),
             jobsState.when(
-              data: (jobs) => LatestJobsWidget(jobs: jobs),
+              data: (jobs) => LatestJobsWidget(jobs: jobs.take(6).toList()),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Jobs Error: $error'),
+            ),
+            const SizedBox(height: 16),
+            ref.watch(marketItemsProvider).when(
+              data: (items) => MarketWidget(items: items),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Text('Market Error: $error'),
             ),
           ],
         ),

@@ -203,3 +203,44 @@ class ServiceDetailScreen extends StatelessWidget {
     );
   }
 }
+
+class MarketItemDetailScreen extends StatelessWidget {
+  final MarketItem item;
+  const MarketItemDetailScreen({super.key, required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(item.title)),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (item.images.isNotEmpty)
+              Image.network(
+                item.images[0].startsWith('http') ? item.images[0] : 'http://188.245.212.240${item.images[0]}',
+                height: 250,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    Container(height: 250, color: Colors.grey[200], child: const Icon(Icons.broken_image, color: Colors.grey, size: 50)),
+              ),
+            const SizedBox(height: 16),
+            Text(item.title, style: Theme.of(context).textTheme.headlineMedium),
+            const SizedBox(height: 8),
+            Text('${item.price} ${item.currency}', style: const TextStyle(fontSize: 24, color: Colors.deepOrange, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            Text('${item.categoryName} • ${item.condition}'),
+            const SizedBox(height: 8),
+            Text('${item.city}${item.area.isNotEmpty ? ', ${item.area}' : ''}'),
+            const SizedBox(height: 24),
+            const Text('Description', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text(item.description),
+          ],
+        ),
+      ),
+    );
+  }
+}

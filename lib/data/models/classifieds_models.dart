@@ -161,3 +161,48 @@ class Review {
     );
   }
 }
+
+class MarketItem {
+  final int id;
+  final String title;
+  final String description;
+  final String categoryName;
+  final String price;
+  final String currency;
+  final String condition;
+  final String city;
+  final String area;
+  final List<String> images;
+
+  MarketItem({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.categoryName,
+    required this.price,
+    required this.currency,
+    required this.condition,
+    required this.city,
+    required this.area,
+    this.images = const [],
+  });
+
+  factory MarketItem.fromJson(Map<String, dynamic> json) {
+    return MarketItem(
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
+      title: json['title_bn']?.toString() ?? json['title']?.toString() ?? '',
+      description: json['description_bn']?.toString() ?? json['description']?.toString() ?? '',
+      categoryName: json['category_name']?.toString() ?? json['category']?.toString() ?? 'সাধারণ',
+      price: json['price']?.toString() ?? '0',
+      currency: json['currency']?.toString() ?? 'OMR',
+      condition: (json['condition']?.toString().isEmpty ?? true) ? 'N/A' : json['condition'].toString(),
+      city: json['city']?.toString() ?? '',
+      area: json['area']?.toString() ?? '',
+      images: (json['images'] as List?)?.map((e) {
+        if (e is String) return e;
+        if (e is Map) return (e['image'] ?? e['url'] ?? '').toString();
+        return '';
+      }).where((e) => e.isNotEmpty).toList() ?? [],
+    );
+  }
+}

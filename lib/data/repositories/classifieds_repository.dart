@@ -93,4 +93,14 @@ class ClassifiedsRepository {
       throw Exception(e.response?.data['detail'] ?? 'Failed to post review');
     }
   }
+  Future<List<MarketItem>> getMarketItems() async {
+    try {
+      final response = await apiClient.dio.get('/community/classifieds/');
+      final data = response.data;
+      final results = data is List ? data : (data['results'] as List? ?? []);
+      return results.map((json) => MarketItem.fromJson(json)).toList();
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to load market items');
+    }
+  }
 }
