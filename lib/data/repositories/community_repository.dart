@@ -9,7 +9,7 @@ class CommunityRepository {
 
   Future<List<Post>> getPosts() async {
     try {
-      final response = await apiClient.dio.get('/community/posts/');
+      final response = await apiClient.dio.get('/community/forum/posts/');
       final results = response.data['results'] as List? ?? response.data as List;
       return results.map((json) => Post.fromJson(json)).toList();
     } on DioException catch (e) {

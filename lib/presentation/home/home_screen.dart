@@ -8,6 +8,8 @@ import 'widgets/hero_slider.dart';
 import 'widgets/category_grid.dart';
 import 'widgets/latest_jobs.dart';
 import 'widgets/market_widget.dart';
+import 'widgets/community_widget.dart';
+import '../community/community_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -48,6 +50,7 @@ class HomeScreen extends ConsumerWidget {
         onRefresh: () async {
           ref.invalidate(jobsProvider);
           ref.invalidate(marketItemsProvider);
+          ref.invalidate(postsProvider);
         },
         child: ListView(
           padding: const EdgeInsets.all(16.0),
@@ -69,6 +72,12 @@ class HomeScreen extends ConsumerWidget {
               data: (items) => MarketWidget(items: items),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Market Error: $error'),
+            ),
+            const SizedBox(height: 16),
+            ref.watch(postsProvider).when(
+              data: (posts) => CommunityWidget(posts: posts),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Text('Community Error: $error'),
             ),
           ],
         ),
