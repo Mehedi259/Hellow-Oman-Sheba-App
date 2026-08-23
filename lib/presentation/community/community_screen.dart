@@ -32,32 +32,143 @@ class CommunityScreen extends ConsumerWidget {
         child: postsState.when(
           data: (posts) {
             if (posts.isEmpty) return const Center(child: Text('No posts yet.'));
-            return ListView.builder(
+            return ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: posts.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final post = posts[index];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => PostDetailScreen(post: post)),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(post.title, style: Theme.of(context).textTheme.titleLarge),
-                          const SizedBox(height: 8),
-                          Text(post.content),
-                          const SizedBox(height: 16),
-                          Text('By ${post.authorName}', style: Theme.of(context).textTheme.bodySmall),
-                        ],
-                      ),
+                
+                String formatTime(DateTime time) {
+                  final difference = DateTime.now().difference(time);
+                  if (difference.inDays > 0) return '${difference.inDays} দিন আগে';
+                  if (difference.inHours > 0) return '${difference.inHours} ঘন্টা আগে';
+                  if (difference.inMinutes > 0) return '${difference.inMinutes} মিনিট আগে';
+                  return 'মাত্রই';
+                }
+
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PostDetailScreen(post: post)),
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.grey.shade200),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.shade100,
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.pink.shade50,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                post.categoryName,
+                                style: TextStyle(
+                                  color: Colors.pink.shade700,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Icon(Icons.access_time, size: 14, color: Colors.grey.shade500),
+                                const SizedBox(width: 4),
+                                Text(
+                                  formatTime(post.createdAt),
+                                  style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          post.title,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          post.content,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                            height: 1.4,
+                          ),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 16),
+                        const Divider(height: 1),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 12,
+                                  backgroundColor: Colors.grey.shade200,
+                                  child: Icon(Icons.person, size: 16, color: Colors.grey.shade600),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  post.authorName,
+                                  style: TextStyle(
+                                    color: Colors.grey.shade800,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.thumb_up_alt_outlined, size: 16, color: Colors.grey.shade500),
+                                    const SizedBox(width: 4),
+                                    Text('${post.likes}', style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+                                  ],
+                                ),
+                                const SizedBox(width: 16),
+                                Row(
+                                  children: [
+                                    Icon(Icons.chat_bubble_outline, size: 16, color: Colors.grey.shade500),
+                                    const SizedBox(width: 4),
+                                    Text('${post.commentsCount}', style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 );

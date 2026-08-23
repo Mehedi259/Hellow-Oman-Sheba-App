@@ -65,7 +65,10 @@ final appRouter = GoRouter(
         ),
         GoRoute(
           path: '/classifieds',
-          builder: (context, state) => const ClassifiedsScreen(),
+          builder: (context, state) {
+            final tab = state.uri.queryParameters['tab'];
+            return ClassifiedsScreen(initialTab: tab);
+          },
         ),
         GoRoute(
           path: '/community',

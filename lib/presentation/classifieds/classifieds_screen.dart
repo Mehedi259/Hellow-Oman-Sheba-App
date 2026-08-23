@@ -6,11 +6,30 @@ import 'widgets/job_card.dart';
 import 'widgets/market_card.dart';
 
 class ClassifiedsScreen extends StatelessWidget {
-  const ClassifiedsScreen({super.key});
+  final String? initialTab;
+  const ClassifiedsScreen({super.key, this.initialTab});
+
+  int _getInitialIndex() {
+    switch (initialTab) {
+      case 'market':
+        return 0;
+      case 'jobs':
+        return 1;
+      case 'properties':
+        return 2;
+      case 'vehicles':
+        return 3;
+      case 'services':
+        return 4;
+      default:
+        return 0; // Default to Market
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+      initialIndex: _getInitialIndex(),
       length: 5,
       child: Scaffold(
         appBar: AppBar(
@@ -151,21 +170,100 @@ class ServicesView extends ConsumerWidget {
       data: (items) {
         if (items.isEmpty) return const Center(child: Text('No services found.'));
         return ListView.builder(
+          padding: const EdgeInsets.all(16),
           itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
             return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: ListTile(
-                title: Text(item.title),
-                subtitle: Text(item.category),
-                trailing: Text(item.contactInfo),
+              margin: const EdgeInsets.only(bottom: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.grey.shade200),
+              ),
+              elevation: 2,
+              shadowColor: Colors.grey.shade100,
+              child: InkWell(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => ServiceDetailScreen(service: item)),
                   );
                 },
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.teal.shade50,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Icons.handyman_outlined, color: Colors.teal.shade600, size: 24),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.title,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    item.category,
+                                    style: TextStyle(
+                                      color: Colors.grey.shade700,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      const Divider(height: 1),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.phone_outlined, size: 16, color: Colors.grey.shade600),
+                              const SizedBox(width: 8),
+                              Text(
+                                item.contactInfo,
+                                style: TextStyle(
+                                  color: Colors.grey.shade700,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey.shade400),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
             );
           },

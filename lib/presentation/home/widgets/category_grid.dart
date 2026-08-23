@@ -5,38 +5,40 @@ import 'package:url_launcher/url_launcher.dart';
 class CategoryItem {
   final String nameBn;
   final String imagePath;
+  final String descriptionBn;
   final String? route;
   final String? url;
 
   CategoryItem({
     required this.nameBn,
     required this.imagePath,
+    required this.descriptionBn,
     this.route,
     this.url,
   });
 }
 
-final List<CategoryItem> _categories = [
-  CategoryItem(nameBn: 'চাকরি', imagePath: 'assets/images/categories/jobs.png', route: '/classifieds'),
-  CategoryItem(nameBn: 'বাসা ভাড়া', imagePath: 'assets/images/categories/properties.png', route: '/classifieds'),
-  CategoryItem(nameBn: 'গাড়ি', imagePath: 'assets/images/categories/vehicles.png', route: '/classifieds'),
-  CategoryItem(nameBn: 'মার্কেট', imagePath: 'assets/images/categories/classifieds.png', route: '/classifieds'),
-  CategoryItem(nameBn: 'প্রশ্ন ও উত্তর', imagePath: 'assets/images/categories/community.png', route: '/community'),
-  CategoryItem(nameBn: 'বাংলাদেশ দূতাবাস', imagePath: 'assets/images/categories/embassy.png', route: '/categories'),
-  CategoryItem(nameBn: 'বিশেষজ্ঞ ডাক্তার', imagePath: 'assets/images/categories/doctors.png', route: '/categories'),
-  CategoryItem(nameBn: 'হাসপাতাল', imagePath: 'assets/images/categories/hospitals.png', route: '/categories'),
-  CategoryItem(nameBn: 'অ্যাম্বুলেন্স', imagePath: 'assets/images/categories/ambulance.png', route: '/emergency'),
-  CategoryItem(nameBn: 'আইনজীবী', imagePath: 'assets/images/categories/lawyers.png', route: '/categories'),
-  CategoryItem(nameBn: 'ট্রাভেল এজেন্সি', imagePath: 'assets/images/categories/travel.png', route: '/categories'),
-  CategoryItem(nameBn: 'হোটেল', imagePath: 'assets/images/categories/hotels.png', route: '/categories'),
-  CategoryItem(nameBn: 'মানি এক্সচেঞ্জ', imagePath: 'assets/images/categories/money.png', route: '/categories'),
-  CategoryItem(nameBn: 'মক্তব সানাদ', imagePath: 'assets/images/categories/maktab.png', route: '/categories'),
-  CategoryItem(nameBn: 'দর্শনীয় স্থান', imagePath: 'assets/images/categories/tourist.png', route: '/categories'),
-  CategoryItem(nameBn: 'পুলিশ স্টেশন', imagePath: 'assets/images/categories/police.png', route: '/categories'),
-  CategoryItem(nameBn: 'জরুরী নম্বর', imagePath: 'assets/images/categories/emergency.png', route: '/emergency'),
-  CategoryItem(nameBn: 'সংবাদ', imagePath: 'assets/images/categories/news.png', route: '/news'),
-  CategoryItem(nameBn: 'হ্যালো ওমান', imagePath: 'assets/images/categories/hellowoman.png', url: 'https://www.facebook.com/helloomanbangla/'),
-  CategoryItem(nameBn: 'সালতানাত ওমান', imagePath: 'assets/images/categories/sultanate-oman.png', route: '/about-oman'),
+final List<CategoryItem> categoriesList = [
+  CategoryItem(nameBn: 'চাকরি', descriptionBn: 'চাকরি খুঁজুন এবং আবেদন করুন', imagePath: 'assets/images/categories/jobs.png', route: '/classifieds?tab=jobs'),
+  CategoryItem(nameBn: 'বাসা ভাড়া', descriptionBn: 'ফ্ল্যাট, রুম এবং বেড স্পেস', imagePath: 'assets/images/categories/properties.png', route: '/classifieds?tab=properties'),
+  CategoryItem(nameBn: 'গাড়ি', descriptionBn: 'গাড়ি কিনুন বা ভাড়া নিন', imagePath: 'assets/images/categories/vehicles.png', route: '/classifieds?tab=vehicles'),
+  CategoryItem(nameBn: 'মার্কেট', descriptionBn: 'কিনুন এবং বিক্রি করুন', imagePath: 'assets/images/categories/classifieds.png', route: '/classifieds?tab=market'),
+  CategoryItem(nameBn: 'প্রশ্ন ও উত্তর', descriptionBn: 'আলোচনা এবং সহযোগিতা', imagePath: 'assets/images/categories/community.png', route: '/community'),
+  CategoryItem(nameBn: 'বাংলাদেশ দূতাবাস', descriptionBn: 'দূতাবাস সেবা এবং সহায়তা', imagePath: 'assets/images/categories/embassy.png', route: '/categories'),
+  CategoryItem(nameBn: 'বিশেষজ্ঞ ডাক্তার', descriptionBn: 'বিশেষজ্ঞ চিকিৎসক এবং পরামর্শ', imagePath: 'assets/images/categories/doctors.png', route: '/categories'),
+  CategoryItem(nameBn: 'হাসপাতাল', descriptionBn: 'হাসপাতাল এবং ক্লিনিক', imagePath: 'assets/images/categories/hospitals.png', route: '/categories'),
+  CategoryItem(nameBn: 'অ্যাম্বুলেন্স', descriptionBn: 'জরুরী অ্যাম্বুলেন্স সেবা', imagePath: 'assets/images/categories/ambulance.png', route: '/emergency'),
+  CategoryItem(nameBn: 'আইনজীবী', descriptionBn: 'আইনি পরামর্শ এবং সহায়তা', imagePath: 'assets/images/categories/lawyers.png', route: '/categories'),
+  CategoryItem(nameBn: 'ট্রাভেল এজেন্সি', descriptionBn: 'ফ্লাইট এবং ট্যুর বুকিং', imagePath: 'assets/images/categories/travel.png', route: '/categories'),
+  CategoryItem(nameBn: 'হোটেল', descriptionBn: 'হোটেল এবং আবাসন', imagePath: 'assets/images/categories/hotels.png', route: '/categories'),
+  CategoryItem(nameBn: 'মানি এক্সচেঞ্জ', descriptionBn: 'মানি ট্রান্সফার এবং এক্সচেঞ্জ', imagePath: 'assets/images/categories/money.png', route: '/categories'),
+  CategoryItem(nameBn: 'মক্তব সানাদ', descriptionBn: 'মক্তব সার্টিফিকেট সেবা', imagePath: 'assets/images/categories/maktab.png', route: '/categories'),
+  CategoryItem(nameBn: 'দর্শনীয় স্থান', descriptionBn: 'ওমানের পর্যটন স্থান', imagePath: 'assets/images/categories/tourist.png', route: '/categories'),
+  CategoryItem(nameBn: 'পুলিশ স্টেশন', descriptionBn: 'পুলিশ স্টেশন তথ্য', imagePath: 'assets/images/categories/police.png', route: '/categories'),
+  CategoryItem(nameBn: 'জরুরী নম্বর', descriptionBn: 'জরুরী যোগাযোগ নম্বর', imagePath: 'assets/images/categories/emergency.png', route: '/emergency'),
+  CategoryItem(nameBn: 'সংবাদ', descriptionBn: 'সর্বশেষ সংবাদ', imagePath: 'assets/images/categories/news.png', route: '/news'),
+  CategoryItem(nameBn: 'হ্যালো ওমান', descriptionBn: 'আমাদের Facebook পেজ', imagePath: 'assets/images/categories/hellowoman.png', url: 'https://www.facebook.com/helloomanbangla/'),
+  CategoryItem(nameBn: 'সালতানাত ওমান', descriptionBn: 'ওমান সালতানাত সম্পর্কে জানুন', imagePath: 'assets/images/categories/sultanate-oman.png', route: '/about-oman'),
 ];
 
 class CategoryGridWidget extends StatelessWidget {
@@ -74,7 +76,7 @@ class CategoryGridWidget extends StatelessWidget {
           child: GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: _categories.length,
+            itemCount: categoriesList.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
               childAspectRatio: 0.85,
@@ -82,7 +84,7 @@ class CategoryGridWidget extends StatelessWidget {
               mainAxisSpacing: 12,
             ),
             itemBuilder: (context, index) {
-              final category = _categories[index];
+              final category = categoriesList[index];
               return InkWell(
                 onTap: () => _handleTap(context, category),
                 borderRadius: BorderRadius.circular(12),
