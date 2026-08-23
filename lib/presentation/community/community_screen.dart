@@ -175,8 +175,8 @@ class CommunityScreen extends ConsumerWidget {
               },
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Error: $e')),
+          loading: () => ListView(children: const [SizedBox(height: 300), Center(child: CircularProgressIndicator())]),
+          error: (e, _) => ListView(children: [SizedBox(height: 300), Center(child: Padding(padding: const EdgeInsets.all(16.0), child: Text('Error: $e', textAlign: TextAlign.center)))]),
         ),
       ),
     );

@@ -12,8 +12,11 @@ class CommunityRepository {
       final response = await apiClient.dio.get('/community/forum/posts/');
       final results = response.data['results'] as List? ?? response.data as List;
       return results.map((json) => Post.fromJson(json)).toList();
-    } on DioException catch (e) {
-      throw Exception(e.response?.data['detail'] ?? 'Failed to load posts');
+    } catch (e) {
+      if (e is DioException) {
+        throw Exception(e.response?.data['detail'] ?? e.message ?? 'Failed to load posts');
+      }
+      throw Exception('Parsing error: $e');
     }
   }
 

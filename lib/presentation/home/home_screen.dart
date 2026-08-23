@@ -22,29 +22,141 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.blue[700],
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: const Text('H', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            ),
-            const SizedBox(width: 8),
-            const Text(
-              'হ্যালো ওমান সেবা',
-              style: TextStyle(
-                color: Color(0xFF0F172A),
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
-          ],
-        ),
+        title: Image.asset('assets/images/main-logo.png', height: 40),
+        centerTitle: false,
         backgroundColor: Colors.white,
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black87), // For the hamburger icon
+      ),
+      endDrawer: Drawer(
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Image.asset('assets/images/main-logo.png', height: 40),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
+              Expanded(
+                child: ListView(
+                  children: [
+                    ListTile(
+                      title: const Text('চাকরি'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        context.push('/classifieds?tab=jobs');
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('বাসা ভাড়া'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        context.push('/classifieds?tab=properties');
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('গাড়ি'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        context.push('/classifieds?tab=vehicles');
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('সেবা'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        context.push('/classifieds?tab=services');
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('কমিউনিটি'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        context.push('/community');
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('মার্কেট'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        context.push('/classifieds?tab=market');
+                      },
+                    ),
+                    const Divider(),
+                    ListTile(
+                      leading: const Icon(Icons.search),
+                      title: const Text('সার্চ'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Implement search
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.favorite_border),
+                      title: const Text('পছন্দের তালিকা'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Implement favorites
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.notifications_none),
+                      title: const Text('নোটিফিকেশন'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Implement notifications
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.person_outline),
+                      title: const Text('প্রোফাইল'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        context.push('/profile');
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('লগআউট'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        ref.read(authStateProvider.notifier).logout();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      // TODO: Implement Post
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue[600],
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text('পোস্ট করুন', style: TextStyle(color: Colors.white, fontSize: 16)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: () async {

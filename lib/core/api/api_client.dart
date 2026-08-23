@@ -15,8 +15,12 @@ class ApiClient {
         }
         return handler.next(options);
       },
-      onError: (DioException e, handler) {
-        // Handle global errors here if needed
+      onError: (DioException e, handler) async {
+        if (e.response?.statusCode == 401) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.remove('auth_token');
+          // We could optionally use a global navigator key to push to login screen here
+        }
         return handler.next(e);
       }
     ));
