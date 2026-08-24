@@ -38,10 +38,6 @@ final appRouter = GoRouter(
       builder: (context, state) => const SearchScreen(),
     ),
     GoRoute(
-      path: '/notifications',
-      builder: (context, state) => const NotificationsScreen(),
-    ),
-    GoRoute(
       path: '/about',
       builder: (context, state) => const AboutScreen(),
     ),
@@ -81,6 +77,10 @@ final appRouter = GoRouter(
         GoRoute(
           path: '/profile',
           builder: (context, state) => const ProfileScreen(),
+        ),
+        GoRoute(
+          path: '/notifications',
+          builder: (context, state) => const NotificationsScreen(),
         ),
       ],
     ),

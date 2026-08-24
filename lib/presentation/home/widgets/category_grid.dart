@@ -79,7 +79,7 @@ class CategoryGridWidget extends StatelessWidget {
             itemCount: categoriesList.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              childAspectRatio: 0.85,
+              childAspectRatio: 0.75,
               crossAxisSpacing: 8,
               mainAxisSpacing: 12,
             ),
@@ -105,7 +105,6 @@ class CategoryGridWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Expanded(
-                        flex: 3,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Image.asset(
@@ -116,21 +115,18 @@ class CategoryGridWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Expanded(
-                        flex: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: Text(
-                            category.nameBn,
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                              height: 1.1,
-                            ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 2.0, right: 2.0, bottom: 8.0),
+                        child: Text(
+                          category.nameBn,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                            height: 1.1,
                           ),
                         ),
                       ),
