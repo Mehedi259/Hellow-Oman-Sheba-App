@@ -7,29 +7,14 @@ class AuthRepository {
 
   AuthRepository(this.apiClient);
 
-  Future<String?> login(String email, String password) async {
+  Future<String?> loginWithGoogle(String idToken) async {
     try {
-      final response = await apiClient.dio.post('/users/login/', data: {
-        'email': email,
-        'password': password,
+      final response = await apiClient.dio.post('/users/auth/google/', data: {
+        'id_token': idToken,
       });
-      return response.data['token']; // Adjust based on actual Django response
+      return response.data['access']; // Returning access token as per website API response
     } on DioException catch (e) {
-      throw Exception(e.response?.data['detail'] ?? 'Login failed');
-    }
-  }
-
-  Future<String?> register(String email, String password, String firstName, String lastName) async {
-    try {
-      final response = await apiClient.dio.post('/users/register/', data: {
-        'email': email,
-        'password': password,
-        'first_name': firstName,
-        'last_name': lastName,
-      });
-      return response.data['token'];
-    } on DioException catch (e) {
-      throw Exception(e.response?.data['detail'] ?? 'Registration failed');
+      throw Exception(e.response?.data['error'] ?? 'Google login failed');
     }
   }
 
