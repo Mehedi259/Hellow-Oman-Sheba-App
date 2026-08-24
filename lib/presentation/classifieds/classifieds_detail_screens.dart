@@ -5,6 +5,9 @@ import '../../data/models/classifieds_models.dart';
 import '../../data/repositories/classifieds_repository.dart';
 import '../../core/api/api_client.dart';
 import '../auth/auth_provider.dart';
+import 'widgets/favorite_button.dart';
+import 'widgets/reviews_section.dart';
+
 
 final classifiedsRepositoryProvider = Provider((ref) {
   return ClassifiedsRepository(ref.watch(apiClientProvider));
@@ -17,7 +20,7 @@ class JobDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: Text(job.title)),
+      appBar: AppBar(title: Text(job.title), actions: [FavoriteButton(contentType: 'job', contentId: job.id)]),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -70,6 +73,8 @@ class JobDetailScreen extends ConsumerWidget {
                 child: const Text('Apply Now'),
               ),
             ),
+            const SizedBox(height: 32),
+            ReviewsSection(contentType: 'job', contentId: job.id),
           ],
         ),
       ),
@@ -84,7 +89,7 @@ class PropertyDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(property.title)),
+      appBar: AppBar(title: Text(property.title), actions: [FavoriteButton(contentType: 'property', contentId: property.id)]),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -113,6 +118,8 @@ class PropertyDetailScreen extends StatelessWidget {
             const Text('Contact Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(property.contactInfo),
+            const SizedBox(height: 32),
+            ReviewsSection(contentType: 'property', contentId: property.id),
           ],
         ),
       ),
@@ -127,7 +134,7 @@ class VehicleDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(vehicle.title)),
+      appBar: AppBar(title: Text(vehicle.title), actions: [FavoriteButton(contentType: 'vehicle', contentId: vehicle.id)]),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -156,6 +163,8 @@ class VehicleDetailScreen extends StatelessWidget {
             const Text('Contact Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(vehicle.contactInfo),
+            const SizedBox(height: 32),
+            ReviewsSection(contentType: 'vehicle', contentId: vehicle.id),
           ],
         ),
       ),
@@ -170,7 +179,7 @@ class ServiceDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(service.title)),
+      appBar: AppBar(title: Text(service.title), actions: [FavoriteButton(contentType: 'service', contentId: service.id)]),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -197,6 +206,8 @@ class ServiceDetailScreen extends StatelessWidget {
             const Text('Contact Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(service.contactInfo),
+            const SizedBox(height: 32),
+            ReviewsSection(contentType: 'service', contentId: service.id),
           ],
         ),
       ),
@@ -211,7 +222,7 @@ class MarketItemDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(item.title)),
+      appBar: AppBar(title: Text(item.title), actions: [FavoriteButton(contentType: 'market_item', contentId: item.id)]),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -238,6 +249,8 @@ class MarketItemDetailScreen extends StatelessWidget {
             const Text('Description', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(item.description),
+            const SizedBox(height: 32),
+            ReviewsSection(contentType: 'market_item', contentId: item.id),
           ],
         ),
       ),

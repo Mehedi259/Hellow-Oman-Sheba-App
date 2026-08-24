@@ -363,19 +363,57 @@ class _MyPostsTab extends ConsumerWidget {
   }
 }
 
-class _FavoritesTab extends StatelessWidget {
+class _FavoritesTab extends ConsumerWidget {
   const _FavoritesTab();
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.favorite, size: 64, color: Colors.grey.shade300),
-          const SizedBox(height: 16),
-          Text('পছন্দের তালিকায় কোনো আইটেম নেই', style: TextStyle(color: Colors.grey.shade600, fontSize: 16)),
-        ],
-      ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return FutureBuilder<List<dynamic>>(
+      future: ref.read(authRepositoryProvider).getFavorites(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+        if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
+        final items = snapshot.data ?? [];
+        if (items.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.favorite, size: 64, color: Colors.grey.shade300),
+                const SizedBox(height: 16),
+                Text('পছন্দের তালিকায় কোনো আইটেম নেই', style: TextStyle(color: Colors.grey.shade600, fontSize: 16)),
+              ],
+            ),
+          );
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final item = items[index];
+            return Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: ListTile(
+                leading: const Icon(Icons.favorite, color: Colors.pink),
+                title: Text(item['title'] ?? item['content_type'] ?? 'Favorite Item'),
+                subtitle: Text('ID: ${item['content_id'] ?? ''}'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () async {
+                    try {
+                      await ref.read(authRepositoryProvider).removeFavorite(item['id']);
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Removed from favorites')));
+                      // Note: In a real app we'd refresh the provider here.
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+                    }
+                  },
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

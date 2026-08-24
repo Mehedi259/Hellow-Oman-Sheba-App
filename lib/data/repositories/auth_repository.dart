@@ -87,4 +87,31 @@ class AuthRepository {
       return [];
     }
   }
+  Future<List<dynamic>> getFavorites() async {
+    try {
+      final response = await apiClient.dio.get('/users/favorites/');
+      return response.data['results'] as List? ?? response.data as List;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<void> addFavorite(String contentType, int contentId) async {
+    try {
+      await apiClient.dio.post('/users/favorites/', data: {
+        'content_type': contentType,
+        'content_id': contentId,
+      });
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to add to favorites');
+    }
+  }
+
+  Future<void> removeFavorite(int favoriteId) async {
+    try {
+      await apiClient.dio.delete('/users/favorites/$favoriteId/');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to remove from favorites');
+    }
+  }
 }
