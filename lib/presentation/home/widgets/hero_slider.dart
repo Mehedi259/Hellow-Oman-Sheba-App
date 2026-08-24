@@ -75,32 +75,43 @@ class _HeroSliderWidgetState extends State<HeroSliderWidget> {
               itemCount: widget.sliders.length,
               itemBuilder: (context, index) {
                 final slider = widget.sliders[index];
-                return GestureDetector(
-                  onTap: () => _launchUrl(slider.link),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.network(
-                        slider.imageUrl.startsWith('http') 
-                            ? slider.imageUrl 
-                            : 'http://188.245.212.240${slider.imageUrl}',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            Container(color: Colors.blue[900]),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.blue[900]!.withOpacity(0.85),
-                              Colors.blue[800]!.withOpacity(0.55),
-                              Colors.transparent,
-                            ],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
+                return Container(
+                  color: Colors.blue[900],
+                  child: GestureDetector(
+                    onTap: () => _launchUrl(slider.link),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.network(
+                          slider.imageUrl.startsWith('http') 
+                              ? slider.imageUrl 
+                              : 'http://188.245.212.240${slider.imageUrl}',
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              color: Colors.blue[900],
+                              child: const Center(
+                                child: CircularProgressIndicator(color: Colors.white54),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(color: Colors.blue[900]),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.blue[900]!.withOpacity(0.85),
+                                Colors.blue[800]!.withOpacity(0.55),
+                                Colors.transparent,
+                              ],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
                           ),
                         ),
-                      ),
                       Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Column(
@@ -168,7 +179,8 @@ class _HeroSliderWidgetState extends State<HeroSliderWidget> {
                       ),
                     ],
                   ),
-                );
+                ),
+              );
               },
             ),
           ),

@@ -74,7 +74,7 @@ class JobsView extends ConsumerWidget {
             crossAxisCount: 2,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            childAspectRatio: 0.75,
+            childAspectRatio: 0.58,
           ),
           itemCount: jobs.length,
           itemBuilder: (context, index) {
@@ -290,7 +290,7 @@ class MarketView extends ConsumerWidget {
             crossAxisCount: 2,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            childAspectRatio: 0.72,
+            childAspectRatio: 0.58,
           ),
           itemCount: items.length,
           itemBuilder: (context, index) {
