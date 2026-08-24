@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../auth/auth_provider.dart';
-
+import '../auth/widgets/google_login_button.dart';
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
@@ -21,7 +21,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       body: authState.when(
         data: (user) {
           if (user == null) {
-            return const Center(child: Text('Please log in to view your profile.'));
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.account_circle, size: 80, color: Colors.grey),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'প্রোফাইল দেখতে আপনাকে লগইন করতে হবে',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    GoogleLoginButton(
+                      onSuccess: () {
+                        // After success, authStateProvider automatically updates and rebuilds this widget.
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
           }
           return Row(
             children: [
