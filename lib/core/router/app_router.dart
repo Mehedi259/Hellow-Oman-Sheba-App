@@ -13,7 +13,7 @@ import '../../presentation/search/search_screen.dart';
 import '../../presentation/notifications/notifications_screen.dart';
 import '../../presentation/info/info_screens.dart';
 import '../../presentation/categories/categories_screen.dart';
-
+import '../../presentation/post/create_post_screen.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -24,6 +24,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/login',
       builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/post/create',
+      builder: (context, state) => const CreatePostScreen(),
     ),
 
     GoRoute(

@@ -19,7 +19,7 @@ class CommunityScreen extends ConsumerWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const CreatePostScreen()),
+                MaterialPageRoute(builder: (context) => const CreateCommunityPostScreen()),
               );
             },
           )
@@ -183,14 +183,14 @@ class CommunityScreen extends ConsumerWidget {
   }
 }
 
-class CreatePostScreen extends ConsumerStatefulWidget {
-  const CreatePostScreen({super.key});
+class CreateCommunityPostScreen extends ConsumerStatefulWidget {
+  const CreateCommunityPostScreen({super.key});
 
   @override
-  ConsumerState<CreatePostScreen> createState() => _CreatePostScreenState();
+  ConsumerState<CreateCommunityPostScreen> createState() => _CreateCommunityPostScreenState();
 }
 
-class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
+class _CreateCommunityPostScreenState extends ConsumerState<CreateCommunityPostScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   bool _isLoading = false;
@@ -216,7 +216,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Post')),
+      appBar: AppBar(title: const Text('Create Community Post')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

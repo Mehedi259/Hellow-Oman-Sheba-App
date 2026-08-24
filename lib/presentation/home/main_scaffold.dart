@@ -41,7 +41,13 @@ class MainScaffold extends ConsumerWidget {
       body: child,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Navigate to add post
+          final authState = ref.read(authStateProvider);
+          final user = authState.value;
+          if (user == null) {
+            context.push('/login');
+          } else {
+            context.push('/post/create');
+          }
         },
         backgroundColor: Colors.blue,
         shape: const CircleBorder(),
