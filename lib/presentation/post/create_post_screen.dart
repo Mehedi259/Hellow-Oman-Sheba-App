@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'widgets/job_form.dart';
+import 'widgets/property_form.dart';
+import 'widgets/vehicle_form.dart';
+import 'widgets/market_form.dart';
+import 'widgets/service_form.dart';
+import '../community/community_screen.dart' show CreateCommunityPostScreen;
 
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key});
@@ -30,7 +36,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF7C3AED), Color(0xFF9333EA)], // violet-600 to purple-600
+              colors: [Color(0xFF7C3AED), Color(0xFF9333EA)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -50,7 +56,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF7C3AED), Color(0xFF9333EA)], // violet-600 to purple-600
+              colors: [Color(0xFF7C3AED), Color(0xFF9333EA)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -88,9 +94,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       final category = _categories[index];
                       return InkWell(
                         onTap: () {
-                          setState(() {
-                            _selectedCategory = category['id'];
-                          });
+                          if (category['id'] == 'discussion') {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateCommunityPostScreen()));
+                          } else {
+                            setState(() {
+                              _selectedCategory = category['id'];
+                            });
+                          }
                         },
                         borderRadius: BorderRadius.circular(16),
                         child: Container(
@@ -146,6 +156,28 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   Widget _buildFormShell() {
     final category = _categories.firstWhere((c) => c['id'] == _selectedCategory);
+    
+    Widget formContent;
+    switch (_selectedCategory) {
+      case 'job':
+        formContent = JobForm(onSuccess: () => setState(() => _selectedCategory = null));
+        break;
+      case 'property':
+        formContent = PropertyForm(onSuccess: () => setState(() => _selectedCategory = null));
+        break;
+      case 'vehicle':
+        formContent = VehicleForm(onSuccess: () => setState(() => _selectedCategory = null));
+        break;
+      case 'classified':
+        formContent = MarketForm(onSuccess: () => setState(() => _selectedCategory = null));
+        break;
+      case 'service':
+        formContent = ServiceForm(onSuccess: () => setState(() => _selectedCategory = null));
+        break;
+      default:
+        formContent = Center(child: Text('Form for ${_selectedCategory} not implemented yet'));
+    }
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Card(
@@ -185,20 +217,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               ),
               const Divider(height: 32),
               Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(category['icon'], size: 64, color: Colors.grey.shade400),
-                      const SizedBox(height: 16),
-                      Text(
-                        '${category['name']} ফর্ম এখনো তৈরি করা হয়নি।',
-                        style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
+                child: formContent,
               ),
             ],
           ),

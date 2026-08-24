@@ -79,4 +79,12 @@ class AuthRepository {
       // ignore
     }
   }
+  Future<List<dynamic>> getNotifications() async {
+    try {
+      final response = await apiClient.dio.get('/users/notifications/');
+      return response.data['results'] as List? ?? response.data as List;
+    } catch (e) {
+      return [];
+    }
+  }
 }

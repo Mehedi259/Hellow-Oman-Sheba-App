@@ -103,4 +103,43 @@ class ClassifiedsRepository {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load market items');
     }
   }
+  Future<void> createJob(Map<String, dynamic> data) async {
+    try {
+      await apiClient.dio.post('/classifieds/jobs/', data: data);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to create job post');
+    }
+  }
+
+  Future<void> createProperty(Map<String, dynamic> data) async {
+    try {
+      await apiClient.dio.post('/classifieds/properties/', data: data);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to create property post');
+    }
+  }
+
+  Future<void> createVehicle(Map<String, dynamic> data) async {
+    try {
+      await apiClient.dio.post('/classifieds/vehicles/', data: data);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to create vehicle post');
+    }
+  }
+
+  Future<void> createService(Map<String, dynamic> data) async {
+    try {
+      await apiClient.dio.post('/classifieds/services/', data: data);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to create service post');
+    }
+  }
+
+  Future<void> createMarketItem(Map<String, dynamic> data) async {
+    try {
+      await apiClient.dio.post('/community/classifieds/', data: data);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to create market post');
+    }
+  }
 }
