@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'classifieds_provider.dart';
 import 'classifieds_detail_screens.dart';
-import 'widgets/job_card.dart';
+import '../../data/models/job.dart';
+import 'find_jobs_provider.dart';
+import 'widgets/job_list_card.dart';
 import 'widgets/market_card.dart';
 
 class ClassifiedsScreen extends StatelessWidget {
@@ -79,42 +81,306 @@ class ClassifiedsScreen extends StatelessWidget {
   }
 }
 
-class JobsView extends ConsumerWidget {
+class JobsView extends ConsumerStatefulWidget {
   const JobsView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final jobsState = ref.watch(jobsProvider);
-    return jobsState.when(
-      data: (jobs) {
-        if (jobs.isEmpty) {
-          return Center(
+  ConsumerState<JobsView> createState() => _JobsViewState();
+}
+
+class _JobsViewState extends ConsumerState<JobsView> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final jobsAsync = ref.watch(filteredJobsProvider);
+    final filterState = ref.watch(findJobsStateProvider);
+
+    return jobsAsync.when(
+      data: (data) {
+        final List<Job> jobs = data['jobs'] ?? [];
+        final int totalItems = data['totalItems'] ?? 0;
+        final int totalPages = data['totalPages'] ?? 0;
+        final int currentPage = data['currentPage'] ?? 1;
+
+        return RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(jobsProvider);
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.work_off_outlined, size: 64, color: Colors.grey.shade300),
-                const SizedBox(height: 16),
-                Text('কোনো চাকরি পাওয়া যায়নি', style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
+                // 1. Hero Search Banner
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(20, 32, 20, 40),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF2563EB), Color(0xFF9333EA)], // blue to purple
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'চাকরি খুঁজুন',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            hintText: 'চাকরির পদবী, কোম্পানি বা কীওয়ার্ড...',
+                            hintStyle: TextStyle(color: Colors.grey.shade500),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            suffixIcon: Container(
+                              margin: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF2563EB),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: IconButton(
+                                icon: const Icon(Icons.search, color: Colors.white),
+                                onPressed: () {
+                                  ref.read(findJobsStateProvider.notifier).updateSearch(_searchController.text);
+                                },
+                              ),
+                            ),
+                          ),
+                          onSubmitted: (value) {
+                            ref.read(findJobsStateProvider.notifier).updateSearch(value);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 2. Filter Section
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey.shade200),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.filter_alt_outlined, size: 24),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'ফিল্টার',
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'চাকরির ধরন',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                _buildFilterChip('FULL_TIME', 'ফুল টাইম', filterState, ref),
+                                _buildFilterChip('PART_TIME', 'পার্ট টাইম', filterState, ref),
+                                _buildFilterChip('CONTRACT', 'কন্ট্রাক্ট', filterState, ref),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // 3. Results Header & Sorting
+                      Text(
+                        '$totalItemsটি চাকরি পাওয়া গেছে',
+                        style: const TextStyle(fontSize: 16, color: Colors.black54),
+                      ),
+                      const SizedBox(height: 12),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildSortButton('সর্বশেষ', 'latest', filterState, ref),
+                            const SizedBox(width: 8),
+                            _buildSortButton('উচ্চ বেতন', 'high_salary', filterState, ref),
+                            const SizedBox(width: 8),
+                            _buildSortButton('নিম্ন বেতন', 'low_salary', filterState, ref),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      // 4. Job List
+                      if (jobs.isEmpty)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(32.0),
+                            child: Column(
+                              children: [
+                                Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'কোনো চাকরি পাওয়া যায়নি',
+                                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      else
+                        ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: jobs.length,
+                          itemBuilder: (context, index) {
+                            return JobListCardWidget(job: jobs[index]);
+                          },
+                        ),
+                      
+                      // 5. Pagination
+                      if (totalPages > 1)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0, bottom: 32.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _buildPaginationButton(
+                                'পূর্ববর্তী',
+                                enabled: currentPage > 1,
+                                onPressed: () {
+                                  ref.read(findJobsStateProvider.notifier).setPage(currentPage - 1);
+                                },
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF2563EB),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  '$currentPage',
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              _buildPaginationButton(
+                                'পরবর্তী',
+                                enabled: currentPage < totalPages,
+                                onPressed: () {
+                                  ref.read(findJobsStateProvider.notifier).setPage(currentPage + 1);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ],
             ),
-          );
-        }
-        return GridView.builder(
-          padding: const EdgeInsets.all(12.0),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 0.56,
           ),
-          itemCount: jobs.length,
-          itemBuilder: (context, index) {
-            return JobCardWidget(job: jobs[index]);
-          },
         );
       },
       loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB))),
       error: (e, _) => Center(child: Text('Error: $e')),
+    );
+  }
+
+  Widget _buildFilterChip(String value, String label, FindJobsState state, WidgetRef ref) {
+    final isSelected = state.jobType == value;
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        ref.read(findJobsStateProvider.notifier).setJobType(selected ? value : null);
+      },
+      backgroundColor: Colors.white,
+      selectedColor: Colors.blue.shade50,
+      labelStyle: TextStyle(
+        color: isSelected ? const Color(0xFF2563EB) : Colors.black87,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      ),
+      side: BorderSide(
+        color: isSelected ? const Color(0xFF2563EB) : Colors.grey.shade300,
+      ),
+    );
+  }
+
+  Widget _buildSortButton(String label, String value, FindJobsState state, WidgetRef ref) {
+    final isSelected = state.sortOrder == value;
+    return InkWell(
+      onTap: () {
+        ref.read(findJobsStateProvider.notifier).setSortOrder(value);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF2563EB) : Colors.white,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: isSelected ? const Color(0xFF2563EB) : Colors.grey.shade300),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black87,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaginationButton(String label, {required bool enabled, required VoidCallback onPressed}) {
+    return InkWell(
+      onTap: enabled ? onPressed : null,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: enabled ? Colors.black87 : Colors.grey.shade400,
+          ),
+        ),
+      ),
     );
   }
 }
