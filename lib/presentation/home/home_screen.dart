@@ -9,6 +9,9 @@ import 'widgets/category_grid.dart';
 import 'widgets/latest_jobs.dart';
 import 'widgets/market_widget.dart';
 import 'widgets/community_widget.dart';
+import 'widgets/properties_widget.dart';
+import 'widgets/vehicles_widget.dart';
+import 'widgets/call_to_action_widget.dart';
 import '../community/community_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -161,6 +164,8 @@ class HomeScreen extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(jobsProvider);
+          ref.invalidate(propertiesProvider);
+          ref.invalidate(vehiclesProvider);
           ref.invalidate(marketItemsProvider);
           ref.invalidate(postsProvider);
         },
@@ -180,6 +185,18 @@ class HomeScreen extends ConsumerWidget {
               error: (error, stack) => Text('Jobs Error: $error'),
             ),
             const SizedBox(height: 16),
+            ref.watch(propertiesProvider).when(
+              data: (properties) => PropertiesWidget(properties: properties),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Text('Properties Error: $error'),
+            ),
+            const SizedBox(height: 16),
+            ref.watch(vehiclesProvider).when(
+              data: (vehicles) => VehiclesWidget(vehicles: vehicles),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Text('Vehicles Error: $error'),
+            ),
+            const SizedBox(height: 16),
             ref.watch(marketItemsProvider).when(
               data: (items) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: MarketWidget(items: items)),
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -191,6 +208,9 @@ class HomeScreen extends ConsumerWidget {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Community Error: $error'),
             ),
+            const SizedBox(height: 16),
+            const CallToActionWidget(),
+            const SizedBox(height: 32),
           ],
         ),
       ),
