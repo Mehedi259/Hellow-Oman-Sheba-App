@@ -33,3 +33,8 @@ final marketItemsProvider = FutureProvider<List<MarketItem>>((ref) async {
   final repository = ref.watch(classifiedsRepositoryProvider);
   return repository.getMarketItems();
 });
+
+final servicesByCategoryProvider = FutureProvider.family<List<Service>, String>((ref, category) async {
+  final repository = ref.read(classifiedsRepositoryProvider);
+  return repository.getServices(category: category);
+});

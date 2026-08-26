@@ -55,6 +55,9 @@ class MainScaffold extends ConsumerWidget {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavigationBar(
+        selectedFontSize: 10,
+        unselectedFontSize: 10,
+        iconSize: 24,
         type: BottomNavigationBarType.fixed,
         currentIndex: _calculateSelectedIndex(context),
         onTap: (int idx) => _onItemTapped(idx, context),
@@ -76,6 +79,7 @@ class MainScaffold extends ConsumerWidget {
     if (location.startsWith('/categories')) return 1;
     if (location.startsWith('/notifications')) return 3;
     if (location.startsWith('/profile')) return 4;
+    if (location.startsWith('/post/create')) return 2;
     return 0; // default to Home
   }
 

@@ -41,9 +41,10 @@ class ClassifiedsRepository {
     }
   }
 
-  Future<List<Service>> getServices() async {
+  Future<List<Service>> getServices({String? category}) async {
     try {
-      final response = await apiClient.dio.get('/classifieds/services/');
+      final query = category != null ? "?category=$category" : "";
+      final response = await apiClient.dio.get('/classifieds/services/$query');
       final data = response.data;
       final results = data is List ? data : (data['results'] as List? ?? []);
       return results.map((json) => Service.fromJson(json)).toList();

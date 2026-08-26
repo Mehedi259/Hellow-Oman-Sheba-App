@@ -12,6 +12,8 @@ import '../../presentation/emergency/emergency_screen.dart';
 import '../../presentation/search/search_screen.dart';
 import '../../presentation/notifications/notifications_screen.dart';
 import '../../presentation/info/info_screens.dart';
+import '../../presentation/info/embassy_screen.dart';
+import '../../presentation/categories/service_list_screen.dart';
 import '../../presentation/categories/categories_screen.dart';
 import '../../presentation/post/create_post_screen.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -24,10 +26,6 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/login',
       builder: (context, state) => const LoginScreen(),
-    ),
-    GoRoute(
-      path: '/post/create',
-      builder: (context, state) => const CreatePostScreen(),
     ),
 
     GoRoute(
@@ -46,12 +44,27 @@ final appRouter = GoRouter(
       path: '/about-oman',
       builder: (context, state) => const AboutOmanScreen(),
     ),
+    GoRoute(
+      path: '/embassy',
+      builder: (context, state) => const EmbassyScreen(),
+    ),
+    GoRoute(
+      path: '/services/:slug',
+      builder: (context, state) {
+        final slug = state.pathParameters['slug']!;
+        return ServiceListScreen(slug: slug);
+      },
+    ),
     ShellRoute(
       navigatorKey: _shellNavigatorKey,
       builder: (context, state, child) {
         return MainScaffold(child: child);
       },
       routes: [
+        GoRoute(
+          path: '/post/create',
+          builder: (context, state) => const CreatePostScreen(),
+        ),
         GoRoute(
           path: '/',
           builder: (context, state) => const HomeScreen(),
