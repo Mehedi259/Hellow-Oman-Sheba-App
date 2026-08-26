@@ -173,6 +173,7 @@ class MarketItem {
   final String city;
   final String area;
   final List<String> images;
+  final DateTime createdAt;
 
   MarketItem({
     required this.id,
@@ -185,6 +186,7 @@ class MarketItem {
     required this.city,
     required this.area,
     this.images = const [],
+    required this.createdAt,
   });
 
   factory MarketItem.fromJson(Map<String, dynamic> json) {
@@ -203,6 +205,9 @@ class MarketItem {
         if (e is Map) return (e['image'] ?? e['url'] ?? '').toString();
         return '';
       }).where((e) => e.isNotEmpty).toList() ?? [],
+      createdAt: json['created_at'] != null 
+          ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now() 
+          : DateTime.now(),
     );
   }
 }

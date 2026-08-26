@@ -7,6 +7,19 @@ class MarketCardWidget extends StatelessWidget {
   
   const MarketCardWidget({super.key, required this.item});
 
+  String _timeAgo(DateTime createdAt) {
+    final difference = DateTime.now().difference(createdAt);
+    if (difference.inDays > 0) {
+      return '${difference.inDays} দিন আগে';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} ঘণ্টা আগে';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} মিনিট আগে';
+    } else {
+      return 'এইমাত্র';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -19,15 +32,16 @@ class MarketCardWidget extends StatelessWidget {
         );
       },
       child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey.shade200),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.shade100,
-              blurRadius: 6,
-              offset: const Offset(0, 2),
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -35,36 +49,39 @@ class MarketCardWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image Section
+            // Top Full Width Image Section
             Stack(
               children: [
                 Container(
-                  height: 110,
+                  height: 180,
                   width: double.infinity,
-                  color: Colors.grey.shade200,
+                  color: Colors.grey.shade100,
                   child: item.images.isNotEmpty
                       ? Image.network(
-                          item.images[0].startsWith('http') ? item.images[0] : 'http://188.245.212.240${item.images[0]}',
+                          item.images[0].startsWith('http') 
+                              ? item.images[0] 
+                              : 'http://188.245.212.240${item.images[0]}',
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                              const Icon(Icons.store, color: Colors.grey, size: 50),
                         )
-                      : const Icon(Icons.image, color: Colors.grey, size: 40),
+                      : const Icon(Icons.store, color: Colors.grey, size: 50),
                 ),
+                // N/A Badge or Category Badge
                 Positioned(
-                  top: 8,
-                  left: 8,
+                  top: 12,
+                  left: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.deepOrange,
-                      borderRadius: BorderRadius.circular(12),
+                      color: const Color(0xFF22C55E), // Green color matching N/A tag
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Text(
-                      item.categoryName,
-                      style: const TextStyle(
+                    child: const Text(
+                      'N/A', // Place holder as seen in screenshot
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -72,70 +89,135 @@ class MarketCardWidget extends StatelessWidget {
                 ),
               ],
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+            
+            // Details Section
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                      height: 1.3,
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.local_offer_outlined, size: 14, color: Colors.grey[600]),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            'অবস্থা: ${item.condition}',
-                            style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '${item.price} ${item.currency}',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2563EB), // Blue color for price
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  
+                  // Tags Row (Condition/Category)
+                  Row(
+                    children: [
+                      Icon(Icons.sell_outlined, size: 16, color: Colors.grey.shade500),
+                      const SizedBox(width: 6),
+                      Text(
+                        item.condition,
+                        style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  
+                  // Location Row
+                  Row(
+                    children: [
+                      Icon(Icons.location_on_outlined, size: 16, color: Colors.grey.shade500),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          '${item.city}${item.area.isNotEmpty ? ', ${item.area}' : ''}',
+                          style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  
+                  // Time Row
+                  Row(
+                    children: [
+                      Icon(Icons.access_time, size: 16, color: Colors.grey.shade500),
+                      const SizedBox(width: 6),
+                      Text(
+                        _timeAgo(item.createdAt),
+                        style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  
+                  // Action Buttons Row
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MarketItemDetailScreen(item: item),
+                              ),
+                            );
+                          },
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            side: BorderSide(color: Colors.grey.shade300),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                          child: const Text(
+                            'বিস্তারিত',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[600]),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            '${item.city}${item.area.isNotEmpty ? ', ${item.area}' : ''}',
-                            style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // TODO: Add contact action
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2563EB),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                          child: const Text(
+                            'যোগাযোগ',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
-                      ],
-                    ),
-                    const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.only(top: 8),
-                      decoration: BoxDecoration(
-                        border: Border(top: BorderSide(color: Colors.grey.shade200)),
                       ),
-                      child: Text(
-                        '${item.price} ${item.currency}',
-                        style: const TextStyle(
-                          color: Colors.deepOrange,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],

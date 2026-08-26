@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'classifieds_provider.dart';
 import 'classifieds_detail_screens.dart';
 import '../../data/models/job.dart';
+import '../../data/models/classifieds_models.dart';
 import 'find_jobs_provider.dart';
+import 'market_provider.dart';
 import 'widgets/job_list_card.dart';
 import 'widgets/market_card.dart';
 
@@ -417,7 +419,7 @@ class PropertiesView extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -550,7 +552,7 @@ class VehiclesView extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -751,37 +753,317 @@ class MarketView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(marketItemsProvider);
-    return state.when(
-      data: (items) {
-        if (items.isEmpty) {
-          return Center(
+    final marketAsync = ref.watch(filteredMarketItemsProvider);
+    final filterState = ref.watch(marketStateProvider);
+
+    return marketAsync.when(
+      data: (data) {
+        final List<MarketItem> items = data['items'] ?? [];
+        final int totalItems = data['totalItems'] ?? 0;
+        final int totalPages = data['totalPages'] ?? 0;
+        final int currentPage = data['currentPage'] ?? 1;
+
+        return RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(marketItemsProvider);
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.store_outlined, size: 64, color: Colors.grey.shade300),
-                const SizedBox(height: 16),
-                Text('কোনো আইটেম পাওয়া যায়নি', style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
+                // 1. Hero Search Banner
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(20, 32, 20, 40),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF0F9D58), Color(0xFF0F9D58)], // Solid green to match screenshot
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'মার্কেট',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'কিনুন, বিক্রি করুন এবং বিনিময় করুন',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: TextButton.icon(
+                                onPressed: () {
+                                  // TODO: Search functionality
+                                },
+                                icon: const Icon(Icons.search, color: Colors.grey),
+                                label: const Text(
+                                  'পণ্য খুঁজুন...',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                                style: TextButton.styleFrom(
+                                  alignment: Alignment.centerLeft,
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Container(
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: TextButton.icon(
+                                onPressed: () {
+                                  // TODO: Post ad functionality
+                                },
+                                icon: const Icon(Icons.add, color: Color(0xFF0F9D58)),
+                                label: const Text(
+                                  'বিজ্ঞাপন দিন',
+                                  style: TextStyle(color: Color(0xFF0F9D58)),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // 2. Categories Grid
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: GridView.count(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.5,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    children: [
+                      _buildCategoryItem('Electronics', 'ইলেকট্রনিক্স', Icons.phone_android, '2', filterState, ref),
+                      _buildCategoryItem('Computer', 'কম্পিউটার', Icons.laptop, '0', filterState, ref),
+                      _buildCategoryItem('Furniture', 'ফার্নিচার', Icons.home, '1', filterState, ref),
+                      _buildCategoryItem('Clothing', 'পোশাক', Icons.checkroom, '1', filterState, ref),
+                      _buildCategoryItem('Baby', 'শিশু সামগ্রী', Icons.child_care, '0', filterState, ref),
+                      _buildCategoryItem('Machinery', 'যন্ত্রপাতি', Icons.build, '0', filterState, ref),
+                      _buildCategoryItem('Books', 'বই', Icons.menu_book, '0', filterState, ref),
+                      _buildCategoryItem('Others', 'অন্যান্য', Icons.favorite_border, '2', filterState, ref),
+                    ],
+                  ),
+                ),
+                
+                const Divider(thickness: 1, color: Color(0xFFEEEEEE)),
+
+                // 3. Latest Ads Section
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'সর্বশেষ বিজ্ঞাপন',
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'মোট $totalItems টি বিজ্ঞাপন পাওয়া গেছে',
+                        style: const TextStyle(fontSize: 16, color: Colors.black54),
+                      ),
+                      const SizedBox(height: 16),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildSortButton('সর্বশেষ', 'latest', filterState, ref),
+                            const SizedBox(width: 8),
+                            _buildSortButton('কম দাম', 'low_price', filterState, ref),
+                            const SizedBox(width: 8),
+                            _buildSortButton('বেশি দাম', 'high_price', filterState, ref),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // 4. Ads List
+                      if (items.isEmpty)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(32.0),
+                            child: Column(
+                              children: [
+                                Icon(Icons.store, size: 64, color: Colors.grey.shade400),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'কোনো আইটেম পাওয়া যায়নি',
+                                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      else
+                        ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            return MarketCardWidget(item: items[index]);
+                          },
+                        ),
+                      
+                      // 5. Pagination
+                      if (totalPages > 1)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0, bottom: 32.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _buildPaginationButton(
+                                'পূর্ববর্তী',
+                                enabled: currentPage > 1,
+                                onPressed: () {
+                                  ref.read(marketStateProvider.notifier).setPage(currentPage - 1);
+                                },
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF2563EB),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  '$currentPage',
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              _buildPaginationButton(
+                                'পরবর্তী',
+                                enabled: currentPage < totalPages,
+                                onPressed: () {
+                                  ref.read(marketStateProvider.notifier).setPage(currentPage + 1);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ],
             ),
-          );
-        }
-        return GridView.builder(
-          padding: const EdgeInsets.all(12.0),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 0.62,
           ),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            return MarketCardWidget(item: items[index]);
-          },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB))),
+      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF0F9D58))),
       error: (e, _) => Center(child: Text('Error: $e')),
     );
   }
+
+  Widget _buildCategoryItem(String id, String title, IconData icon, String count, MarketState state, WidgetRef ref) {
+    final isSelected = state.category == id;
+    return InkWell(
+      onTap: () {
+        if (isSelected) {
+          ref.read(marketStateProvider.notifier).setCategory(null);
+        } else {
+          ref.read(marketStateProvider.notifier).setCategory(id);
+        }
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon, 
+            size: 32, 
+            color: isSelected ? const Color(0xFF0F9D58) : const Color(0xFF2563EB)
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: TextStyle(
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.bold,
+              color: isSelected ? const Color(0xFF0F9D58) : Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            count,
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSortButton(String label, String value, MarketState state, WidgetRef ref) {
+    final isSelected = state.sortOrder == value;
+    return InkWell(
+      onTap: () {
+        ref.read(marketStateProvider.notifier).setSortOrder(value);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF2563EB) : Colors.white,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: isSelected ? const Color(0xFF2563EB) : Colors.grey.shade300),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black87,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaginationButton(String label, {required bool enabled, required VoidCallback onPressed}) {
+    return InkWell(
+      onTap: enabled ? onPressed : null,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: enabled ? Colors.black87 : Colors.grey.shade400,
+          ),
+        ),
+      ),
+    );
+  }
 }
+
