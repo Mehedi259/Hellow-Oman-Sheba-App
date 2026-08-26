@@ -22,7 +22,7 @@ class ClassifiedsScreen extends StatelessWidget {
       case 'services':
         return 4;
       default:
-        return 0; // Default to Market
+        return 0;
     }
   }
 
@@ -32,16 +32,36 @@ class ClassifiedsScreen extends StatelessWidget {
       initialIndex: _getInitialIndex(),
       length: 5,
       child: Scaffold(
+        backgroundColor: const Color(0xFFF8FAFC),
         appBar: AppBar(
-          title: const Text('Classifieds'),
-          bottom: const TabBar(
+          backgroundColor: Colors.white,
+          foregroundColor: const Color(0xFF1E293B),
+          elevation: 0,
+          title: const Text(
+            'ক্লাসিফায়েড',
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 20,
+              color: Color(0xFF1E293B),
+            ),
+          ),
+          centerTitle: true,
+          bottom: TabBar(
             isScrollable: true,
-            tabs: [
-              Tab(text: 'Market'),
-              Tab(text: 'Jobs'),
-              Tab(text: 'Properties'),
-              Tab(text: 'Vehicles'),
-              Tab(text: 'Services'),
+            labelColor: const Color(0xFF2563EB),
+            unselectedLabelColor: const Color(0xFF94A3B8),
+            labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+            indicatorColor: const Color(0xFF2563EB),
+            indicatorWeight: 3,
+            indicatorSize: TabBarIndicatorSize.label,
+            tabAlignment: TabAlignment.start,
+            tabs: const [
+              Tab(text: 'মার্কেট'),
+              Tab(text: 'চাকরি'),
+              Tab(text: 'প্রপার্টি'),
+              Tab(text: 'গাড়ি'),
+              Tab(text: 'সেবা'),
             ],
           ),
         ),
@@ -67,14 +87,25 @@ class JobsView extends ConsumerWidget {
     final jobsState = ref.watch(jobsProvider);
     return jobsState.when(
       data: (jobs) {
-        if (jobs.isEmpty) return const Center(child: Text('No jobs found.'));
+        if (jobs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.work_off_outlined, size: 64, color: Colors.grey.shade300),
+                const SizedBox(height: 16),
+                Text('কোনো চাকরি পাওয়া যায়নি', style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
+              ],
+            ),
+          );
+        }
         return GridView.builder(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(12.0),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            childAspectRatio: 0.58,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 0.56,
           ),
           itemCount: jobs.length,
           itemBuilder: (context, index) {
@@ -82,7 +113,7 @@ class JobsView extends ConsumerWidget {
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB))),
       error: (e, _) => Center(child: Text('Error: $e')),
     );
   }
@@ -96,29 +127,126 @@ class PropertiesView extends ConsumerWidget {
     final state = ref.watch(propertiesProvider);
     return state.when(
       data: (items) {
-        if (items.isEmpty) return const Center(child: Text('No properties found.'));
+        if (items.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.home_work_outlined, size: 64, color: Colors.grey.shade300),
+                const SizedBox(height: 16),
+                Text('কোনো প্রপার্টি পাওয়া যায়নি', style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
+              ],
+            ),
+          );
+        }
         return ListView.builder(
+          padding: const EdgeInsets.all(12),
           itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: ListTile(
-                title: Text(item.title),
-                subtitle: Text('${item.location} - ${item.type}'),
-                trailing: Text('\$${item.price}'),
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: InkWell(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => PropertyDetailScreen(property: item)),
                   );
                 },
+                borderRadius: BorderRadius.circular(16),
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Icon(Icons.apartment_rounded, color: Colors.green.shade600, size: 36),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.title,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF1E293B),
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                Icon(Icons.location_on_outlined, size: 14, color: Colors.grey.shade500),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    item.location,
+                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.shade50,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    item.type,
+                                    style: TextStyle(fontSize: 11, color: Colors.blue.shade700, fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                                const Spacer(),
+                                Text(
+                                  '\$${item.price}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF059669),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             );
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB))),
       error: (e, _) => Center(child: Text('Error: $e')),
     );
   }
@@ -132,29 +260,106 @@ class VehiclesView extends ConsumerWidget {
     final state = ref.watch(vehiclesProvider);
     return state.when(
       data: (items) {
-        if (items.isEmpty) return const Center(child: Text('No vehicles found.'));
+        if (items.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.directions_car_outlined, size: 64, color: Colors.grey.shade300),
+                const SizedBox(height: 16),
+                Text('কোনো গাড়ি পাওয়া যায়নি', style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
+              ],
+            ),
+          );
+        }
         return ListView.builder(
+          padding: const EdgeInsets.all(12),
           itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: ListTile(
-                title: Text(item.title),
-                subtitle: Text('${item.make} ${item.model} (${item.year})'),
-                trailing: Text('\$${item.price}'),
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: InkWell(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => VehicleDetailScreen(vehicle: item)),
                   );
                 },
+                borderRadius: BorderRadius.circular(16),
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.purple.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Icon(Icons.directions_car_filled_rounded, color: Colors.purple.shade500, size: 36),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.title,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF1E293B),
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                Icon(Icons.calendar_today_outlined, size: 14, color: Colors.grey.shade500),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${item.make} ${item.model} (${item.year})',
+                                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '\$${item.price}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF059669),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             );
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB))),
       error: (e, _) => Center(child: Text('Error: $e')),
     );
   }
@@ -283,14 +488,25 @@ class MarketView extends ConsumerWidget {
     final state = ref.watch(marketItemsProvider);
     return state.when(
       data: (items) {
-        if (items.isEmpty) return const Center(child: Text('No market items found.'));
+        if (items.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.store_outlined, size: 64, color: Colors.grey.shade300),
+                const SizedBox(height: 16),
+                Text('কোনো আইটেম পাওয়া যায়নি', style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
+              ],
+            ),
+          );
+        }
         return GridView.builder(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(12.0),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            childAspectRatio: 0.58,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 0.62,
           ),
           itemCount: items.length,
           itemBuilder: (context, index) {
@@ -298,7 +514,7 @@ class MarketView extends ConsumerWidget {
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB))),
       error: (e, _) => Center(child: Text('Error: $e')),
     );
   }
