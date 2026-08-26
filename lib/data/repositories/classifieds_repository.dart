@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../models/job.dart';
+import '../models/job_seeker.dart';
 import '../models/classifieds_models.dart';
 import '../../core/api/api_client.dart';
 
@@ -7,6 +8,30 @@ class ClassifiedsRepository {
   final ApiClient apiClient;
 
   ClassifiedsRepository(this.apiClient);
+
+  Future<Map<String, dynamic>> getJobSeekers({String? search, String? sort, int? page}) async {
+    try {
+      final queryParams = <String, dynamic>{};
+      if (search != null && search.isNotEmpty) queryParams['search'] = search;
+      if (sort != null) queryParams['ordering'] = sort;
+      if (page != null) queryParams['page'] = page;
+
+      final response = await apiClient.dio.get('/job-seekers/', queryParameters: queryParams);
+      final data = response.data;
+      
+      final results = data['results'] as List? ?? [];
+      final total = data['count'] ?? 0;
+      final totalPages = data['total_pages'] ?? 1;
+
+      return {
+        'items': results.map((json) => JobSeeker.fromJson(json)).toList(),
+        'total': total,
+        'totalPages': totalPages,
+      };
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to load job seekers');
+    }
+  }
 
   Future<List<Job>> getJobs() async {
     try {
