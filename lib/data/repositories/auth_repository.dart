@@ -99,8 +99,8 @@ class AuthRepository {
   Future<void> addFavorite(String contentType, int contentId) async {
     try {
       await apiClient.dio.post('/users/favorites/', data: {
-        'content_type': contentType,
-        'content_id': contentId,
+        'favorite_type': contentType,
+        'favorite_id': contentId,
       });
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to add to favorites');
