@@ -12,6 +12,7 @@ import '../../presentation/emergency/emergency_screen.dart';
 import '../../presentation/search/search_screen.dart';
 import '../../presentation/notifications/notifications_screen.dart';
 import '../../presentation/info/info_screens.dart';
+import '../../presentation/info/about_oman_screen.dart';
 import '../../presentation/info/embassy_screen.dart';
 import '../../presentation/categories/service_list_screen.dart';
 import '../../presentation/categories/categories_screen.dart';
