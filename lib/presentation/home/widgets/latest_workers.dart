@@ -1,29 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../data/models/job.dart';
-import '../../classifieds/widgets/job_card.dart';
+import '../../../data/models/job_seeker.dart';
+import 'home_job_seeker_card.dart';
 
-class LatestJobsWidget extends StatelessWidget {
-  final List<Job> jobs;
+class LatestWorkersWidget extends StatelessWidget {
+  final List<JobSeeker> workers;
 
-  const LatestJobsWidget({super.key, required this.jobs});
-
-  String _timeAgo(DateTime createdAt) {
-    final difference = DateTime.now().difference(createdAt);
-    if (difference.inDays > 0) {
-      return '${difference.inDays} দিন আগে';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours} ঘন্টা আগে';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} মিনিট আগে';
-    } else {
-      return 'এইমাত্র';
-    }
-  }
+  const LatestWorkersWidget({super.key, required this.workers});
 
   @override
   Widget build(BuildContext context) {
-    if (jobs.isEmpty) return const SizedBox();
+    if (workers.isEmpty) return const SizedBox();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,7 +26,7 @@ class LatestJobsWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'চাকরি খুঁজুন',
+                      'কর্মী খুঁজুন',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -50,7 +37,7 @@ class LatestJobsWidget extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'আপনার স্বপ্নের চাকরি খুঁজুন',
+                      'দক্ষ কর্মী খুঁজে নিন',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -63,7 +50,7 @@ class LatestJobsWidget extends StatelessWidget {
               ),
               OutlinedButton(
                 onPressed: () {
-                  context.push('/classifieds');
+                  context.push('/classifieds?tab=jobs');
                 },
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: Colors.grey.shade300),
@@ -93,12 +80,12 @@ class LatestJobsWidget extends StatelessWidget {
               crossAxisCount: 2,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
-              childAspectRatio: 0.58, // Adjust based on card height
+              childAspectRatio: 0.70, // Adjust based on card height
             ),
-            itemCount: jobs.length,
+            itemCount: workers.length,
             itemBuilder: (context, index) {
-              final job = jobs[index];
-              return JobCardWidget(job: job);
+              final worker = workers[index];
+              return HomeJobSeekerCardWidget(jobSeeker: worker);
             },
           ),
         ),

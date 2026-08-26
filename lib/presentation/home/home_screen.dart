@@ -7,6 +7,7 @@ import 'system_provider.dart';
 import 'widgets/hero_slider.dart';
 import 'widgets/category_grid.dart';
 import 'widgets/latest_jobs.dart';
+import 'widgets/latest_workers.dart';
 import 'widgets/market_widget.dart';
 import 'widgets/community_widget.dart';
 import 'widgets/properties_widget.dart';
@@ -164,6 +165,7 @@ class HomeScreen extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(jobsProvider);
+          ref.invalidate(homeJobSeekersProvider);
           ref.invalidate(propertiesProvider);
           ref.invalidate(vehiclesProvider);
           ref.invalidate(marketItemsProvider);
@@ -180,9 +182,15 @@ class HomeScreen extends ConsumerWidget {
             const CategoryGridWidget(),
             const SizedBox(height: 16),
             jobsState.when(
-              data: (jobs) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: LatestJobsWidget(jobs: jobs.take(6).toList())),
+              data: (jobs) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: LatestJobsWidget(jobs: jobs.take(4).toList())),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Jobs Error: $error'),
+            ),
+            const SizedBox(height: 16),
+            ref.watch(homeJobSeekersProvider).when(
+              data: (workers) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: LatestWorkersWidget(workers: workers.take(4).toList())),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Text('Workers Error: $error'),
             ),
             const SizedBox(height: 16),
             ref.watch(propertiesProvider).when(

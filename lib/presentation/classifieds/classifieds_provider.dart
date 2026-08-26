@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/job.dart';
+import '../../data/models/job_seeker.dart';
 import '../../data/models/classifieds_models.dart';
 import '../../data/repositories/classifieds_repository.dart';
 import '../auth/auth_provider.dart'; // To get apiClientProvider
@@ -12,6 +13,12 @@ final classifiedsRepositoryProvider = Provider((ref) {
 final jobsProvider = FutureProvider<List<Job>>((ref) async {
   final repository = ref.watch(classifiedsRepositoryProvider);
   return repository.getJobs();
+});
+
+final homeJobSeekersProvider = FutureProvider<List<JobSeeker>>((ref) async {
+  final repository = ref.watch(classifiedsRepositoryProvider);
+  final response = await repository.getJobSeekers(page: 1);
+  return response['items'] as List<JobSeeker>;
 });
 
 final propertiesProvider = FutureProvider<List<Property>>((ref) async {

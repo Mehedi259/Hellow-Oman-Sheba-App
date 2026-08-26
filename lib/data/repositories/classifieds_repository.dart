@@ -19,9 +19,9 @@ class ClassifiedsRepository {
       final response = await apiClient.dio.get('/job-seekers/', queryParameters: queryParams);
       final data = response.data;
       
-      final results = data['results'] as List? ?? [];
-      final total = data['count'] ?? 0;
-      final totalPages = data['total_pages'] ?? 1;
+      final List results = data is List ? data : (data['results'] as List? ?? []);
+      final int total = data is List ? data.length : (data['count'] ?? 0);
+      final int totalPages = data is List ? 1 : (data['total_pages'] ?? 1);
 
       return {
         'items': results.map((json) => JobSeeker.fromJson(json)).toList(),

@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+with open('lib/presentation/classifieds/widgets/job_card.dart', 'w') as f:
+    f.write("""import 'package:flutter/material.dart';
 import '../../../data/models/job.dart';
 import '../classifieds_detail_screens.dart';
 
@@ -154,3 +155,5 @@ class JobCardWidget extends StatelessWidget {
     );
   }
 }
+""")
+
