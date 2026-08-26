@@ -60,11 +60,11 @@ class _HeroSliderWidgetState extends State<HeroSliderWidget> {
 
     return Container(
       height: 200,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       child: Stack(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             child: PageView.builder(
               controller: _pageController,
               onPageChanged: (int page) {
@@ -181,8 +181,8 @@ class _HeroSliderWidgetState extends State<HeroSliderWidget> {
                   ),
                 ),
               );
-              },
-            ),
+            },
+          ),
           ),
           if (widget.sliders.length > 1)
             Positioned(

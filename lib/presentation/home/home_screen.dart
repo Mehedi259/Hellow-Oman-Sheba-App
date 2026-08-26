@@ -165,7 +165,7 @@ class HomeScreen extends ConsumerWidget {
           ref.invalidate(postsProvider);
         },
         child: ListView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
           children: [
             slidersState.when(
               data: (sliders) => HeroSliderWidget(sliders: sliders),
@@ -175,19 +175,19 @@ class HomeScreen extends ConsumerWidget {
             const CategoryGridWidget(),
             const SizedBox(height: 16),
             jobsState.when(
-              data: (jobs) => LatestJobsWidget(jobs: jobs.take(6).toList()),
+              data: (jobs) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: LatestJobsWidget(jobs: jobs.take(6).toList())),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Jobs Error: $error'),
             ),
             const SizedBox(height: 16),
             ref.watch(marketItemsProvider).when(
-              data: (items) => MarketWidget(items: items),
+              data: (items) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: MarketWidget(items: items)),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Market Error: $error'),
             ),
             const SizedBox(height: 16),
             ref.watch(postsProvider).when(
-              data: (posts) => CommunityWidget(posts: posts),
+              data: (posts) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: CommunityWidget(posts: posts)),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Community Error: $error'),
             ),
