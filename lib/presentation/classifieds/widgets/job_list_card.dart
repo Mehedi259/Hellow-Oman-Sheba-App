@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../data/models/job.dart';
 import '../classifieds_detail_screens.dart';
+import 'favorite_button.dart';
 
 class JobListCardWidget extends StatelessWidget {
   final Job job;
@@ -136,18 +137,10 @@ class JobListCardWidget extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    OutlinedButton(
-                      onPressed: () {
-                        // TODO: Implement Add to Favorite
-                      },
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.all(12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        side: BorderSide(color: Colors.grey.shade300),
-                      ),
-                      child: Icon(Icons.favorite_border, color: Colors.grey.shade600),
+                    FavoriteButton(
+                      contentType: 'job',
+                      contentId: job.id,
+                      isOutlined: true,
                     ),
                   ],
                 ),

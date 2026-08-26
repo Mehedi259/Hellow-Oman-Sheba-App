@@ -5,8 +5,9 @@ import '../../auth/auth_provider.dart';
 class FavoriteButton extends ConsumerStatefulWidget {
   final String contentType;
   final int contentId;
+  final bool isOutlined;
 
-  const FavoriteButton({super.key, required this.contentType, required this.contentId});
+  const FavoriteButton({super.key, required this.contentType, required this.contentId, this.isOutlined = false});
 
   @override
   ConsumerState<FavoriteButton> createState() => _FavoriteButtonState();
@@ -26,7 +27,7 @@ class _FavoriteButtonState extends ConsumerState<FavoriteButton> {
     try {
       final favorites = await ref.read(authRepositoryProvider).getFavorites();
       for (var fav in favorites) {
-        if (fav['content_type'] == widget.contentType && fav['content_id'] == widget.contentId) {
+        if (fav['favorite_type'] == widget.contentType && fav['favorite_id'] == widget.contentId) {
           if (mounted) {
             setState(() {
               isFavorite = true;
@@ -71,6 +72,23 @@ class _FavoriteButtonState extends ConsumerState<FavoriteButton> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.isOutlined) {
+      return OutlinedButton(
+        onPressed: _toggleFavorite,
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.all(12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(6),
+          ),
+          side: BorderSide(color: Colors.grey.shade300),
+        ),
+        child: Icon(
+          isFavorite ? Icons.favorite : Icons.favorite_border,
+          color: isFavorite ? Colors.red : Colors.grey.shade600,
+        ),
+      );
+    }
+    
     return IconButton(
       icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
       color: isFavorite ? Colors.red : null,
