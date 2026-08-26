@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../models/job.dart';
 import '../models/job_seeker.dart';
@@ -16,8 +17,15 @@ class ClassifiedsRepository {
       if (sort != null) queryParams['ordering'] = sort;
       if (page != null) queryParams['page'] = page;
 
-      final response = await apiClient.dio.get('/job-seekers/', queryParameters: queryParams);
-      final data = response.data;
+      final response = await apiClient.dio.get('/classifieds/job-seekers/', queryParameters: queryParams);
+      var data = response.data;
+      if (data is String) {
+        try {
+          data = jsonDecode(data);
+        } catch (e) {
+          // If it fails to decode, we will let it fall through or handle it
+        }
+      }
       
       final List results = data is List ? data : (data['results'] as List? ?? []);
       final int total = data is List ? data.length : (data['count'] ?? 0);
