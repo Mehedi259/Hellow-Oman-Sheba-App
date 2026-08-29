@@ -154,66 +154,79 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
               SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Avatar
-                      Container(
-                        width: 90,
-                        height: 90,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white.withOpacity(0.3), width: 3),
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 8))],
-                        ),
-                        child: Container(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Avatar
+                        Container(
+                          width: 90,
+                          height: 90,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            gradient: LinearGradient(colors: [Colors.white, Colors.white.withOpacity(0.95)]),
+                            border: Border.all(color: Colors.white.withOpacity(0.3), width: 3),
+                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 8))],
                           ),
-                          child: Center(
-                            child: Text(
-                              initials,
-                              style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: Color(0xFF7C3AED), letterSpacing: 1),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(colors: [Colors.white, Colors.white.withOpacity(0.95)]),
+                              image: user.profilePicture != null && user.profilePicture!.isNotEmpty
+                                  ? DecorationImage(
+                                      image: NetworkImage(user.profilePicture!),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
                             ),
+                            child: user.profilePicture == null || user.profilePicture!.isEmpty
+                                ? Center(
+                                    child: Text(
+                                      initials,
+                                      style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: Color(0xFF7C3AED), letterSpacing: 1),
+                                    ),
+                                  )
+                                : null,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      // Name
-                      Text(
-                        displayName,
-                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.3),
-                      ),
-                      const SizedBox(height: 6),
-                      // Email
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                        decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(20)),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.email_rounded, size: 14, color: Colors.white.withOpacity(0.8)),
-                            const SizedBox(width: 6),
-                            Text(user.email, style: TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.w500)),
-                          ],
+                        const SizedBox(height: 16),
+                        // Name
+                        Text(
+                          displayName,
+                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.3),
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      // Location badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(16)),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.location_on_rounded, size: 14, color: Colors.white.withOpacity(0.7)),
-                            const SizedBox(width: 4),
-                            Text('ওমান', style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.7), fontWeight: FontWeight.w500)),
-                          ],
+                        const SizedBox(height: 6),
+                        // Email
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(20)),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.email_rounded, size: 14, color: Colors.white.withOpacity(0.8)),
+                              const SizedBox(width: 6),
+                              Text(user.email, style: TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.w500)),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 10),
+                        // Location badge
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(16)),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.location_on_rounded, size: 14, color: Colors.white.withOpacity(0.7)),
+                              const SizedBox(width: 4),
+                              Text('ওমান', style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.7), fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

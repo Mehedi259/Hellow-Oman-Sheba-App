@@ -21,9 +21,17 @@ class User {
       email: json['email'],
       firstName: json['first_name'],
       lastName: json['last_name'],
-      profilePicture: json['profile_picture'],
+      profilePicture: _parseProfilePicture(json),
       phone: json['phone'],
     );
+  }
+
+  static String? _parseProfilePicture(Map<String, dynamic> json) {
+    final pic = json['avatar_url'] ?? json['avatar'] ?? json['profile_picture'];
+    if (pic == null || pic.toString().isEmpty) return null;
+    final picStr = pic.toString();
+    if (picStr.startsWith('http')) return picStr;
+    return 'http://188.245.212.240${picStr.startsWith('/') ? '' : '/'}$picStr';
   }
 
   Map<String, dynamic> toJson() {
