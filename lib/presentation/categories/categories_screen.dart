@@ -282,24 +282,23 @@ class CategoriesScreen extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
-              BoxShadow(color: gradientColors[0].withOpacity(0.08), blurRadius: 16, offset: const Offset(0, 6)),
-              BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 4, offset: const Offset(0, 2)),
+              BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 16, offset: const Offset(0, 4)),
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             child: Row(
               children: [
-                // Icon
-                Container(
+                // Original Image Icon without background
+                SizedBox(
                   width: 50,
                   height: 50,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: gradientColors, begin: Alignment.topLeft, end: Alignment.bottomRight),
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [BoxShadow(color: gradientColors[0].withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))],
+                  child: Image.asset(
+                    category.imagePath,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) =>
+                        Icon(iconData, color: gradientColors[0], size: 24),
                   ),
-                  child: Icon(iconData, color: Colors.white, size: 24),
                 ),
                 const SizedBox(width: 14),
                 // Text content
