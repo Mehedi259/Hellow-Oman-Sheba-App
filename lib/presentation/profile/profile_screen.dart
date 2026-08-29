@@ -56,9 +56,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
             return _buildLoginPrompt();
           }
 
-          final displayName = user.firstName != null && user.firstName!.isNotEmpty
-              ? '${user.firstName} ${user.lastName ?? ''}'.trim()
-              : 'ব্যবহারকারী';
+          final displayName = user.name != null && user.name!.isNotEmpty
+              ? user.name!.trim()
+              : (user.firstName != null && user.firstName!.isNotEmpty
+                  ? '${user.firstName} ${user.lastName ?? ''}'.trim()
+                  : 'ব্যবহারকারী');
           final initials = _getInitials(displayName, user.email);
 
           return NestedScrollView(
@@ -306,7 +308,7 @@ class _ProfileInfoTabState extends ConsumerState<_ProfileInfoTab> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.user.firstName);
+    _nameController = TextEditingController(text: widget.user.name ?? widget.user.firstName);
     _phoneController = TextEditingController(text: widget.user.phone);
   }
 
@@ -392,8 +394,8 @@ class _ProfileInfoTabState extends ConsumerState<_ProfileInfoTab> {
                         try {
                           final repo = ref.read(authRepositoryProvider);
                           await repo.updateProfile({
-                            'first_name': _nameController.text,
-                            'phone': _phoneController.text,
+                            'name': _nameController.text,
+                            'phone': _phoneController.text.isEmpty ? null : _phoneController.text,
                           });
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(

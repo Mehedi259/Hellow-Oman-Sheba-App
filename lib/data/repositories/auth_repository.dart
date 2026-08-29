@@ -29,7 +29,7 @@ class AuthRepository {
 
   Future<void> updateProfile(Map<String, dynamic> data) async {
     try {
-      await apiClient.dio.put('/users/profile/', data: data);
+      await apiClient.dio.patch('/users/profile/', data: data);
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Update failed');
     }
