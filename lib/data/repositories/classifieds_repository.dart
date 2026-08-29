@@ -176,4 +176,32 @@ class ClassifiedsRepository {
       throw Exception(e.response?.data['detail'] ?? 'Failed to create market post');
     }
   }
+
+  Future<Map<String, dynamic>> createJobSeekerProfile(Map<String, dynamic> data) async {
+    try {
+      final response = await apiClient.dio.post('/classifieds/job-seekers/', data: data);
+      return response.data is Map<String, dynamic> ? response.data : {'id': response.data['id']};
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to create job seeker profile');
+    }
+  }
+
+  Future<void> uploadClassifiedImage(String filePath, String category, int id, bool isPrimary) async {
+    try {
+      final formData = FormData.fromMap({
+        'image': await MultipartFile.fromFile(filePath),
+        'category': category,
+        'is_primary': isPrimary.toString(),
+        if (category == 'market' || category == 'marketitem') 'market_item': id
+        else if (category == 'job') 'job': id
+        else if (category == 'property') 'property': id
+        else if (category == 'vehicle') 'vehicle': id
+        else if (category == 'service') 'service': id
+        else 'content_id': id,
+      });
+      await apiClient.dio.post('/classifieds/images/', data: formData);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to upload image');
+    }
+  }
 }

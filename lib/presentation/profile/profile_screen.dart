@@ -9,6 +9,7 @@ import '../classifieds/widgets/market_card.dart';
 import 'privacy_policy_screen.dart';
 import 'terms_conditions_screen.dart';
 import 'faq_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
@@ -649,6 +650,25 @@ class _SettingsTab extends StatelessWidget {
                 },
               ),
             ],
+          ),
+        ),
+        const SizedBox(height: 32),
+        Center(
+          child: GestureDetector(
+            onTap: () async {
+              final Uri url = Uri.parse('https://helloomantech.com/');
+              if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                debugPrint('Could not launch $url');
+              }
+            },
+            child: const Text(
+              'Developed by Hello Oman Tech',
+              style: TextStyle(
+                color: Colors.blue,
+                decoration: TextDecoration.underline,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ),
       ],

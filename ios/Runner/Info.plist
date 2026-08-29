@@ -66,6 +66,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to the photo library to upload profile pictures and advertisement images.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires access to the camera to take pictures for advertisements.</string>
 	<key>GIDClientID</key>
 	<string>426790430741-vptvc5lmjjd6dou9lbhialos1fofak4g.apps.googleusercontent.com</string>
 	<key>CFBundleURLTypes</key>
