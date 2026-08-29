@@ -3,6 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../auth/auth_provider.dart';
 import '../auth/widgets/google_login_button.dart';
 import '../../data/models/user.dart';
+import '../classifieds/classifieds_provider.dart';
+import '../classifieds/widgets/job_list_card.dart';
+import '../classifieds/widgets/market_card.dart';
+import 'privacy_policy_screen.dart';
+import 'terms_conditions_screen.dart';
+import 'faq_screen.dart';
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
@@ -16,7 +22,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 6, vsync: this);
   }
 
   @override
@@ -160,6 +166,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
                         Tab(icon: Icon(Icons.favorite_outline), text: 'পছন্দ'),
                         Tab(icon: Icon(Icons.work_outline), text: 'আবেদন'),
                         Tab(icon: Icon(Icons.security_outlined), text: 'পাসওয়ার্ড'),
+                        Tab(icon: Icon(Icons.settings_outlined), text: 'সেটিংস'),
                       ],
                     ),
                   ),
@@ -174,6 +181,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
                 const _FavoritesTab(),
                 const _ApplicationsTab(),
                 const _SecurityTab(),
+                const _SettingsTab(),
               ],
             ),
           );
@@ -367,6 +375,10 @@ class _FavoritesTab extends ConsumerWidget {
   const _FavoritesTab();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Watch providers to get cached lists
+    final jobsAsync = ref.watch(jobsProvider);
+    final marketAsync = ref.watch(marketItemsProvider);
+
     return FutureBuilder<List<dynamic>>(
       future: ref.read(authRepositoryProvider).getFavorites(),
       builder: (context, snapshot) {
@@ -390,30 +402,65 @@ class _FavoritesTab extends ConsumerWidget {
           itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
-            return Card(
-              margin: const EdgeInsets.only(bottom: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: ListTile(
-                leading: const Icon(Icons.favorite, color: Colors.pink),
-                title: Text(item['title'] ?? item['content_type'] ?? 'Favorite Item'),
-                subtitle: Text('ID: ${item['content_id'] ?? ''}'),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () async {
-                    try {
-                      await ref.read(authRepositoryProvider).removeFavorite(item['id']);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Removed from favorites')));
-                      // Note: In a real app we'd refresh the provider here.
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-                    }
-                  },
+            final String contentType = item['favorite_type'] ?? item['content_type'] ?? '';
+            final String contentIdStr = (item['favorite_id'] ?? item['content_id'] ?? '').toString();
+            final int favId = item['id'];
+
+            Widget contentWidget;
+            
+            if (contentType == 'job' && jobsAsync.hasValue) {
+              final job = jobsAsync.value!.where((j) => j.id.toString() == contentIdStr).firstOrNull;
+              if (job != null) {
+                contentWidget = JobListCardWidget(job: job);
+              } else {
+                contentWidget = _fallbackCard(context, ref, item, favId);
+              }
+            } else if ((contentType == 'market' || contentType == 'marketitem' || contentType == 'property' || contentType == 'vehicle' || contentType == 'service') && marketAsync.hasValue) {
+              final marketItem = marketAsync.value!.where((m) => m.id.toString() == contentIdStr).firstOrNull;
+              if (marketItem != null) {
+                contentWidget = MarketCardWidget(item: marketItem);
+              } else {
+                contentWidget = _fallbackCard(context, ref, item, favId);
+              }
+            } else {
+              contentWidget = _fallbackCard(context, ref, item, favId);
+            }
+
+            return Stack(
+              children: [
+                contentWidget,
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: IconButton(
+                    icon: const Icon(Icons.remove_circle, color: Colors.red),
+                    onPressed: () async {
+                      try {
+                        await ref.read(authRepositoryProvider).removeFavorite(favId);
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Removed from favorites')));
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+                      }
+                    },
+                  ),
                 ),
-              ),
+              ],
             );
           },
         );
       },
+    );
+  }
+
+  Widget _fallbackCard(BuildContext context, WidgetRef ref, dynamic item, int favId) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        leading: const Icon(Icons.favorite, color: Colors.pink),
+        title: Text(item['title'] ?? item['favorite_type'] ?? item['content_type'] ?? 'Favorite Item'),
+        subtitle: Text('ID: ${item['favorite_id'] ?? item['content_id'] ?? ''}'),
+      ),
     );
   }
 }
@@ -550,6 +597,61 @@ class _SecurityTabState extends ConsumerState<_SecurityTab> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _SettingsTab extends StatelessWidget {
+  const _SettingsTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Column(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.privacy_tip_outlined, color: Color(0xFF9333EA)),
+                title: const Text('গোপনীয়তা নীতি (Privacy Policy)'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()),
+                  );
+                },
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.description_outlined, color: Color(0xFF9333EA)),
+                title: const Text('শর্তাবলী (Terms & Conditions)'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const TermsConditionsScreen()),
+                  );
+                },
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.help_outline, color: Color(0xFF9333EA)),
+                title: const Text('সাধারণ জিজ্ঞাসা (FAQ)'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const FaqScreen()),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
