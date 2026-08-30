@@ -58,14 +58,14 @@ class _AnimatedSeeMoreButtonState extends State<AnimatedSeeMoreButton> with Sing
           width: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.blue.shade50, Colors.indigo.shade50],
+              colors: [Colors.red.shade50, Colors.pink.shade50],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.blue.withValues(alpha: 0.1),
+                color: Colors.red.withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -76,8 +76,8 @@ class _AnimatedSeeMoreButtonState extends State<AnimatedSeeMoreButton> with Sing
             child: InkWell(
               onTap: widget.onPressed,
               borderRadius: BorderRadius.circular(12),
-              splashColor: Colors.blue.withValues(alpha: 0.2),
-              highlightColor: Colors.blue.withValues(alpha: 0.1),
+              splashColor: Colors.red.withValues(alpha: 0.2),
+              highlightColor: Colors.red.withValues(alpha: 0.1),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 child: Row(
@@ -88,7 +88,7 @@ class _AnimatedSeeMoreButtonState extends State<AnimatedSeeMoreButton> with Sing
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF2563EB),
+                        color: Color(0xFFDC2626), // Red-600
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -102,7 +102,7 @@ class _AnimatedSeeMoreButtonState extends State<AnimatedSeeMoreButton> with Sing
                       },
                       child: const Icon(
                         Icons.arrow_downward_rounded,
-                        color: Color(0xFF2563EB),
+                        color: Color(0xFFDC2626), // Red-600
                         size: 20,
                       ),
                     ),
