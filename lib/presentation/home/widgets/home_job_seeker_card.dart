@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../data/models/job_seeker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../classifieds/worker_detail_screen.dart';
 
 class HomeJobSeekerCardWidget extends StatelessWidget {
   final JobSeeker jobSeeker;
@@ -128,7 +129,12 @@ class HomeJobSeekerCardWidget extends StatelessWidget {
                     height: 30,
                     child: ElevatedButton(
                       onPressed: () {
-                        // TODO: View candidate profile
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => WorkerDetailScreen(jobSeeker: jobSeeker),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFEC4899),

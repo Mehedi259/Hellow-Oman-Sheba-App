@@ -48,21 +48,31 @@ class NotificationsScreen extends ConsumerWidget {
 
           if (notifications.isEmpty) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.notifications_none, size: 100, color: Colors.grey.shade300),
-                  const SizedBox(height: 24),
-                  Text(
-                    'আপনার কোনো নতুন নোটিফিকেশন নেই',
-                    style: TextStyle(fontSize: 18, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'নতুন কোনো আপডেট আসলে এখানে দেখতে পাবেন',
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade400),
-                  ),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 80),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.notifications_active_outlined, size: 80, color: Colors.blue.shade300),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'কোনো নতুন নোটিফিকেশন নেই',
+                      style: TextStyle(fontSize: 20, color: Colors.blueGrey.shade800, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'নতুন কোনো আপডেট আসলে এখানে দেখতে পাবেন',
+                      style: TextStyle(fontSize: 14, color: Colors.blueGrey.shade400),
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -74,7 +84,7 @@ class NotificationsScreen extends ConsumerWidget {
               // We'll leave it as a visual feedback.
             },
             child: ListView.separated(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100), // Bottom padding for nav bar overlap
               itemCount: notifications.length,
               separatorBuilder: (context, index) => const SizedBox(height: 12),
               itemBuilder: (context, index) {

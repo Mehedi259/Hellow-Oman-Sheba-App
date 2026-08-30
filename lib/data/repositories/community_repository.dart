@@ -30,4 +30,27 @@ class CommunityRepository {
       throw Exception(e.response?.data['detail'] ?? 'Failed to create post');
     }
   }
+
+  Future<List<Map<String, dynamic>>> getComments(int postId) async {
+    try {
+      final response = await apiClient.dio.get('/community/forum/posts/$postId/comments/');
+      final results = response.data['results'] as List? ?? response.data as List;
+      return results.cast<Map<String, dynamic>>();
+    } catch (e) {
+      if (e is DioException) {
+        throw Exception(e.response?.data['detail'] ?? 'Failed to load comments');
+      }
+      throw Exception('Parsing error: $e');
+    }
+  }
+
+  Future<void> addComment(int postId, String content) async {
+    try {
+      await apiClient.dio.post('/community/forum/posts/$postId/comments/', data: {
+        'content': content,
+      });
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to add comment');
+    }
+  }
 }
