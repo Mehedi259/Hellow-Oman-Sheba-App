@@ -182,13 +182,13 @@ class HomeScreen extends ConsumerWidget {
             const CategoryGridWidget(),
             const SizedBox(height: 16),
             jobsState.when(
-              data: (jobs) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: LatestJobsWidget(jobs: jobs.take(4).toList())),
+              data: (jobs) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: LatestJobsWidget(jobs: jobs)),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Jobs Error: $error'),
             ),
             const SizedBox(height: 16),
             ref.watch(homeJobSeekersProvider).when(
-              data: (workers) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: LatestWorkersWidget(workers: workers.take(4).toList())),
+              data: (workers) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: LatestWorkersWidget(workers: workers)),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Workers Error: $error'),
             ),

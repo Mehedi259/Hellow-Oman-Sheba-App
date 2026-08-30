@@ -3,14 +3,23 @@ import 'package:go_router/go_router.dart';
 import '../../../data/models/classifieds_models.dart';
 import '../../classifieds/widgets/market_card.dart';
 
-class MarketWidget extends StatelessWidget {
+class MarketWidget extends StatefulWidget {
   final List<MarketItem> items;
 
   const MarketWidget({super.key, required this.items});
 
   @override
+  State<MarketWidget> createState() => _MarketWidgetState();
+}
+
+class _MarketWidgetState extends State<MarketWidget> {
+  bool isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
-    if (items.isEmpty) return const SizedBox();
+    if (widget.items.isEmpty) return const SizedBox();
+
+    final displayCount = isExpanded ? widget.items.length : (widget.items.length > 4 ? 4 : widget.items.length);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,13 +91,35 @@ class MarketWidget extends StatelessWidget {
               mainAxisSpacing: 8,
               childAspectRatio: 0.58,
             ),
-            itemCount: items.length > 4 ? 4 : items.length, // Display max 4 or adjust based on requirement
+            itemCount: displayCount,
             itemBuilder: (context, index) {
-              final item = items[index];
+              final item = widget.items[index];
               return MarketCardWidget(item: item);
             },
           ),
         ),
+        if (widget.items.length > 4 && !isExpanded)
+          Padding(
+            padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
+            child: SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () {
+                  setState(() {
+                    isExpanded = true;
+                  });
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.blue.shade50,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text('আরও দেখুন', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ),
       ],
     );
   }

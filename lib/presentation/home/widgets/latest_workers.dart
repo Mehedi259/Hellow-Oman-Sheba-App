@@ -3,14 +3,23 @@ import 'package:go_router/go_router.dart';
 import '../../../data/models/job_seeker.dart';
 import 'home_job_seeker_card.dart';
 
-class LatestWorkersWidget extends StatelessWidget {
+class LatestWorkersWidget extends StatefulWidget {
   final List<JobSeeker> workers;
 
   const LatestWorkersWidget({super.key, required this.workers});
 
   @override
+  State<LatestWorkersWidget> createState() => _LatestWorkersWidgetState();
+}
+
+class _LatestWorkersWidgetState extends State<LatestWorkersWidget> {
+  bool isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
-    if (workers.isEmpty) return const SizedBox();
+    if (widget.workers.isEmpty) return const SizedBox();
+
+    final displayCount = isExpanded ? widget.workers.length : (widget.workers.length > 4 ? 4 : widget.workers.length);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,13 +91,35 @@ class LatestWorkersWidget extends StatelessWidget {
               mainAxisSpacing: 8,
               childAspectRatio: 0.70, // Adjust based on card height
             ),
-            itemCount: workers.length,
+            itemCount: displayCount,
             itemBuilder: (context, index) {
-              final worker = workers[index];
+              final worker = widget.workers[index];
               return HomeJobSeekerCardWidget(jobSeeker: worker);
             },
           ),
         ),
+        if (widget.workers.length > 4 && !isExpanded)
+          Padding(
+            padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
+            child: SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () {
+                  setState(() {
+                    isExpanded = true;
+                  });
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.blue.shade50,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text('আরও দেখুন', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ),
       ],
     );
   }

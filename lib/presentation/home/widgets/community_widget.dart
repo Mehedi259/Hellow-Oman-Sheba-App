@@ -3,14 +3,23 @@ import 'package:go_router/go_router.dart';
 import '../../../data/models/post.dart';
 import '../../community/community_detail_screen.dart';
 
-class CommunityWidget extends StatelessWidget {
+class CommunityWidget extends StatefulWidget {
   final List<Post> posts;
 
   const CommunityWidget({super.key, required this.posts});
 
   @override
+  State<CommunityWidget> createState() => _CommunityWidgetState();
+}
+
+class _CommunityWidgetState extends State<CommunityWidget> {
+  bool isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
-    if (posts.isEmpty) return const SizedBox();
+    if (widget.posts.isEmpty) return const SizedBox();
+
+    final displayCount = isExpanded ? widget.posts.length : (widget.posts.length > 4 ? 4 : widget.posts.length);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,13 +92,35 @@ class CommunityWidget extends StatelessWidget {
               mainAxisSpacing: 8,
               childAspectRatio: 0.65,
             ),
-            itemCount: posts.length > 6 ? 6 : posts.length,
+            itemCount: displayCount,
             itemBuilder: (context, index) {
-              final post = posts[index];
+              final post = widget.posts[index];
               return CommunityCardWidget(post: post);
             },
           ),
         ),
+        if (widget.posts.length > 4 && !isExpanded)
+          Padding(
+            padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
+            child: SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () {
+                  setState(() {
+                    isExpanded = true;
+                  });
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.blue.shade50,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text('আরও দেখুন', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ),
       ],
     );
   }
