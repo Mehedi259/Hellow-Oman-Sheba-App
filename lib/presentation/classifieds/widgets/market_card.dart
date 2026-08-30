@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../data/models/classifieds_models.dart';
 import '../classifieds_detail_screens.dart';
 
@@ -44,12 +45,26 @@ class MarketCardWidget extends StatelessWidget {
                     width: double.infinity,
                     color: Colors.grey.shade100,
                     child: item.images.isNotEmpty
-                        ? Image.network(
-                            item.images[0].startsWith('http') 
+                        ? CachedNetworkImage(
+                            imageUrl: item.images[0].startsWith('http') 
                                 ? item.images[0] 
                                 : 'http://188.245.212.240${item.images[0]}',
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
+                            width: double.infinity,
+                            height: double.infinity,
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey.shade100,
+                              child: Center(
+                                child: SizedBox(
+                                  width: 24, height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.grey.shade400),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) =>
                                 const Icon(Icons.store, color: Colors.grey, size: 50),
                           )
                         : const Icon(Icons.store, color: Colors.grey, size: 50),

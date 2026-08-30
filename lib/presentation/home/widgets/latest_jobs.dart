@@ -97,6 +97,7 @@ class _LatestJobsWidgetState extends State<LatestJobsWidget> {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: GridView.builder(
             shrinkWrap: true,
+            padding: EdgeInsets.zero,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
@@ -113,7 +114,7 @@ class _LatestJobsWidgetState extends State<LatestJobsWidget> {
         ),
         if (widget.jobs.length > 4 && !isExpanded)
           Padding(
-            padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
+            padding: const EdgeInsets.only(top: 4, left: 12, right: 12),
             child: SizedBox(
               width: double.infinity,
               child: TextButton(

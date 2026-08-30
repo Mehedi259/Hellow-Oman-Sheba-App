@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../data/models/job.dart';
 import '../classifieds_detail_screens.dart';
 
@@ -73,14 +74,26 @@ class JobCardWidget extends StatelessWidget {
                   ),
                   child: job.images.isNotEmpty
                       ? ClipOval(
-                          child: Image.network(
-                            job.images[0].startsWith('http')
+                          child: CachedNetworkImage(
+                            imageUrl: job.images[0].startsWith('http')
                                 ? job.images[0]
                                 : 'http://188.245.212.240${job.images[0]}',
                             fit: BoxFit.cover,
                             width: 56,
                             height: 56,
-                            errorBuilder: (context, error, stackTrace) =>
+                            placeholder: (context, url) => Container(
+                              color: Colors.white.withOpacity(0.2),
+                              child: const Center(
+                                child: SizedBox(
+                                  width: 20, height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) =>
                                 const Icon(Icons.work_rounded, color: Colors.white, size: 26),
                           ),
                         )

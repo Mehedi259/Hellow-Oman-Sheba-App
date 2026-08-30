@@ -7,8 +7,8 @@ class CallToActionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-      padding: const EdgeInsets.all(24.0),
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)], // Gradient similar to the website

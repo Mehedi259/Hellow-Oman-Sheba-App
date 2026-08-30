@@ -218,7 +218,7 @@ class HomeScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             const CallToActionWidget(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 100), // Large padding for floating bottom nav clearance
           ],
         ),
       ),
