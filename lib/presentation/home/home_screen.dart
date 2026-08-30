@@ -172,7 +172,7 @@ class HomeScreen extends ConsumerWidget {
           ref.invalidate(postsProvider);
         },
         child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          padding: const EdgeInsets.only(top: 8.0),
           children: [
             slidersState.when(
               data: (sliders) => HeroSliderWidget(sliders: sliders),
@@ -180,45 +180,45 @@ class HomeScreen extends ConsumerWidget {
               error: (e, _) => Center(child: Text('Slider Error: $e')),
             ),
             const CategoryGridWidget(),
-            const SizedBox(height: 16),
+            const SizedBox(height: 4),
             jobsState.when(
               data: (jobs) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: LatestJobsWidget(jobs: jobs)),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Jobs Error: $error'),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 4),
             ref.watch(homeJobSeekersProvider).when(
               data: (workers) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: LatestWorkersWidget(workers: workers)),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Workers Error: $error'),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 4),
             ref.watch(propertiesProvider).when(
               data: (properties) => PropertiesWidget(properties: properties),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Properties Error: $error'),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 4),
             ref.watch(vehiclesProvider).when(
               data: (vehicles) => VehiclesWidget(vehicles: vehicles),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Vehicles Error: $error'),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 4),
             ref.watch(marketItemsProvider).when(
               data: (items) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: MarketWidget(items: items)),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Market Error: $error'),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 4),
             ref.watch(postsProvider).when(
               data: (posts) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: CommunityWidget(posts: posts)),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Community Error: $error'),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             const CallToActionWidget(),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
           ],
         ),
       ),

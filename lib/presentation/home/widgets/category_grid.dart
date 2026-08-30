@@ -61,7 +61,7 @@ class CategoryGridWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const Padding(
-          padding: EdgeInsets.symmetric(vertical: 16.0),
+          padding: EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
             'আমাদের সেবাসমূহ',
             style: TextStyle(

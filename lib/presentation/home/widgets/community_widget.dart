@@ -25,7 +25,7 @@ class _CommunityWidgetState extends State<CommunityWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -152,100 +152,121 @@ class CommunityCardWidget extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade200),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.shade100,
-              blurRadius: 6,
-              offset: const Offset(0, 2),
+              color: const Color(0xFF0EA5E9).withOpacity(0.08),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 4,
+              offset: const Offset(0, 1),
             ),
           ],
         ),
-        padding: const EdgeInsets.all(12),
+        clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Gradient accent bar
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.pink.shade50,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                post.categoryName,
-                style: TextStyle(
-                  color: Colors.pink.shade700,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
+              height: 4,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF0EA5E9), Color(0xFF6366F1)],
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ),
-            const SizedBox(height: 12),
-            Text(
-              post.title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              post.content,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                Icon(Icons.person_outline, size: 14, color: Colors.grey.shade600),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    post.authorName,
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Text(' • ', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
-                Icon(Icons.access_time, size: 12, color: Colors.grey.shade600),
-                const SizedBox(width: 4),
-                Text(
-                  _formatTime(post.createdAt),
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 10),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Divider(color: Colors.grey.shade200, height: 1),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Row(
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.thumb_up_alt_outlined, size: 14, color: Colors.grey.shade600),
-                    const SizedBox(width: 4),
-                    Text('${post.likes}', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF0EA5E9).withOpacity(0.1),
+                            const Color(0xFF6366F1).withOpacity(0.1),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        post.categoryName,
+                        style: const TextStyle(
+                          color: Color(0xFF0EA5E9),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      post.title,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1E293B),
+                        height: 1.3,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      post.content,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Color(0xFF94A3B8),
+                        height: 1.3,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const Spacer(),
+                    // Author row
+                    Row(
+                      children: [
+                        const Icon(Icons.person_rounded, size: 12, color: Color(0xFF94A3B8)),
+                        const SizedBox(width: 3),
+                        Expanded(
+                          child: Text(
+                            post.authorName,
+                            style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 10, fontWeight: FontWeight.w500),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    // Stats row
+                    Row(
+                      children: [
+                        const Icon(Icons.favorite_rounded, size: 12, color: Color(0xFFEC4899)),
+                        const SizedBox(width: 3),
+                        Text('${post.likes}', style: const TextStyle(color: Color(0xFF64748B), fontSize: 10)),
+                        const SizedBox(width: 10),
+                        const Icon(Icons.chat_bubble_rounded, size: 12, color: Color(0xFF0EA5E9)),
+                        const SizedBox(width: 3),
+                        Text('${post.commentsCount}', style: const TextStyle(color: Color(0xFF64748B), fontSize: 10)),
+                        const Spacer(),
+                        Text(
+                          _formatTime(post.createdAt),
+                          style: const TextStyle(color: Color(0xFFCBD5E1), fontSize: 9),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-                const SizedBox(width: 16),
-                Row(
-                  children: [
-                    Icon(Icons.chat_bubble_outline, size: 14, color: Colors.grey.shade600),
-                    const SizedBox(width: 4),
-                    Text('${post.commentsCount} মন্তব্য', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
-                  ],
-                ),
-              ],
+              ),
             ),
           ],
         ),
@@ -253,3 +274,4 @@ class CommunityCardWidget extends StatelessWidget {
     );
   }
 }
+
