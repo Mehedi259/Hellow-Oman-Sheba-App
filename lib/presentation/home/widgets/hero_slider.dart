@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../data/models/system_models.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HeroSliderWidget extends StatefulWidget {
   final List<SliderItem> sliders;
@@ -59,131 +61,46 @@ class _HeroSliderWidgetState extends State<HeroSliderWidget> {
     if (widget.sliders.isEmpty) return const SizedBox();
 
     return Container(
-      height: 200,
       margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-      child: Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: PageView.builder(
-              controller: _pageController,
-              onPageChanged: (int page) {
-                setState(() {
-                  _currentPage = page;
-                });
-              },
-              itemCount: widget.sliders.length,
-              itemBuilder: (context, index) {
-                final slider = widget.sliders[index];
-                return Container(
-                  color: Colors.blue[900],
-                  child: GestureDetector(
+      child: AspectRatio(
+        aspectRatio: 2.2,
+        child: Stack(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: PageView.builder(
+                controller: _pageController,
+                onPageChanged: (int page) {
+                  setState(() {
+                    _currentPage = page;
+                  });
+                },
+                itemCount: widget.sliders.length,
+                itemBuilder: (context, index) {
+                  final slider = widget.sliders[index];
+                  final imageUrl = slider.imageUrl.startsWith('http')
+                      ? slider.imageUrl
+                      : 'http://188.245.212.240${slider.imageUrl}';
+
+                  return GestureDetector(
                     onTap: () => _launchUrl(slider.link),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Image.network(
-                          slider.imageUrl.startsWith('http') 
-                              ? slider.imageUrl 
-                              : 'http://188.245.212.240${slider.imageUrl}',
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Container(
-                              color: Colors.blue[900],
-                              child: const Center(
-                                child: CircularProgressIndicator(color: Colors.white54),
-                              ),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(color: Colors.blue[900]),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.blue[900]!.withOpacity(0.85),
-                                Colors.blue[800]!.withOpacity(0.55),
-                                Colors.transparent,
-                              ],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
-                          ),
-                        ),
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.6,
-                              child: Text(
-                                slider.title,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  shadows: [
-                                    Shadow(
-                                      offset: Offset(0, 1),
-                                      blurRadius: 2.0,
-                                      color: Colors.black26,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.6,
-                              child: Text(
-                                slider.subtitle,
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Text(
-                                    'এক্সপ্লোর করুন',
-                                    style: TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  const Icon(
-                                    Icons.arrow_forward,
-                                    size: 12,
-                                    color: Colors.black87,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(color: Colors.white),
                       ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-          ),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey[200],
+                        child: const Icon(Icons.broken_image, color: Colors.grey),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           if (widget.sliders.length > 1)
             Positioned(
               bottom: 12,
@@ -207,6 +124,7 @@ class _HeroSliderWidgetState extends State<HeroSliderWidget> {
               ),
             ),
         ],
+      ),
       ),
     );
   }
