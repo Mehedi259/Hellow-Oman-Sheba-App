@@ -27,165 +27,153 @@ class JobDetailScreen extends ConsumerWidget {
         centerTitle: true,
         actions: [FavoriteButton(contentType: 'job', contentId: job.id)],
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.only(bottom: 100), // Space for sticky bottom bar
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (job.images.isNotEmpty)
-                  Container(
-                    width: double.infinity,
-                    height: 250,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                    ),
-                    child: Image.network(
-                      job.images[0].startsWith('http') ? job.images[0] : 'http://188.245.212.240${job.images[0]}',
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Center(child: Icon(Icons.broken_image, color: Colors.grey, size: 50)),
-                    ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (job.images.isNotEmpty)
+              Container(
+                width: double.infinity,
+                height: 250,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                ),
+                child: Image.network(
+                  job.images[0].startsWith('http') ? job.images[0] : 'http://188.245.212.240${job.images[0]}',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Center(child: Icon(Icons.broken_image, color: Colors.grey, size: 50)),
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    job.title,
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
                   ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 12),
+                  Row(
                     children: [
-                      Text(
-                        job.title,
-                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
+                      Icon(Icons.business, size: 20, color: Colors.grey.shade600),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          job.company,
+                          style: TextStyle(fontSize: 16, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
+                        ),
                       ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Icon(Icons.business, size: 20, color: Colors.grey.shade600),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              job.company,
-                              style: TextStyle(fontSize: 16, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(Icons.location_on_outlined, size: 20, color: Colors.grey.shade600),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              job.location,
-                              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF0EA5E9).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Column(
-                                children: [
-                                  const Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF0EA5E9)),
-                                  const SizedBox(height: 4),
-                                  Text(job.salary, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0EA5E9))),
-                                  const Text('বেতন', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF6366F1).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Column(
-                                children: [
-                                  const Icon(Icons.work_outline, color: Color(0xFF6366F1)),
-                                  const SizedBox(height: 4),
-                                  Text(job.jobType, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF6366F1))),
-                                  const Text('ধরণ', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 32),
-                      const Text('বিস্তারিত বিবরণ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 12),
-                      Text(
-                        job.description,
-                        style: TextStyle(fontSize: 15, color: Colors.grey.shade700, height: 1.5),
-                      ),
-                      const SizedBox(height: 32),
-                      const Text('রিভিউ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 16),
-                      ReviewsSection(contentType: 'job', contentId: job.id),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
-          
-          // Sticky Bottom Apply Button
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.location_on_outlined, size: 20, color: Colors.grey.shade600),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          job.location,
+                          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0EA5E9).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: [
+                              const Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF0EA5E9)),
+                              const SizedBox(height: 4),
+                              Text(job.salary, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0EA5E9))),
+                              const Text('বেতন', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF6366F1).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: [
+                              const Icon(Icons.work_outline, color: Color(0xFF6366F1)),
+                              const SizedBox(height: 4),
+                              Text(job.jobType, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF6366F1))),
+                              const Text('ধরণ', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  const Text('বিস্তারিত বিবরণ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 12),
+                  Text(
+                    job.description,
+                    style: TextStyle(fontSize: 15, color: Colors.grey.shade700, height: 1.5),
+                  ),
+                  const SizedBox(height: 32),
+                  const Text('রিভিউ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16),
+                  ReviewsSection(contentType: 'job', contentId: job.id),
                 ],
               ),
-              child: SafeArea(
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        await ref.read(classifiedsRepositoryProvider).applyForJob(job.id);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Successfully applied for job!'), backgroundColor: Colors.green),
-                          );
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
-                        }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2563EB),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      elevation: 0,
-                    ),
-                    child: const Text('আবেদন করুন', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  ),
-                ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -5)),
+          ],
+        ),
+        child: SafeArea(
+          child: SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: () async {
+                try {
+                  await ref.read(classifiedsRepositoryProvider).applyForJob(job.id);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Successfully applied for job!'), backgroundColor: Colors.green),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2563EB),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                elevation: 0,
               ),
+              child: const Text('আবেদন করুন', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import '../../../data/models/post.dart';
 import '../../community/community_detail_screen.dart';
 
+import 'section_header.dart';
+
 class CommunityWidget extends StatefulWidget {
   final List<Post> posts;
 
@@ -24,62 +26,14 @@ class _CommunityWidgetState extends State<CommunityWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'কমিউনিটি আলোচনা',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'প্রবাসী জীবনের সমস্যা ও সমাধান',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              OutlinedButton(
-                onPressed: () {
-                  // Navigate to Community Screen
-                  context.push('/community');
-                },
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.grey.shade300),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text('সব দেখুন', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold)),
-                    SizedBox(width: 4),
-                    Icon(Icons.arrow_forward, size: 16, color: Colors.black87),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        SectionHeader(
+          title: 'কমিউনিটি আলোচনা',
+          subtitle: 'প্রবাসী জীবনের সমস্যা ও সমাধান',
+          icon: Icons.forum_outlined,
+          color: const Color(0xFFF59E0B), // Amber/Orange
+          onSeeAllPressed: () {
+            context.push('/community');
+          },
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),

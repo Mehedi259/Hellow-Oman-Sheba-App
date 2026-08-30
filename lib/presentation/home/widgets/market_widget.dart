@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import '../../../data/models/classifieds_models.dart';
 import '../../classifieds/widgets/market_card.dart';
 
+import 'section_header.dart';
+
 class MarketWidget extends StatefulWidget {
   final List<MarketItem> items;
 
@@ -24,61 +26,14 @@ class _MarketWidgetState extends State<MarketWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'মার্কেট',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'কিনুন, বিক্রি করুন সহজেই',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              OutlinedButton(
-                onPressed: () {
-                  context.push('/classifieds');
-                },
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.grey.shade300),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text('সব দেখুন', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold)),
-                    SizedBox(width: 4),
-                    Icon(Icons.arrow_forward, size: 16, color: Colors.black87),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        SectionHeader(
+          title: 'মার্কেট',
+          subtitle: 'কিনুন, বিক্রি করুন সহজেই',
+          icon: Icons.storefront_outlined,
+          color: const Color(0xFF10B981), // Green
+          onSeeAllPressed: () {
+            context.push('/classifieds');
+          },
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
