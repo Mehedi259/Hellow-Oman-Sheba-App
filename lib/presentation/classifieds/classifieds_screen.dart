@@ -1157,9 +1157,15 @@ class MarketView extends ConsumerWidget {
                           ),
                         )
                       else
-                        ListView.builder(
+                        GridView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 8,
+                            childAspectRatio: 0.58,
+                          ),
                           itemCount: items.length,
                           itemBuilder: (context, index) {
                             return MarketCardWidget(item: items[index]);

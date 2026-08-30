@@ -4,6 +4,7 @@ import '../../../data/models/classifieds_models.dart';
 import '../../classifieds/widgets/market_card.dart';
 
 import 'section_header.dart';
+import 'animated_see_more_button.dart';
 
 class MarketWidget extends StatefulWidget {
   final List<MarketItem> items;
@@ -55,26 +56,12 @@ class _MarketWidgetState extends State<MarketWidget> {
           ),
         ),
         if (widget.items.length > 4 && !isExpanded)
-          Padding(
-            padding: const EdgeInsets.only(top: 4, left: 12, right: 12),
-            child: SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                onPressed: () {
-                  setState(() {
-                    isExpanded = true;
-                  });
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.blue.shade50,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text('আরও দেখুন', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              ),
-            ),
+          AnimatedSeeMoreButton(
+            onPressed: () {
+              setState(() {
+                isExpanded = true;
+              });
+            },
           ),
       ],
     );
