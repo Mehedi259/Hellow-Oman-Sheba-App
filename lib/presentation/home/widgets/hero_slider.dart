@@ -86,7 +86,7 @@ class _HeroSliderWidgetState extends State<HeroSliderWidget> {
                     onTap: () => _launchUrl(slider.link),
                     child: Image.network(
                       imageUrl,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Shimmer.fromColors(
