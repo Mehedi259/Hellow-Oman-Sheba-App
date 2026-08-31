@@ -44,7 +44,7 @@ class SectionHeader extends StatelessWidget {
                       child: Text(
                         title,
                         style: const TextStyle(
-                          fontSize: 24,
+                          fontSize: 28,
                           fontWeight: FontWeight.w900, // Very bold as requested
                           color: Colors.black87,
                         ),

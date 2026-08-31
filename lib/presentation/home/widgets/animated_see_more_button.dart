@@ -58,14 +58,14 @@ class _AnimatedSeeMoreButtonState extends State<AnimatedSeeMoreButton> with Sing
           width: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.red.shade50, Colors.pink.shade50],
+              colors: [const Color(0xFF0056D2).withOpacity(0.05), const Color(0xFF0056D2).withOpacity(0.1)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.red.withValues(alpha: 0.1),
+                color: const Color(0xFF0056D2).withOpacity(0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -76,8 +76,8 @@ class _AnimatedSeeMoreButtonState extends State<AnimatedSeeMoreButton> with Sing
             child: InkWell(
               onTap: widget.onPressed,
               borderRadius: BorderRadius.circular(12),
-              splashColor: Colors.red.withValues(alpha: 0.2),
-              highlightColor: Colors.red.withValues(alpha: 0.1),
+              splashColor: const Color(0xFF0056D2).withOpacity(0.2),
+              highlightColor: const Color(0xFF0056D2).withOpacity(0.1),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 child: Row(
@@ -88,7 +88,7 @@ class _AnimatedSeeMoreButtonState extends State<AnimatedSeeMoreButton> with Sing
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFFDC2626), // Red-600
+                        color: const Color(0xFF0056D2), // Logo Blue
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -102,7 +102,7 @@ class _AnimatedSeeMoreButtonState extends State<AnimatedSeeMoreButton> with Sing
                       },
                       child: const Icon(
                         Icons.arrow_downward_rounded,
-                        color: Color(0xFFDC2626), // Red-600
+                        color: const Color(0xFF0056D2), // Logo Blue
                         size: 20,
                       ),
                     ),

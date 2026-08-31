@@ -32,7 +32,7 @@ class _LatestWorkersWidgetState extends State<LatestWorkersWidget> {
   Widget build(BuildContext context) {
     if (widget.workers.isEmpty) return const SizedBox();
 
-    final displayCount = isExpanded ? widget.workers.length : (widget.workers.length > 4 ? 4 : widget.workers.length);
+    final displayCount = isExpanded ? widget.workers.length : (widget.workers.length > 6 ? 6 : widget.workers.length);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +66,7 @@ class _LatestWorkersWidgetState extends State<LatestWorkersWidget> {
             },
           ),
         ),
-        if (widget.workers.length > 4 && !isExpanded)
+        if (widget.workers.length > 6 && !isExpanded)
           AnimatedSeeMoreButton(
             onPressed: () {
               setState(() {

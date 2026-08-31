@@ -32,7 +32,7 @@ class _MarketWidgetState extends State<MarketWidget> {
   Widget build(BuildContext context) {
     if (widget.items.isEmpty) return const SizedBox();
 
-    final displayCount = isExpanded ? widget.items.length : (widget.items.length > 4 ? 4 : widget.items.length);
+    final displayCount = isExpanded ? widget.items.length : (widget.items.length > 6 ? 6 : widget.items.length);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +66,7 @@ class _MarketWidgetState extends State<MarketWidget> {
             },
           ),
         ),
-        if (widget.items.length > 4 && !isExpanded)
+        if (widget.items.length > 6 && !isExpanded)
           AnimatedSeeMoreButton(
             onPressed: () {
               setState(() {

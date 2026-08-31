@@ -57,6 +57,7 @@ class JobCardWidget extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       job.title,
@@ -66,7 +67,6 @@ class JobCardWidget extends StatelessWidget {
                         color: Color(0xFF1E293B),
                         height: 1.2,
                       ),
-                      textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),

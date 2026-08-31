@@ -45,7 +45,7 @@ class _LatestJobsWidgetState extends State<LatestJobsWidget> {
   Widget build(BuildContext context) {
     if (widget.jobs.isEmpty) return const SizedBox();
 
-    final displayCount = isExpanded ? widget.jobs.length : (widget.jobs.length > 4 ? 4 : widget.jobs.length);
+    final displayCount = isExpanded ? widget.jobs.length : (widget.jobs.length > 6 ? 6 : widget.jobs.length);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +70,7 @@ class _LatestJobsWidgetState extends State<LatestJobsWidget> {
               crossAxisCount: 2,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
-              childAspectRatio: 0.58, // Adjust based on card height
+              childAspectRatio: 0.95, // Adjusted after removing image
             ),
             itemCount: displayCount,
             itemBuilder: (context, index) {
@@ -79,7 +79,7 @@ class _LatestJobsWidgetState extends State<LatestJobsWidget> {
             },
           ),
         ),
-        if (widget.jobs.length > 4 && !isExpanded)
+        if (widget.jobs.length > 6 && !isExpanded)
           AnimatedSeeMoreButton(
             onPressed: () {
               setState(() {
