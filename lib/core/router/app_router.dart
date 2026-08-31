@@ -11,6 +11,8 @@ import '../../presentation/emergency/emergency_screen.dart';
 
 import '../../presentation/search/search_screen.dart';
 import '../../presentation/notifications/notifications_screen.dart';
+import '../../presentation/messages/messages_screen.dart';
+import '../../presentation/my_listings/my_listings_screen.dart';
 import '../../presentation/info/info_screens.dart';
 import '../../presentation/info/about_oman_screen.dart';
 import '../../presentation/info/embassy_screen.dart';
@@ -96,6 +98,14 @@ final appRouter = GoRouter(
         GoRoute(
           path: '/notifications',
           builder: (context, state) => const NotificationsScreen(),
+        ),
+        GoRoute(
+          path: '/my-listings',
+          builder: (context, state) => const MyListingsScreen(),
+        ),
+        GoRoute(
+          path: '/messages',
+          builder: (context, state) => const MessagesScreen(),
         ),
       ],
     ),
