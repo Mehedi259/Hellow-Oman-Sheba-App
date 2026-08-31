@@ -18,6 +18,16 @@ class LatestWorkersWidget extends StatefulWidget {
 class _LatestWorkersWidgetState extends State<LatestWorkersWidget> {
   bool isExpanded = false;
 
+  String _toBengaliNumber(int number) {
+    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    const bengali = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+    String numStr = number.toString();
+    for (int i = 0; i < english.length; i++) {
+      numStr = numStr.replaceAll(english[i], bengali[i]);
+    }
+    return numStr;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.workers.isEmpty) return const SizedBox();
@@ -29,6 +39,7 @@ class _LatestWorkersWidgetState extends State<LatestWorkersWidget> {
       children: [
         SectionHeader(
           title: 'কর্মী খুঁজুন',
+          badgeText: '${_toBengaliNumber(widget.workers.length)} টি',
           subtitle: 'দক্ষ কর্মী খুঁজে নিন',
           icon: Icons.group_outlined,
           color: const Color(0xFFEC4899), // Pink

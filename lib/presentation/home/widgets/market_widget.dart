@@ -18,6 +18,16 @@ class MarketWidget extends StatefulWidget {
 class _MarketWidgetState extends State<MarketWidget> {
   bool isExpanded = false;
 
+  String _toBengaliNumber(int number) {
+    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    const bengali = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+    String numStr = number.toString();
+    for (int i = 0; i < english.length; i++) {
+      numStr = numStr.replaceAll(english[i], bengali[i]);
+    }
+    return numStr;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.items.isEmpty) return const SizedBox();
@@ -29,6 +39,7 @@ class _MarketWidgetState extends State<MarketWidget> {
       children: [
         SectionHeader(
           title: 'মার্কেট',
+          badgeText: '${_toBengaliNumber(widget.items.length)} টি',
           subtitle: 'কিনুন, বিক্রি করুন সহজেই',
           icon: Icons.storefront_outlined,
           color: const Color(0xFF10B981), // Green

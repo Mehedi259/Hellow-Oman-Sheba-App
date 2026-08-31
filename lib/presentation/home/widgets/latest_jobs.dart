@@ -31,6 +31,16 @@ class _LatestJobsWidgetState extends State<LatestJobsWidget> {
     }
   }
 
+  String _toBengaliNumber(int number) {
+    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    const bengali = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+    String numStr = number.toString();
+    for (int i = 0; i < english.length; i++) {
+      numStr = numStr.replaceAll(english[i], bengali[i]);
+    }
+    return numStr;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.jobs.isEmpty) return const SizedBox();
@@ -42,6 +52,7 @@ class _LatestJobsWidgetState extends State<LatestJobsWidget> {
       children: [
         SectionHeader(
           title: 'চাকরি খুঁজুন',
+          badgeText: '${_toBengaliNumber(widget.jobs.length)} টি',
           subtitle: 'আপনার স্বপ্নের চাকরি খুঁজুন',
           icon: Icons.work_outline_rounded,
           color: const Color(0xFF2563EB), // Blue
