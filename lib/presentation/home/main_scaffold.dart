@@ -60,8 +60,8 @@ class MainScaffold extends ConsumerWidget {
 
   static int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.path;
-    if (location.startsWith('/categories')) return 1;
-    if (location.startsWith('/notifications')) return 3;
+    if (location.startsWith('/my-listings') || location.startsWith('/listings')) return 1;
+    if (location.startsWith('/messages')) return 3;
     if (location.startsWith('/profile')) return 4;
     if (location.startsWith('/post/create')) return 2;
     return 0; // default to Home
@@ -73,13 +73,13 @@ class MainScaffold extends ConsumerWidget {
         context.go('/');
         break;
       case 1:
-        context.go('/categories');
+        context.go('/my-listings');
         break;
       case 2:
         // Handled by FAB
         break;
       case 3:
-        context.go('/notifications');
+        context.go('/messages');
         break;
       case 4:
         context.go('/profile');
@@ -133,9 +133,9 @@ class _PremiumBottomNavBar extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildNavItem(0, Icons.home_rounded, Icons.home_outlined, 'হোম'),
-                _buildNavItem(1, Icons.dashboard_rounded, Icons.dashboard_outlined, 'ক্যাটাগরি'),
+                _buildNavItem(1, Icons.list_alt_rounded, Icons.list_alt_outlined, 'লিস্টিং'),
                 const SizedBox(width: 56), // Space for FAB
-                _buildNavItem(3, Icons.notifications_rounded, Icons.notifications_none_rounded, 'নোটিফিকেশন'),
+                _buildNavItem(3, Icons.message_rounded, Icons.message_outlined, 'মেসেজ'),
                 _buildNavItem(4, Icons.person_rounded, Icons.person_outline_rounded, 'প্রোফাইল'),
               ],
             ),

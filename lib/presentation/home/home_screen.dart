@@ -31,6 +31,21 @@ class HomeScreen extends ConsumerWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black87), // For the hamburger icon
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_none_rounded, color: Colors.black87),
+            onPressed: () {
+              context.push('/notifications');
+            },
+          ),
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu, color: Colors.black87),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       endDrawer: Drawer(
         child: SafeArea(
