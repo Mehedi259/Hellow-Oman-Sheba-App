@@ -57,7 +57,7 @@ class _LatestWorkersWidgetState extends State<LatestWorkersWidget> {
               crossAxisCount: 2,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
-              childAspectRatio: 0.70, // Adjust based on card height
+              childAspectRatio: 0.95, // Adjusted to match jobs
             ),
             itemCount: displayCount,
             itemBuilder: (context, index) {
