@@ -6,7 +6,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF0D9488), // Teal color from website
+        seedColor: const Color(0xFF0056D2), // Blue color from logo
         brightness: Brightness.light,
       ),
       textTheme: GoogleFonts.interTextTheme(),
@@ -17,7 +17,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF0D9488),
+        seedColor: const Color(0xFF0056D2),
         brightness: Brightness.dark,
       ),
       textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),

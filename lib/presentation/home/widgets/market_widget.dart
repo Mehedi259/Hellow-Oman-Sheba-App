@@ -42,7 +42,7 @@ class _MarketWidgetState extends State<MarketWidget> {
           badgeText: '${_toBengaliNumber(widget.items.length)} টি',
           subtitle: 'কিনুন, বিক্রি করুন সহজেই',
           icon: Icons.storefront_outlined,
-          color: const Color(0xFF10B981), // Green
+          color: const Color(0xFF0056D2), // Logo Blue
           onSeeAllPressed: () {
             context.push('/classifieds');
           },

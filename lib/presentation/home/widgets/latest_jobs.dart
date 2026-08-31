@@ -55,7 +55,7 @@ class _LatestJobsWidgetState extends State<LatestJobsWidget> {
           badgeText: '${_toBengaliNumber(widget.jobs.length)} টি',
           subtitle: 'আপনার স্বপ্নের চাকরি খুঁজুন',
           icon: Icons.work_outline_rounded,
-          color: const Color(0xFF2563EB), // Blue
+          color: const Color(0xFF0056D2), // Logo Blue
           onSeeAllPressed: () {
             context.push('/classifieds');
           },

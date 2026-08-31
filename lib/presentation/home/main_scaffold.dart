@@ -18,7 +18,7 @@ class MainScaffold extends ConsumerWidget {
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(color: Color(0xFF0D9488)),
+              decoration: BoxDecoration(color: Color(0xFF0056D2)),
               child: Text('Sheba Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
             ),
             ListTile(
@@ -116,7 +116,7 @@ class _PremiumBottomNavBar extends StatelessWidget {
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF7C3AED).withOpacity(0.08),
+                  color: const Color(0xFF0056D2).withOpacity(0.08),
                   blurRadius: 30,
                   offset: const Offset(0, -4),
                   spreadRadius: 2,
@@ -142,29 +142,39 @@ class _PremiumBottomNavBar extends StatelessWidget {
           ),
           // --- Center FAB ---
           Positioned(
-            bottom: 22,
+            bottom: 8,
             child: GestureDetector(
               onTap: onFabTapped,
-              child: Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF7C3AED), Color(0xFFDB2777)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF7C3AED).withOpacity(0.4),
-                      blurRadius: 16,
-                      offset: const Offset(0, 6),
-                      spreadRadius: 0,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0056D2), // Logo Blue
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF0056D2).withOpacity(0.4),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6),
+                          spreadRadius: 0,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: const Icon(Icons.add_rounded, color: Colors.white, size: 30),
+                    child: const Icon(Icons.add_rounded, color: Colors.white, size: 30),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'পোস্ট',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0056D2),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -175,7 +185,7 @@ class _PremiumBottomNavBar extends StatelessWidget {
 
   Widget _buildNavItem(int index, IconData activeIcon, IconData inactiveIcon, String label) {
     final isSelected = selectedIndex == index;
-    final Color activeColor = const Color(0xFF7C3AED);
+    final Color activeColor = const Color(0xFF0056D2); // Logo Blue
     final Color inactiveColor = const Color(0xFF94A3B8);
 
     return GestureDetector(

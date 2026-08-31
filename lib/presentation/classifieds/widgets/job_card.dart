@@ -38,7 +38,7 @@ class JobCardWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF6366F1).withOpacity(0.08),
+              color: const Color(0xFF0056D2).withOpacity(0.08),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -52,55 +52,6 @@ class JobCardWidget extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: Column(
           children: [
-            // Gradient header with avatar
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                ),
-              ),
-              child: Center(
-                child: Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withOpacity(0.4), width: 2),
-                    color: Colors.white.withOpacity(0.2),
-                  ),
-                  child: job.images.isNotEmpty
-                      ? ClipOval(
-                          child: CachedNetworkImage(
-                            imageUrl: job.images[0].startsWith('http')
-                                ? job.images[0]
-                                : 'http://188.245.212.240${job.images[0]}',
-                            fit: BoxFit.cover,
-                            width: 56,
-                            height: 56,
-                            placeholder: (context, url) => Container(
-                              color: Colors.white.withOpacity(0.2),
-                              child: const Center(
-                                child: SizedBox(
-                                  width: 20, height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.work_rounded, color: Colors.white, size: 26),
-                          ),
-                        )
-                      : const Icon(Icons.work_rounded, color: Colors.white, size: 26),
-                ),
-              ),
-            ),
             // Content
             Expanded(
               child: Padding(
@@ -120,7 +71,7 @@ class JobCardWidget extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
-                    _infoRow(Icons.location_on_rounded, job.location, const Color(0xFF6366F1)),
+                    _infoRow(Icons.location_on_rounded, job.location, const Color(0xFF0056D2)),
                     const SizedBox(height: 4),
                     _infoRow(Icons.payments_rounded, job.salary, const Color(0xFF059669)),
                     const SizedBox(height: 4),
@@ -140,7 +91,7 @@ class JobCardWidget extends StatelessWidget {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6366F1),
+                          backgroundColor: const Color(0xFF0056D2),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),

@@ -16,7 +16,7 @@ class HomeJobSeekerCardWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFEC4899).withOpacity(0.08),
+            color: const Color(0xFF0056D2).withOpacity(0.08),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -38,7 +38,7 @@ class HomeJobSeekerCardWidget extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFFEC4899), Color(0xFFF97316)],
+                colors: [Color(0xFF0056D2), Color(0xFF2563EB)],
               ),
             ),
             child: Center(
@@ -117,7 +117,7 @@ class HomeJobSeekerCardWidget extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 6),
-                  _infoRow(Icons.work_history_rounded, 'অভিজ্ঞতা: ${jobSeeker.yearsOfExperience} বছর', const Color(0xFFEC4899)),
+                  _infoRow(Icons.work_history_rounded, 'অভিজ্ঞতা: ${jobSeeker.yearsOfExperience} বছর', const Color(0xFF0056D2)),
                   if (jobSeeker.educationLevel != null && jobSeeker.educationLevel!.isNotEmpty) ...[
                     const SizedBox(height: 3),
                     _infoRow(Icons.school_rounded, jobSeeker.educationLevel!, const Color(0xFF94A3B8)),
@@ -137,7 +137,7 @@ class HomeJobSeekerCardWidget extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFEC4899),
+                        backgroundColor: const Color(0xFF0056D2),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),

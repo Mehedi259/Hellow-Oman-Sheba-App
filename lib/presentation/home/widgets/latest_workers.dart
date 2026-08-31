@@ -42,7 +42,7 @@ class _LatestWorkersWidgetState extends State<LatestWorkersWidget> {
           badgeText: '${_toBengaliNumber(widget.workers.length)} টি',
           subtitle: 'দক্ষ কর্মী খুঁজে নিন',
           icon: Icons.group_outlined,
-          color: const Color(0xFFEC4899), // Pink
+          color: const Color(0xFF0056D2), // Logo Blue
           onSeeAllPressed: () {
             context.push('/classifieds?tab=jobs');
           },
