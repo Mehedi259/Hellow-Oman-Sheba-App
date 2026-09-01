@@ -1,3 +1,4 @@
+import 'chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -84,7 +85,14 @@ class _ChatListItem extends StatelessWidget {
       color: Colors.white,
       child: InkWell(
         onTap: () {
-          // TODO: Open chat details screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatScreen(
+                title: chat['name'],
+              ),
+            ),
+          );
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

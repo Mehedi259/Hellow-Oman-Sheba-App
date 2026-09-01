@@ -1,4 +1,6 @@
+import '../messages/chat_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/job.dart';
 import '../../data/models/classifieds_models.dart';
@@ -179,44 +181,285 @@ class JobDetailScreen extends ConsumerWidget {
   }
 }
 
-class PropertyDetailScreen extends StatelessWidget {
+class PropertyDetailScreen extends StatefulWidget {
   final Property property;
   const PropertyDetailScreen({super.key, required this.property});
 
   @override
+  State<PropertyDetailScreen> createState() => _PropertyDetailScreenState();
+}
+
+class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
+  int _currentImageIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
+    final images = widget.property.images.isNotEmpty 
+        ? widget.property.images 
+        : (widget.property.imageUrl != null ? [widget.property.imageUrl!] : []);
+
     return Scaffold(
-      appBar: AppBar(title: Text(property.title), actions: [FavoriteButton(contentType: 'property', contentId: property.id)]),
+      backgroundColor: const Color(0xFFF8FAFC),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleAvatar(
+            backgroundColor: Colors.white,
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.black87),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: FavoriteButton(contentType: 'property', contentId: widget.property.id),
+            ),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (property.imageUrl != null)
-              Image.network(
-                property.imageUrl!.startsWith('http') ? property.imageUrl! : 'http://188.245.212.240${property.imageUrl}',
-                height: 250,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    Container(height: 250, color: Colors.grey[200], child: const Icon(Icons.broken_image, color: Colors.grey, size: 50)),
+            // Image Header
+            SizedBox(
+              height: 300,
+              width: double.infinity,
+              child: images.isNotEmpty
+                  ? Stack(
+                      children: [
+                        PageView.builder(
+                          itemCount: images.length,
+                          onPageChanged: (index) {
+                            setState(() {
+                              _currentImageIndex = index;
+                            });
+                          },
+                          itemBuilder: (context, index) {
+                            final imgUrl = images[index].startsWith('http') 
+                                ? images[index] 
+                                : 'http://188.245.212.240${images[index]}';
+                            return Image.network(
+                              imgUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              errorBuilder: (context, error, stackTrace) => Container(
+                                color: Colors.grey.shade200,
+                                child: const Icon(Icons.broken_image, color: Colors.grey, size: 50),
+                              ),
+                            );
+                          },
+                        ),
+                        if (images.length > 1)
+                          Positioned(
+                            bottom: 16,
+                            left: 0,
+                            right: 0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(
+                                images.length,
+                                (index) => Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                                  width: _currentImageIndex == index ? 12 : 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    color: _currentImageIndex == index ? Colors.white : Colors.white.withOpacity(0.5),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    )
+                  : Container(
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.apartment, color: Colors.grey, size: 80),
+                    ),
+            ),
+            
+            // Content
+            Container(
+              transform: Matrix4.translationValues(0.0, -20.0, 0.0),
+              decoration: const BoxDecoration(
+                color: Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
-            const SizedBox(height: 16),
-            Text(property.title, style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 8),
-            Text('\$${property.price}', style: const TextStyle(fontSize: 24, color: Colors.teal, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            Text('${property.location} • ${property.type}'),
-            const SizedBox(height: 24),
-            const Text('Description', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text(property.description),
-            const SizedBox(height: 24),
-            const Text('Contact Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text(property.contactInfo),
-            const SizedBox(height: 32),
-            ReviewsSection(contentType: 'property', contentId: property.id),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title and Price
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            widget.property.title,
+                            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE0E7FF),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '${widget.property.price} OMR',
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF4338CA)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Location & Type
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on, color: Color(0xFFDC2626), size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            widget.property.location.isNotEmpty ? widget.property.location : 'ঠিকানা দেওয়া নেই',
+                            style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        const Icon(Icons.home_work, color: Color(0xFF0056D2), size: 20),
+                        const SizedBox(width: 8),
+                        Text(
+                          'ধরণ: ${widget.property.type.isNotEmpty ? widget.property.type : 'N/A'}',
+                          style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    const Text('বিস্তারিত বিবরণ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                    const SizedBox(height: 12),
+                    Text(
+                      widget.property.description,
+                      style: const TextStyle(fontSize: 15, height: 1.5, color: Color(0xFF475569)),
+                    ),
+                    
+                    const SizedBox(height: 32),
+                    const Text('যোগাযোগ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade200),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4)),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          const CircleAvatar(
+                            backgroundColor: Color(0xFFE2E8F0),
+                            radius: 24,
+                            child: Icon(Icons.person, color: Color(0xFF64748B), size: 28),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('মালিক/এজেন্ট', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                                const SizedBox(height: 4),
+                                Text(
+                                  widget.property.contactInfo.isNotEmpty ? widget.property.contactInfo : 'যোগাযোগ নম্বর নেই',
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 32),
+                    ReviewsSection(contentType: 'property', contentId: widget.property.id),
+                    const SizedBox(height: 40),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(16).copyWith(bottom: MediaQuery.of(context).padding.bottom + 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -4)),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  final phone = widget.property.contactInfo;
+                  if (phone.isNotEmpty) {
+                    final url = Uri.parse('tel:$phone');
+                    if (await canLaunchUrl(url)) await launchUrl(url);
+                  }
+                },
+                icon: const Icon(Icons.phone),
+                label: const Text('কল করুন', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF007BFF),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatScreen(
+                        title: widget.property.title,
+                        initialMessage: 'আমি এই প্রপার্টি সম্পর্কে জানতে চাচ্ছি: ${widget.property.title}',
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.chat_rounded),
+                label: const Text('মেসেজ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF25D366),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
+                ),
+              ),
+            ),
           ],
         ),
       ),

@@ -6,6 +6,7 @@ class Property {
   final String location;
   final String type;
   final String? imageUrl;
+  final List<String> images;
   final String contactInfo;
   final DateTime createdAt;
   final double rating;
@@ -20,6 +21,7 @@ class Property {
     required this.type,
     required this.createdAt,
     this.imageUrl,
+    this.images = const [],
     this.contactInfo = 'Contact owner',
     this.rating = 0.0,
     this.reviewCount = 0,
@@ -28,14 +30,21 @@ class Property {
   factory Property.fromJson(Map<String, dynamic> json) {
     return Property(
       id: json['id'],
-      title: json['title']?.toString() ?? '',
-      description: json['description']?.toString() ?? '',
+      title: json['title_bn']?.toString() ?? json['title']?.toString() ?? '',
+      description: json['description_bn']?.toString() ?? json['description']?.toString() ?? '',
       price: json['price']?.toString() ?? '',
-      location: json['location']?.toString() ?? '',
-      type: json['property_type']?.toString() ?? '',
+      location: (json['area'] != null && json['area'].toString().isNotEmpty) 
+          ? '${json['area']}, ${json['city'] ?? ''}' 
+          : (json['city']?.toString() ?? json['location']?.toString() ?? ''),
+      type: json['category']?.toString() ?? json['type']?.toString() ?? json['property_type']?.toString() ?? '',
       createdAt: DateTime.parse(json['created_at']),
       imageUrl: json['image_url']?.toString(),
-      contactInfo: json['contact_info']?.toString() ?? 'Contact owner',
+      images: (json['images'] as List?)?.map((e) {
+        if (e is String) return e;
+        if (e is Map) return (e['image'] ?? e['url'] ?? '').toString();
+        return '';
+      }).where((e) => e.isNotEmpty).toList() ?? [],
+      contactInfo: json['contact_phone']?.toString() ?? json['contact_info']?.toString() ?? 'Contact owner',
       rating: (json['rating'] ?? 0.0).toDouble(),
       reviewCount: json['review_count'] ?? 0,
     );
