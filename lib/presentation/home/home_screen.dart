@@ -208,18 +208,6 @@ class HomeScreen extends ConsumerWidget {
               error: (error, stack) => Text('Workers Error: $error'),
             ),
             const SizedBox(height: 4),
-            ref.watch(propertiesProvider).when(
-              data: (properties) => PropertiesWidget(properties: properties),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Text('Properties Error: $error'),
-            ),
-            const SizedBox(height: 4),
-            ref.watch(vehiclesProvider).when(
-              data: (vehicles) => VehiclesWidget(vehicles: vehicles),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Text('Vehicles Error: $error'),
-            ),
-            const SizedBox(height: 4),
             ref.watch(marketItemsProvider).when(
               data: (items) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: MarketWidget(items: items)),
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -230,6 +218,18 @@ class HomeScreen extends ConsumerWidget {
               data: (posts) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: CommunityWidget(posts: posts)),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Community Error: $error'),
+            ),
+            const SizedBox(height: 4),
+            ref.watch(propertiesProvider).when(
+              data: (properties) => PropertiesWidget(properties: properties),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Text('Properties Error: $error'),
+            ),
+            const SizedBox(height: 4),
+            ref.watch(vehiclesProvider).when(
+              data: (vehicles) => VehiclesWidget(vehicles: vehicles),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Text('Vehicles Error: $error'),
             ),
             const SizedBox(height: 8),
             const CallToActionWidget(),

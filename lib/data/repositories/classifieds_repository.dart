@@ -99,8 +99,8 @@ class ClassifiedsRepository {
       final response = await apiClient.dio.get(
         '/classifieds/reviews/',
         queryParameters: {
-          'content_type': contentType,
-          'content_id': contentId,
+          'reviewable_type': contentType,
+          'reviewable_id': contentId,
         },
       );
       final data = response.data;
@@ -116,8 +116,8 @@ class ClassifiedsRepository {
       final response = await apiClient.dio.post(
         '/classifieds/reviews/',
         data: {
-          'content_type': contentType,
-          'content_id': contentId,
+          'reviewable_type': contentType,
+          'reviewable_id': contentId,
           'rating': rating,
           'comment': comment,
         },
