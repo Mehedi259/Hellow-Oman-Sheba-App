@@ -57,7 +57,7 @@ class _MarketWidgetState extends State<MarketWidget> {
               crossAxisCount: 2,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
-              childAspectRatio: 0.58,
+              childAspectRatio: 0.85,
             ),
             itemCount: displayCount,
             itemBuilder: (context, index) {

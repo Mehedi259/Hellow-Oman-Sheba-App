@@ -3,10 +3,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../data/models/classifieds_models.dart';
 import '../classifieds_detail_screens.dart';
 
-class MarketCardWidget extends StatelessWidget {
+class MarketCardWidget extends StatefulWidget {
   final MarketItem item;
   
   const MarketCardWidget({super.key, required this.item});
+
+  @override
+  State<MarketCardWidget> createState() => _MarketCardWidgetState();
+}
+
+class _MarketCardWidgetState extends State<MarketCardWidget> {
+  bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
@@ -15,76 +22,102 @@ class MarketCardWidget extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MarketItemDetailScreen(item: item),
+            builder: (context) => MarketItemDetailScreen(item: widget.item),
           ),
         );
       },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade200),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Top Full Width Image Section
-            Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image with Overlays
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              clipBehavior: Clip.antiAlias,
               child: Stack(
+                fit: StackFit.expand,
                 children: [
-                  Container(
-                    width: double.infinity,
-                    color: Colors.grey.shade100,
-                    child: item.images.isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl: item.images[0].startsWith('http') 
-                                ? item.images[0] 
-                                : 'http://188.245.212.240${item.images[0]}',
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                            placeholder: (context, url) => Container(
-                              color: Colors.grey.shade100,
-                              child: Center(
-                                child: SizedBox(
-                                  width: 24, height: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.grey.shade400),
-                                  ),
+                  // Image
+                  widget.item.images.isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: widget.item.images[0].startsWith('http') 
+                              ? widget.item.images[0] 
+                              : 'http://188.245.212.240${widget.item.images[0]}',
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            color: Colors.grey.shade100,
+                            child: Center(
+                              child: SizedBox(
+                                width: 24, height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.grey.shade400),
                                 ),
                               ),
                             ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.store, color: Colors.grey, size: 50),
-                          )
-                        : const Icon(Icons.store, color: Colors.grey, size: 50),
-                  ),
-                  // Category Badge
+                          ),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.store, color: Colors.grey, size: 50),
+                        )
+                      : const Icon(Icons.store, color: Colors.grey, size: 50),
+                  
+                  // Favorite Button (Top Right)
                   Positioned(
                     top: 8,
-                    left: 8,
+                    right: 8,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isFavorite = !isFavorite;
+                        });
+                        // In a real app, you would also trigger an API call or update a provider here
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              isFavorite 
+                                  ? 'পছন্দের তালিকায় যুক্ত করা হয়েছে' 
+                                  : 'পছন্দের তালিকা থেকে সরানো হয়েছে'
+                            ),
+                            duration: const Duration(seconds: 1),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded, 
+                          color: isFavorite ? const Color(0xFFEF4444) : Colors.white, // Red or White
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Price Tag (Bottom Right)
+                  Positioned(
+                    bottom: 8,
+                    right: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEA580C), // Orange color matching screenshot
-                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.black.withOpacity(0.85),
+                        borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        item.categoryName.isNotEmpty ? item.categoryName : 'সাধারণ',
+                        '${widget.item.price} ${widget.item.currency}',
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -92,74 +125,23 @@ class MarketCardWidget extends StatelessWidget {
                 ],
               ),
             ),
-            
-            // Details Section
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.title,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 6),
-                  
-                  // Tags Row (Condition)
-                  Row(
-                    children: [
-                      Icon(Icons.sell_outlined, size: 14, color: Colors.grey.shade500),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          'অবস্থা: ${item.condition}',
-                          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  
-                  // Location Row
-                  Row(
-                    children: [
-                      Icon(Icons.location_on_outlined, size: 14, color: Colors.grey.shade500),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          '${item.city}${item.area.isNotEmpty ? ', ${item.area}' : ''}',
-                          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const Divider(height: 1),
-                  const SizedBox(height: 8),
-                  
-                  Text(
-                    '${item.price} ${item.currency}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFEA580C), // Orange color for price
-                    ),
-                  ),
-                ],
+          ),
+          
+          // Details Section (Just the title)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0, left: 4, right: 4, bottom: 4),
+            child: Text(
+              widget.item.title,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF1E293B),
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
