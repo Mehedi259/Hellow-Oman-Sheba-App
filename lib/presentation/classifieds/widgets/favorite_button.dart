@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/auth_provider.dart';
+import '../../my_listings/providers/my_listings_provider.dart';
 
 class FavoriteButton extends ConsumerStatefulWidget {
   final String contentType;
@@ -52,6 +53,7 @@ class _FavoriteButtonState extends ConsumerState<FavoriteButton> {
           favoriteId = null;
         });
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Removed from favorites')));
+        ref.invalidate(myFavoritesProvider);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
       }
@@ -63,6 +65,7 @@ class _FavoriteButtonState extends ConsumerState<FavoriteButton> {
           isFavorite = true;
         });
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Added to favorites')));
+        ref.invalidate(myFavoritesProvider);
         _checkFavoriteStatus(); // To get the new ID
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));

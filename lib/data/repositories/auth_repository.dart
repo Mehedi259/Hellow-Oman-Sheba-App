@@ -49,7 +49,18 @@ class AuthRepository {
   Future<List<dynamic>> getMyPosts() async {
     try {
       final response = await apiClient.dio.get('/users/my-posts/');
-      return response.data['results'] as List? ?? response.data as List;
+      if (response.data is List) return response.data as List;
+      return (response.data['results'] as List?) ?? [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getMyComments() async {
+    try {
+      final response = await apiClient.dio.get('/users/my-comments/');
+      if (response.data is List) return response.data as List;
+      return (response.data['results'] as List?) ?? [];
     } catch (e) {
       return [];
     }
@@ -58,7 +69,8 @@ class AuthRepository {
   Future<List<dynamic>> getJobApplications() async {
     try {
       final response = await apiClient.dio.get('/users/applications/');
-      return response.data['results'] as List? ?? response.data as List;
+      if (response.data is List) return response.data as List;
+      return (response.data['results'] as List?) ?? [];
     } catch (e) {
       return [];
     }
@@ -82,7 +94,8 @@ class AuthRepository {
   Future<List<dynamic>> getNotifications() async {
     try {
       final response = await apiClient.dio.get('/users/notifications/');
-      return response.data['results'] as List? ?? response.data as List;
+      if (response.data is List) return response.data as List;
+      return (response.data['results'] as List?) ?? [];
     } catch (e) {
       return [];
     }
@@ -90,7 +103,8 @@ class AuthRepository {
   Future<List<dynamic>> getFavorites() async {
     try {
       final response = await apiClient.dio.get('/users/favorites/');
-      return response.data['results'] as List? ?? response.data as List;
+      if (response.data is List) return response.data as List;
+      return (response.data['results'] as List?) ?? [];
     } catch (e) {
       return [];
     }

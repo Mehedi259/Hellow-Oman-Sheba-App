@@ -127,10 +127,10 @@ class _ChatListItem extends ConsumerWidget {
               CircleAvatar(
                 radius: 26,
                 backgroundColor: const Color(0xFF0056D2).withOpacity(0.1),
-                backgroundImage: otherParticipant?.profilePicture != null
-                    ? NetworkImage(otherParticipant!.profilePicture!)
+                backgroundImage: (otherParticipant?.profilePicture != null && otherParticipant!.profilePicture!.isNotEmpty)
+                    ? NetworkImage(otherParticipant.profilePicture!)
                     : null,
-                child: otherParticipant?.profilePicture == null
+                child: (otherParticipant?.profilePicture == null || otherParticipant!.profilePicture!.isEmpty)
                     ? Text(
                         title.isNotEmpty ? title[0].toUpperCase() : 'U',
                         style: const TextStyle(
