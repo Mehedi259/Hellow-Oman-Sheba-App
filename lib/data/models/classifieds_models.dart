@@ -11,6 +11,7 @@ class Property {
   final DateTime createdAt;
   final double rating;
   final int reviewCount;
+  final int? ownerId;
 
   Property({
     required this.id,
@@ -25,11 +26,13 @@ class Property {
     this.contactInfo = 'Contact owner',
     this.rating = 0.0,
     this.reviewCount = 0,
+    this.ownerId,
   });
 
   factory Property.fromJson(Map<String, dynamic> json) {
     return Property(
       id: json['id'],
+      ownerId: json['user_id'] ?? json['owner_id'],
       title: json['title_bn']?.toString() ?? json['title']?.toString() ?? '',
       description: json['description_bn']?.toString() ?? json['description']?.toString() ?? '',
       price: json['price']?.toString() ?? '',

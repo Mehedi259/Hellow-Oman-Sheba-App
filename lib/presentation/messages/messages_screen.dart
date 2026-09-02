@@ -1,39 +1,16 @@
 import 'chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../chat/providers/chat_providers.dart';
+import '../../data/models/chat_models.dart';
+import '../auth/auth_provider.dart';
 
 class MessagesScreen extends ConsumerWidget {
   const MessagesScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Dummy data for chat list
-    final List<Map<String, dynamic>> dummyChats = [
-      {
-        'name': 'Hasan Ali',
-        'avatar': 'HA',
-        'lastMessage': 'আমি আগামীকাল আপনার সাথে দেখা করতে পারি।',
-        'time': '10:30 AM',
-        'unread': 2,
-        'isOnline': true,
-      },
-      {
-        'name': 'Kamrul Islam',
-        'avatar': 'KI',
-        'lastMessage': 'জব অফারটি সম্পর্কে বিস্তারিত বলবেন কি?',
-        'time': 'Yesterday',
-        'unread': 0,
-        'isOnline': false,
-      },
-      {
-        'name': 'Sheba Support',
-        'avatar': 'SS',
-        'lastMessage': 'আপনার পেমেন্টটি সফলভাবে সম্পন্ন হয়েছে।',
-        'time': 'Monday',
-        'unread': 1,
-        'isOnline': true,
-      },
-    ];
+    final conversationsAsync = ref.watch(conversationsProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -59,28 +36,72 @@ class MessagesScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: dummyChats.isEmpty
-          ? const _EmptyMessagesView()
-          : ListView.separated(
-              padding: const EdgeInsets.only(top: 8, bottom: 100), // padding for bottom nav
-              itemCount: dummyChats.length,
+      body: conversationsAsync.when(
+        data: (conversations) {
+          if (conversations.isEmpty) {
+            return const _EmptyMessagesView();
+          }
+          return RefreshIndicator(
+            onRefresh: () => ref.refresh(conversationsProvider.future),
+            child: ListView.separated(
+              padding: const EdgeInsets.only(top: 8, bottom: 100),
+              itemCount: conversations.length,
               separatorBuilder: (context, index) => const Divider(height: 1, indent: 72),
               itemBuilder: (context, index) {
-                final chat = dummyChats[index];
-                return _ChatListItem(chat: chat);
+                final conversation = conversations[index];
+                return _ChatListItem(conversation: conversation);
               },
             ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Error loading messages'),
+              ElevatedButton(
+                onPressed: () => ref.refresh(conversationsProvider),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
-class _ChatListItem extends StatelessWidget {
-  final Map<String, dynamic> chat;
+class _ChatListItem extends ConsumerWidget {
+  final ChatConversation conversation;
 
-  const _ChatListItem({required this.chat});
+  const _ChatListItem({required this.conversation});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userState = ref.watch(authStateProvider);
+    final currentUserId = userState.value?.id ?? 0;
+    
+    final otherParticipant = conversation.getOtherParticipant(currentUserId);
+    final title = otherParticipant?.fullName ?? 'Unknown User';
+    
+    final lastMessageText = conversation.lastMessage?.text ?? 'Started a chat';
+    
+    // Formatting time
+    String timeText = '';
+    if (conversation.lastMessage != null) {
+      final diff = DateTime.now().difference(conversation.lastMessage!.timestamp);
+      if (diff.inDays > 0) {
+        timeText = '${diff.inDays}d ago';
+      } else if (diff.inHours > 0) {
+        timeText = '${diff.inHours}h ago';
+      } else if (diff.inMinutes > 0) {
+        timeText = '${diff.inMinutes}m ago';
+      } else {
+        timeText = 'Just now';
+      }
+    }
+
     return Material(
       color: Colors.white,
       child: InkWell(
@@ -89,44 +110,35 @@ class _ChatListItem extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) => ChatScreen(
-                title: chat['name'],
+                title: title,
+                conversationId: conversation.id,
               ),
             ),
-          );
+          ).then((_) {
+            // Refresh conversations when returning to update read status/last message
+            ref.refresh(conversationsProvider);
+          });
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 26,
-                    backgroundColor: const Color(0xFF0056D2).withOpacity(0.1),
-                    child: Text(
-                      chat['avatar'],
-                      style: const TextStyle(
-                        color: Color(0xFF0056D2),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  if (chat['isOnline'] == true)
-                    Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        width: 14,
-                        height: 14,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF10B981), // Green
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
+              CircleAvatar(
+                radius: 26,
+                backgroundColor: const Color(0xFF0056D2).withOpacity(0.1),
+                backgroundImage: otherParticipant?.profilePicture != null
+                    ? NetworkImage(otherParticipant!.profilePicture!)
+                    : null,
+                child: otherParticipant?.profilePicture == null
+                    ? Text(
+                        title.isNotEmpty ? title[0].toUpperCase() : 'U',
+                        style: const TextStyle(
+                          color: Color(0xFF0056D2),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
-                      ),
-                    ),
-                ],
+                      )
+                    : null,
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -137,7 +149,7 @@ class _ChatListItem extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          chat['name'],
+                          title,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -145,11 +157,11 @@ class _ChatListItem extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          chat['time'],
+                          timeText,
                           style: TextStyle(
                             fontSize: 12,
-                            color: chat['unread'] > 0 ? const Color(0xFF0056D2) : const Color(0xFF94A3B8),
-                            fontWeight: chat['unread'] > 0 ? FontWeight.bold : FontWeight.normal,
+                            color: conversation.unreadCount > 0 ? const Color(0xFF0056D2) : const Color(0xFF94A3B8),
+                            fontWeight: conversation.unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
                           ),
                         ),
                       ],
@@ -160,17 +172,17 @@ class _ChatListItem extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            chat['lastMessage'],
+                            lastMessageText,
                             style: TextStyle(
                               fontSize: 14,
-                              color: chat['unread'] > 0 ? const Color(0xFF334155) : const Color(0xFF64748B),
-                              fontWeight: chat['unread'] > 0 ? FontWeight.w600 : FontWeight.normal,
+                              color: conversation.unreadCount > 0 ? const Color(0xFF334155) : const Color(0xFF64748B),
+                              fontWeight: conversation.unreadCount > 0 ? FontWeight.w600 : FontWeight.normal,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        if (chat['unread'] > 0) ...[
+                        if (conversation.unreadCount > 0) ...[
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.all(6),
@@ -179,7 +191,7 @@ class _ChatListItem extends StatelessWidget {
                               shape: BoxShape.circle,
                             ),
                             child: Text(
-                              '${chat['unread']}',
+                              '${conversation.unreadCount}',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,

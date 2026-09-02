@@ -1,4 +1,4 @@
-import '../messages/chat_screen.dart';
+import '../chat/widgets/chat_initiator_button.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -437,27 +437,12 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChatScreen(
-                        title: widget.property.title,
-                        initialMessage: 'আমি এই প্রপার্টি সম্পর্কে জানতে চাচ্ছি: ${widget.property.title}',
-                      ),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.chat_rounded),
-                label: const Text('মেসেজ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF25D366),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  elevation: 0,
-                ),
+              child: ChatInitiatorButton(
+                targetUserId: widget.property.ownerId ?? 1,
+                title: widget.property.title,
+                initialMessage: 'আমি এই প্রপার্টি সম্পর্কে জানতে চাচ্ছি: ${widget.property.title}',
+                relatedObjectType: 'property',
+                relatedObjectId: widget.property.id,
               ),
             ),
           ],

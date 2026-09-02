@@ -1,4 +1,4 @@
-import '../../messages/chat_screen.dart';
+import '../../chat/widgets/chat_initiator_button.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
@@ -261,24 +261,15 @@ class _PropertyRentCardState extends State<PropertyRentCard> {
                           flex: 1,
                           child: SizedBox(
                             height: 36,
-                            child: OutlinedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ChatScreen(
-                                      title: widget.property.title,
-                                      initialMessage: 'আমি এই প্রপার্টি সম্পর্কে জানতে চাচ্ছি: ${widget.property.title}',
-                                    ),
-                                  ),
-                                );
-                              },
-                              style: OutlinedButton.styleFrom(
-                                side: const BorderSide(color: Colors.black87),
-                                padding: EdgeInsets.zero,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                              ),
-                              child: const Icon(Icons.chat_rounded, color: Color(0xFF25D366), size: 18),
+                            child: ChatInitiatorButton(
+                              targetUserId: widget.property.ownerId ?? 1,
+                              title: widget.property.title,
+                              initialMessage: 'আমি এই প্রপার্টি সম্পর্কে জানতে চাচ্ছি: ${widget.property.title}',
+                              relatedObjectType: 'property',
+                              relatedObjectId: widget.property.id,
+                              icon: const Icon(Icons.chat_bubble_outline, size: 18),
+                              label: '',
+                              backgroundColor: Colors.transparent,
                             ),
                           ),
                         ),

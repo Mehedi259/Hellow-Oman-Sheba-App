@@ -1,56 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../chat/providers/chat_providers.dart';
+import '../auth/auth_provider.dart';
+import 'package:intl/intl.dart';
 
-class ChatScreen extends StatefulWidget {
+class ChatScreen extends ConsumerStatefulWidget {
   final String title;
+  final int conversationId;
   final String? initialMessage;
 
   const ChatScreen({
     super.key,
     required this.title,
+    required this.conversationId,
     this.initialMessage,
   });
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends ConsumerState<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
-  final List<Map<String, dynamic>> _messages = [
-    {
-      'text': 'হ্যালো, আমি আপনাকে কীভাবে সাহায্য করতে পারি?',
-      'isMe': false,
-      'time': '১০:৩০ এএম',
-    },
-  ];
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     if (widget.initialMessage != null && widget.initialMessage!.isNotEmpty) {
-      _messages.add({
-        'text': widget.initialMessage,
-        'isMe': true,
-        'time': 'এখন',
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(chatNotifierProvider(widget.conversationId).notifier).sendMessage(widget.initialMessage!);
       });
     }
   }
 
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
   void _sendMessage() {
-    if (_messageController.text.trim().isEmpty) return;
+    final text = _messageController.text.trim();
+    if (text.isEmpty) return;
     
-    setState(() {
-      _messages.add({
-        'text': _messageController.text.trim(),
-        'isMe': true,
-        'time': 'এখন',
-      });
-      _messageController.clear();
-    });
+    ref.read(chatNotifierProvider(widget.conversationId).notifier).sendMessage(text);
+    _messageController.clear();
+    
+    Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
   }
 
   @override
   Widget build(BuildContext context) {
+    final chatState = ref.watch(chatNotifierProvider(widget.conversationId));
+    final userState = ref.watch(authStateProvider);
+    final currentUserId = userState.value?.id ?? 0;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -60,90 +69,91 @@ class _ChatScreenState extends State<ChatScreen> {
         shadowColor: Colors.black12,
         iconTheme: const IconThemeData(color: Colors.black87),
         titleTextStyle: const TextStyle(color: Colors.black87),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.call),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                final isMe = message['isMe'] as bool;
+            child: chatState.when(
+              data: (messages) {
+                WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
                 
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Row(
-                    mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      if (!isMe) ...[
-                        CircleAvatar(
-                          radius: 16,
-                          backgroundColor: Colors.blue.shade100,
-                          child: Text(
-                            widget.title.isNotEmpty ? widget.title[0].toUpperCase() : '?',
-                            style: TextStyle(color: Colors.blue.shade800, fontSize: 14, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                      ],
-                      Flexible(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          decoration: BoxDecoration(
-                            color: isMe ? const Color(0xFF0056D2) : Colors.white,
-                            borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(16),
-                              topRight: const Radius.circular(16),
-                              bottomLeft: Radius.circular(isMe ? 16 : 4),
-                              bottomRight: Radius.circular(isMe ? 4 : 16),
+                return ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(16),
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final message = messages[index];
+                    final isMe = message.senderId == currentUserId;
+                    
+                    final timeString = DateFormat('h:mm a').format(message.timestamp);
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          if (!isMe) ...[
+                            CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.blue.shade100,
+                              child: Text(
+                                widget.title.isNotEmpty ? widget.title[0].toUpperCase() : '?',
+                                style: TextStyle(color: Colors.blue.shade800, fontSize: 14, fontWeight: FontWeight.bold),
+                              ),
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 5,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                message['text'],
-                                style: TextStyle(
-                                  color: isMe ? Colors.white : const Color(0xFF1E293B),
-                                  fontSize: 15,
+                            const SizedBox(width: 8),
+                          ],
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: isMe ? const Color(0xFF0056D2) : Colors.white,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: const Radius.circular(16),
+                                  topRight: const Radius.circular(16),
+                                  bottomLeft: Radius.circular(isMe ? 16 : 4),
+                                  bottomRight: Radius.circular(isMe ? 4 : 16),
                                 ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                message['time'],
-                                style: TextStyle(
-                                  color: isMe ? Colors.white70 : Colors.grey.shade500,
-                                  fontSize: 11,
-                                ),
+                              child: Column(
+                                crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    message.text,
+                                    style: TextStyle(
+                                      color: isMe ? Colors.white : const Color(0xFF1E293B),
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    timeString,
+                                    style: TextStyle(
+                                      color: isMe ? Colors.white70 : Colors.grey.shade500,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                          if (isMe) const SizedBox(width: 24),
+                        ],
                       ),
-                      if (isMe) const SizedBox(width: 24),
-                    ],
-                  ),
+                    );
+                  },
                 );
               },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, st) => Center(child: Text('Error loading messages: $e')),
             ),
           ),
           
@@ -183,6 +193,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                       maxLines: null,
                       keyboardType: TextInputType.multiline,
+                      onSubmitted: (_) => _sendMessage(),
                     ),
                   ),
                 ),
