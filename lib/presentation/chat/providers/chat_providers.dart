@@ -65,7 +65,7 @@ class ChatNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> {
   }
 }
 
-final chatNotifierProvider = StateNotifierProvider.family<ChatNotifier, AsyncValue<List<ChatMessage>>, int>((ref, conversationId) {
+final chatNotifierProvider = StateNotifierProvider.autoDispose.family<ChatNotifier, AsyncValue<List<ChatMessage>>, int>((ref, conversationId) {
   return ChatNotifier(
     conversationId,
     ref,

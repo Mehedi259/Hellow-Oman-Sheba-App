@@ -32,7 +32,7 @@ class Property {
   factory Property.fromJson(Map<String, dynamic> json) {
     return Property(
       id: json['id'],
-      ownerId: json['user_id'] ?? json['owner_id'],
+      ownerId: json['user'] ?? json['user_id'] ?? json['owner_id'],
       title: json['title_bn']?.toString() ?? json['title']?.toString() ?? '',
       description: json['description_bn']?.toString() ?? json['description']?.toString() ?? '',
       price: json['price']?.toString() ?? '',

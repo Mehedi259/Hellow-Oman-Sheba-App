@@ -9,6 +9,7 @@ class Job {
   final String jobType;
   final DateTime createdAt;
   final List<String> images;
+  final int? ownerId;
 
   Job({
     required this.id,
@@ -21,11 +22,13 @@ class Job {
     this.jobType = 'Full-time',
     required this.createdAt,
     this.images = const [],
+    this.ownerId,
   });
 
   factory Job.fromJson(Map<String, dynamic> json) {
     return Job(
       id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
+      ownerId: json['user'] ?? json['user_id'] ?? json['owner_id'],
       title: json['title_bn']?.toString() ?? json['title']?.toString() ?? '',
       description: json['description_bn']?.toString() ?? json['description']?.toString() ?? '',
       company: json['company']?.toString() ?? json['user_name']?.toString() ?? '',

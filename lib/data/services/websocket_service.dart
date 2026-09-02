@@ -43,7 +43,7 @@ class WebSocketService {
         print('WebSocket error: $error');
       },
       onDone: () {
-        print('WebSocket closed');
+        print('WebSocket closed. Code: ${_channel?.closeCode}, Reason: ${_channel?.closeReason}');
       },
     );
   }
