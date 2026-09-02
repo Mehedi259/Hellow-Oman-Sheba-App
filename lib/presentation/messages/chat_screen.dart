@@ -8,12 +8,14 @@ class ChatScreen extends ConsumerStatefulWidget {
   final String title;
   final int conversationId;
   final String? initialMessage;
+  final String? participantAvatar;
 
   const ChatScreen({
     super.key,
     required this.title,
     required this.conversationId,
     this.initialMessage,
+    this.participantAvatar,
   });
 
   @override
@@ -60,6 +62,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final userState = ref.watch(authStateProvider);
     final currentUserId = userState.value?.id ?? 0;
 
+    String? avatarUrl = widget.participantAvatar;
+    if (avatarUrl == null) {
+      final conversationsState = ref.watch(conversationsProvider);
+      if (conversationsState.value != null) {
+        try {
+          final conv = conversationsState.value!.firstWhere((c) => c.id == widget.conversationId);
+          avatarUrl = conv.getOtherParticipant(currentUserId)?.profilePicture;
+        } catch (_) {}
+      }
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -97,10 +110,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             CircleAvatar(
                               radius: 16,
                               backgroundColor: Colors.blue.shade100,
-                              child: Text(
-                                widget.title.isNotEmpty ? widget.title[0].toUpperCase() : '?',
-                                style: TextStyle(color: Colors.blue.shade800, fontSize: 14, fontWeight: FontWeight.bold),
-                              ),
+                              backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl!) : null,
+                              child: avatarUrl == null 
+                                ? Text(
+                                    widget.title.isNotEmpty ? widget.title[0].toUpperCase() : '?',
+                                    style: TextStyle(color: Colors.blue.shade800, fontSize: 14, fontWeight: FontWeight.bold),
+                                  )
+                                : null,
                             ),
                             const SizedBox(width: 8),
                           ],

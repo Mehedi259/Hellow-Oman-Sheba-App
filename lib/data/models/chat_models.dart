@@ -16,7 +16,7 @@ class ChatUser {
       id: json['id'],
       firstName: json['first_name'],
       lastName: json['last_name'],
-      profilePicture: json['profile_picture'],
+      profilePicture: json['profile_picture'] ?? json['avatar_url'],
     );
   }
 

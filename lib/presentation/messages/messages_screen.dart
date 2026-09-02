@@ -112,6 +112,7 @@ class _ChatListItem extends ConsumerWidget {
               builder: (context) => ChatScreen(
                 title: title,
                 conversationId: conversation.id,
+                participantAvatar: otherParticipant?.profilePicture,
               ),
             ),
           ).then((_) {

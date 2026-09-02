@@ -26,7 +26,10 @@ class ChatNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> {
       final messages = await _repository.getMessages(conversationId);
       state = AsyncValue.data(messages);
 
+      final currentUserId = ref.read(authStateProvider).value?.id ?? 0;
       _wsService.onMessageReceived = (message) {
+        // Skip echo of own messages (already added optimistically)
+        if (message.senderId == currentUserId) return;
         state.whenData((currentMessages) {
           state = AsyncValue.data([...currentMessages, message]);
         });
