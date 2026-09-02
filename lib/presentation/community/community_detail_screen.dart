@@ -17,11 +17,39 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
   bool _isLoadingComments = true;
   bool _isPostingComment = false;
   List<Map<String, dynamic>> _comments = [];
+  int _likesCount = 0;
+  bool _isLiking = false;
 
   @override
   void initState() {
     super.initState();
+    _likesCount = widget.post.likes;
     _fetchComments();
+  }
+
+  Future<void> _toggleLike() async {
+    if (_isLiking) return;
+    setState(() {
+      _isLiking = true;
+    });
+    try {
+      final newLikes = await ref.read(communityRepositoryProvider).toggleLike(widget.post.id);
+      if (mounted) {
+        setState(() {
+          _likesCount = newLikes;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLiking = false;
+        });
+      }
+    }
   }
 
   Future<void> _fetchComments() async {
@@ -137,11 +165,16 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
                         const SizedBox(height: 16),
                         Row(
                           children: [
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundColor: Colors.grey.shade100,
-                              child: Icon(Icons.person, color: Colors.grey.shade400),
-                            ),
+                            widget.post.authorProfilePicture != null
+                                ? CircleAvatar(
+                                    radius: 20,
+                                    backgroundImage: NetworkImage(widget.post.authorProfilePicture!),
+                                  )
+                                : CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: Colors.grey.shade100,
+                                    child: Icon(Icons.person, color: Colors.grey.shade400),
+                                  ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
@@ -188,12 +221,23 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Row(
-                              children: [
-                                Icon(Icons.thumb_up_alt_outlined, color: Colors.grey.shade500, size: 20),
-                                const SizedBox(width: 8),
-                                Text('${widget.post.likes} পছন্দ', style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
-                              ],
+                            InkWell(
+                              onTap: _toggleLike,
+                              borderRadius: BorderRadius.circular(8),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.thumb_up_alt_rounded, 
+                                      color: _likesCount > widget.post.likes ? Colors.blue.shade500 : Colors.grey.shade500, 
+                                      size: 20
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text('$_likesCount পছন্দ', style: TextStyle(color: Colors.grey.shade600, fontSize: 14, fontWeight: FontWeight.w600)),
+                                  ],
+                                ),
+                              ),
                             ),
                             Row(
                               children: [
@@ -242,14 +286,19 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
                               return Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  CircleAvatar(
-                                    radius: 16,
-                                    backgroundColor: Colors.blue.shade100,
-                                    child: Text(
-                                      (comment['author_name'] ?? '?')[0].toUpperCase(),
-                                      style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold, fontSize: 14),
-                                    ),
-                                  ),
+                                  comment['author_profile_picture'] != null
+                                      ? CircleAvatar(
+                                          radius: 16,
+                                          backgroundImage: NetworkImage(comment['author_profile_picture']),
+                                        )
+                                      : CircleAvatar(
+                                          radius: 16,
+                                          backgroundColor: Colors.blue.shade100,
+                                          child: Text(
+                                            (comment['author_name'] ?? '?')[0].toUpperCase(),
+                                            style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold, fontSize: 14),
+                                          ),
+                                        ),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(

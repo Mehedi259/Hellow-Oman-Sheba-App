@@ -131,11 +131,16 @@ class CommunityScreen extends ConsumerWidget {
                           children: [
                             Row(
                               children: [
-                                CircleAvatar(
-                                  radius: 12,
-                                  backgroundColor: Colors.grey.shade200,
-                                  child: Icon(Icons.person, size: 16, color: Colors.grey.shade600),
-                                ),
+                                post.authorProfilePicture != null
+                                    ? CircleAvatar(
+                                        radius: 12,
+                                        backgroundImage: NetworkImage(post.authorProfilePicture!),
+                                      )
+                                    : CircleAvatar(
+                                        radius: 12,
+                                        backgroundColor: Colors.grey.shade200,
+                                        child: Icon(Icons.person, size: 16, color: Colors.grey.shade600),
+                                      ),
                                 const SizedBox(width: 8),
                                 Text(
                                   post.authorName,

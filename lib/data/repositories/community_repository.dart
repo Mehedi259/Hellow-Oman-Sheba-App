@@ -53,4 +53,13 @@ class CommunityRepository {
       throw Exception(e.response?.data['detail'] ?? 'Failed to add comment');
     }
   }
+
+  Future<int> toggleLike(int postId) async {
+    try {
+      final response = await apiClient.dio.post('/community/forum/posts/$postId/like/');
+      return response.data['likes'] as int;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to toggle like');
+    }
+  }
 }
