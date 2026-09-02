@@ -3,6 +3,7 @@ class Post {
   final String title;
   final String content;
   final String authorName;
+  final int authorId;
   final String categoryName;
   final int likes;
   final int commentsCount;
@@ -13,6 +14,7 @@ class Post {
     required this.title,
     required this.content,
     required this.authorName,
+    required this.authorId,
     required this.categoryName,
     required this.likes,
     required this.commentsCount,
@@ -25,6 +27,7 @@ class Post {
       title: json['title'] ?? '',
       content: json['content'] ?? '',
       authorName: json['author_first_name'] ?? json['author_name'] ?? 'অজ্ঞাত',
+      authorId: json['author_id'] ?? json['user'] ?? json['user_id'] ?? 1,
       categoryName: json['category'] != null ? (json['category']['nameBn'] ?? json['category']['name'] ?? 'সাধারণ আলোচনা') : 'সাধারণ আলোচনা',
       likes: json['likes'] ?? 0,
       commentsCount: json['comments_count'] ?? 0,

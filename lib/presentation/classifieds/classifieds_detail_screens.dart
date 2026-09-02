@@ -148,32 +148,45 @@ class JobDetailScreen extends ConsumerWidget {
           ],
         ),
         child: SafeArea(
-          child: SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () async {
-                try {
-                  await ref.read(classifiedsRepositoryProvider).applyForJob(job.id);
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Successfully applied for job!'), backgroundColor: Colors.green),
-                    );
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2563EB),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                elevation: 0,
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      await ref.read(classifiedsRepositoryProvider).applyForJob(job.id);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Successfully applied for job!'), backgroundColor: Colors.green),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2563EB),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: const Text('আবেদন করুন', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
               ),
-              child: const Text('আবেদন করুন', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ChatInitiatorButton(
+                  targetUserId: job.ownerId ?? 1,
+                  title: job.title,
+                  initialMessage: 'আমি এই চাকরি সম্পর্কে জানতে চাচ্ছি: ${job.title}',
+                  relatedObjectType: 'job',
+                  relatedObjectId: job.id,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -784,26 +797,12 @@ class _MarketItemDetailScreenState extends State<MarketItemDetailScreen> {
               const SizedBox(width: 16),
               Expanded(
                 flex: 3,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Contact logic
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    'যোগাযোগ করুন',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                child: ChatInitiatorButton(
+                  targetUserId: widget.item.ownerId ?? 1,
+                  title: widget.item.title,
+                  initialMessage: 'আমি এই বিজ্ঞাপনটি সম্পর্কে জানতে চাচ্ছি: ${widget.item.title}',
+                  relatedObjectType: 'market_item',
+                  relatedObjectId: widget.item.id,
                 ),
               ),
             ],

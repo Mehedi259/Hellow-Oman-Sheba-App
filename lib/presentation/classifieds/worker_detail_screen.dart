@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../data/models/job_seeker.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../chat/widgets/chat_initiator_button.dart';
 
 class WorkerDetailScreen extends StatelessWidget {
   final JobSeeker jobSeeker;
@@ -167,28 +168,41 @@ class WorkerDetailScreen extends StatelessWidget {
           ],
         ),
         child: SafeArea(
-          child: SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                if (jobSeeker.userPhone != null && jobSeeker.userPhone!.isNotEmpty) {
-                  launchUrl(Uri.parse('tel:${jobSeeker.userPhone}'));
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('কোনো ফোন নম্বর দেওয়া নেই!')),
-                  );
-                }
-              },
-              icon: const Icon(Icons.phone),
-              label: const Text('যোগাযোগ করুন', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFEC4899),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                elevation: 0,
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    if (jobSeeker.userPhone != null && jobSeeker.userPhone!.isNotEmpty) {
+                      launchUrl(Uri.parse('tel:${jobSeeker.userPhone}'));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('কোনো ফোন নম্বর দেওয়া নেই!')),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.phone),
+                  label: const Text('কল করুন', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFEC4899),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ChatInitiatorButton(
+                  targetUserId: jobSeeker.userId,
+                  title: jobSeeker.userFullName.isNotEmpty ? jobSeeker.userFullName : jobSeeker.userName,
+                  initialMessage: 'আমি আপনার প্রোফাইল দেখেছি এবং যোগাযোগ করতে চাচ্ছি।',
+                  relatedObjectType: 'job_seeker',
+                  relatedObjectId: jobSeeker.id,
+                ),
+              ),
+            ],
           ),
         ),
       ),

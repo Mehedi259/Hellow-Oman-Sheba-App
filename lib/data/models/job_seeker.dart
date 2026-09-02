@@ -11,6 +11,7 @@ class JobSeeker {
   final String? expectedSalary;
   final String salaryCurrency;
   final String? userPhone;
+  final int userId;
   final DateTime createdAt;
 
   JobSeeker({
@@ -26,6 +27,7 @@ class JobSeeker {
     this.expectedSalary,
     required this.salaryCurrency,
     this.userPhone,
+    required this.userId,
     required this.createdAt,
   });
 
@@ -43,6 +45,7 @@ class JobSeeker {
       expectedSalary: json['expected_salary']?.toString(),
       salaryCurrency: json['salary_currency'] ?? 'OMR',
       userPhone: json['user_phone'],
+      userId: json['user'] ?? json['user_id'] ?? 0,
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
     );
   }

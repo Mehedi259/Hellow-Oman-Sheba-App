@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../data/models/post.dart';
+import '../chat/widgets/chat_initiator_button.dart';
 
 class PostDetailScreen extends StatelessWidget {
   final Post post;
@@ -31,6 +32,28 @@ class PostDetailScreen extends StatelessWidget {
             const SizedBox(height: 16),
             const Center(child: Text('No comments yet.', style: TextStyle(color: Colors.grey))),
           ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+          ],
+        ),
+        child: SafeArea(
+          child: SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ChatInitiatorButton(
+              targetUserId: post.authorId,
+              title: post.authorName,
+              initialMessage: 'আপনার পোস্টটি সম্পর্কে জানতে চাচ্ছি: ${post.title}',
+              relatedObjectType: 'forum_post',
+              relatedObjectId: post.id,
+            ),
+          ),
         ),
       ),
     );

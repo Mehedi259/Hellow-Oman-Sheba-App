@@ -185,6 +185,7 @@ class MarketItem {
   final String city;
   final String area;
   final List<String> images;
+  final int? ownerId;
   final DateTime createdAt;
 
   MarketItem({
@@ -198,6 +199,7 @@ class MarketItem {
     required this.city,
     required this.area,
     this.images = const [],
+    this.ownerId,
     required this.createdAt,
   });
 
@@ -217,6 +219,7 @@ class MarketItem {
         if (e is Map) return (e['image'] ?? e['url'] ?? '').toString();
         return '';
       }).where((e) => e.isNotEmpty).toList() ?? [],
+      ownerId: json['owner'] ?? json['user'] ?? json['user_id'] ?? json['owner_id'],
       createdAt: json['created_at'] != null 
           ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now() 
           : DateTime.now(),
