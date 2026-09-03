@@ -82,8 +82,31 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
     try {
       final comments = await ref.read(communityRepositoryProvider).getComments(widget.post.id);
       if (mounted) {
+        // Sort: parent comments first, then their replies right after
+        final List<Map<String, dynamic>> sortedComments = [];
+        final List<Map<String, dynamic>> topLevel = [];
+        final Map<int, List<Map<String, dynamic>>> repliesMap = {};
+
+        for (final c in comments) {
+          if (c['parent'] == null) {
+            topLevel.add(c);
+          } else {
+            final parentId = c['parent'] as int;
+            repliesMap.putIfAbsent(parentId, () => []);
+            repliesMap[parentId]!.add(c);
+          }
+        }
+
+        for (final parent in topLevel) {
+          sortedComments.add(parent);
+          final replies = repliesMap[parent['id']];
+          if (replies != null) {
+            sortedComments.addAll(replies);
+          }
+        }
+
         setState(() {
-          _comments = comments;
+          _comments = sortedComments;
           _isLoadingComments = false;
         });
       }
@@ -351,141 +374,142 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: _comments.length,
-                            separatorBuilder: (context, index) => const Divider(height: 32),
+                            separatorBuilder: (context, index) {
+                              final nextIsReply = index + 1 < _comments.length && _comments[index + 1]['parent'] != null;
+                              final currentIsReply = _comments[index]['parent'] != null;
+                              if (nextIsReply || currentIsReply) {
+                                return const SizedBox(height: 12);
+                              }
+                              return Divider(height: 24, color: Colors.grey.shade200);
+                            },
                             itemBuilder: (context, index) {
                               final comment = _comments[index];
                               final createdAt = comment['created_at'] != null ? DateTime.tryParse(comment['created_at']) : null;
-                              return Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  comment['author_profile_picture'] != null
-                                      ? CircleAvatar(
-                                          radius: 16,
-                                          backgroundImage: NetworkImage(comment['author_profile_picture']),
-                                        )
-                                      : CircleAvatar(
-                                          radius: 16,
-                                          backgroundColor: Colors.blue.shade100,
-                                          child: Text(
-                                            (comment['author_name'] ?? '?')[0].toUpperCase(),
-                                            style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold, fontSize: 14),
-                                          ),
-                                        ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              comment['author_name'] ?? 'Unknown User',
-                                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                              final bool isReply = comment['parent'] != null;
+                              final double avatarRadius = isReply ? 12.0 : 16.0;
+                              String? parentAuthorName;
+                              if (isReply) {
+                                for (final c in _comments) {
+                                  if (c['id'] == comment['parent']) {
+                                    parentAuthorName = c['author_name'] ?? 'Unknown';
+                                    break;
+                                  }
+                                }
+                              }
+                              return Padding(
+                                padding: EdgeInsets.only(left: isReply ? 44.0 : 0.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (isReply)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 8, right: 8),
+                                        child: Icon(Icons.subdirectory_arrow_right, size: 16, color: Colors.grey.shade400),
+                                      ),
+                                    comment['author_profile_picture'] != null
+                                        ? CircleAvatar(radius: avatarRadius, backgroundImage: NetworkImage(comment['author_profile_picture']))
+                                        : CircleAvatar(
+                                            radius: avatarRadius,
+                                            backgroundColor: isReply ? Colors.grey.shade200 : Colors.blue.shade100,
+                                            child: Text(
+                                              (comment['author_name'] ?? '?')[0].toUpperCase(),
+                                              style: TextStyle(color: isReply ? Colors.grey.shade700 : Colors.blue.shade700, fontWeight: FontWeight.bold, fontSize: isReply ? 11 : 14),
                                             ),
-                                            Row(
+                                          ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          if (isReply && parentAuthorName != null)
+                                            Padding(
+                                              padding: const EdgeInsets.only(bottom: 4),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.reply, size: 12, color: Colors.blue.shade400),
+                                                  const SizedBox(width: 3),
+                                                  Text('$parentAuthorName এর রিপ্লাই', style: TextStyle(color: Colors.blue.shade400, fontSize: 11, fontWeight: FontWeight.w500)),
+                                                ],
+                                              ),
+                                            ),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                            decoration: BoxDecoration(
+                                              color: isReply ? Colors.grey.shade50 : Colors.grey.shade100,
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                if (createdAt != null)
-                                                  Text(
-                                                    _formatTime(createdAt),
-                                                    style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
-                                                  ),
-                                                if (currentUser != null && comment['author'] == currentUser.id)
-                                                  PopupMenuButton<String>(
-                                                    padding: EdgeInsets.zero,
-                                                    iconSize: 18,
-                                                    icon: Icon(Icons.more_vert, color: Colors.grey.shade500),
-                                                    onSelected: (value) {
-                                                      if (value == 'edit') {
-                                                        _startEditingComment(comment);
-                                                      } else if (value == 'delete') {
-                                                        _deleteComment(comment['id']);
-                                                      }
-                                                    },
-                                                    itemBuilder: (context) => [
-                                                      const PopupMenuItem(
-                                                        value: 'edit',
-                                                        child: Row(
-                                                          children: [
-                                                            Icon(Icons.edit, size: 16),
-                                                            SizedBox(width: 8),
-                                                            Text('এডিট করুন', style: TextStyle(fontSize: 14)),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      PopupMenuItem(
-                                                        value: 'delete',
-                                                        child: Row(
-                                                          children: [
-                                                            Icon(Icons.delete, size: 16, color: Colors.red),
-                                                            SizedBox(width: 8),
-                                                            Text('ডিলিট করুন', style: TextStyle(fontSize: 14, color: Colors.red)),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Text(comment['author_name'] ?? 'Unknown User', style: TextStyle(fontWeight: FontWeight.bold, fontSize: isReply ? 13 : 14)),
+                                                    Row(
+                                                      children: [
+                                                        if (createdAt != null)
+                                                          Text(_formatTime(createdAt), style: TextStyle(color: Colors.grey.shade500, fontSize: 11)),
+                                                        if (currentUser != null && comment['author'] == currentUser.id)
+                                                          PopupMenuButton<String>(
+                                                            padding: EdgeInsets.zero,
+                                                            iconSize: 18,
+                                                            icon: Icon(Icons.more_vert, color: Colors.grey.shade500),
+                                                            onSelected: (value) {
+                                                              if (value == 'edit') { _startEditingComment(comment); }
+                                                              else if (value == 'delete') { _deleteComment(comment['id']); }
+                                                            },
+                                                            itemBuilder: (context) => [
+                                                              const PopupMenuItem(value: 'edit', child: Row(children: [Icon(Icons.edit, size: 16), SizedBox(width: 8), Text('এডিট করুন', style: TextStyle(fontSize: 14))])),
+                                                              PopupMenuItem(value: 'delete', child: Row(children: [Icon(Icons.delete, size: 16, color: Colors.red), SizedBox(width: 8), Text('ডিলিট করুন', style: TextStyle(fontSize: 14, color: Colors.red))])),
+                                                            ],
+                                                          ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(comment['content'] ?? '', style: TextStyle(color: Colors.grey.shade800, fontSize: isReply ? 13 : 14, height: 1.4)),
                                               ],
                                             ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 6),
-
-                                        Text(
-                                          comment['content'] ?? '',
-                                          style: TextStyle(color: Colors.grey.shade800, fontSize: 14, height: 1.4),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Row(
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () => _toggleCommentLike(comment['id'], index, false, null),
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                    comment['is_liked_by_user'] == true ? Icons.thumb_up : Icons.thumb_up_alt_outlined,
-                                                    size: 14,
-                                                    color: comment['is_liked_by_user'] == true ? Colors.blue : Colors.grey.shade600,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 8, top: 6),
+                                            child: Row(
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () => _toggleCommentLike(comment['id'], index, false, null),
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(comment['is_liked_by_user'] == true ? Icons.thumb_up : Icons.thumb_up_alt_outlined, size: 13, color: comment['is_liked_by_user'] == true ? Colors.blue : Colors.grey.shade600),
+                                                      const SizedBox(width: 4),
+                                                      Text('${comment['likes'] ?? 0} লাইক', style: TextStyle(color: comment['is_liked_by_user'] == true ? Colors.blue : Colors.grey.shade600, fontSize: 11, fontWeight: comment['is_liked_by_user'] == true ? FontWeight.bold : FontWeight.normal)),
+                                                    ],
                                                   ),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    '${comment['likes'] ?? 0} লাইক',
-                                                    style: TextStyle(
-                                                      color: comment['is_liked_by_user'] == true ? Colors.blue : Colors.grey.shade600,
-                                                      fontSize: 12,
-                                                      fontWeight: comment['is_liked_by_user'] == true ? FontWeight.bold : FontWeight.normal,
-                                                    ),
+                                                ),
+                                                const SizedBox(width: 16),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _replyingToCommentId = comment['parent'] ?? comment['id'];
+                                                      _replyingToName = comment['author_name'] ?? 'Unknown User';
+                                                    });
+                                                  },
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(Icons.reply, size: 13, color: Colors.grey.shade600),
+                                                      const SizedBox(width: 4),
+                                                      Text('রিপ্লাই', style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
+                                                    ],
                                                   ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
-                                            const SizedBox(width: 16),
-                                            GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  _replyingToCommentId = comment['parent'] ?? comment['id'];
-                                                  _replyingToName = comment['author_name'] ?? 'Unknown User';
-                                                  FocusScope.of(context).requestFocus(FocusNode()); // To trigger keyboard if needed
-                                                });
-                                              },
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.reply, size: 14, color: Colors.grey.shade600),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    'রিপ্লাই',
-                                                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-
-                                      ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               );
                             },
                           ),
