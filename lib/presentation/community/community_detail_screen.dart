@@ -20,6 +20,8 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
   List<Map<String, dynamic>> _comments = [];
   int _likesCount = 0;
   bool _isLiking = false;
+  int? _replyingToCommentId;
+  String? _replyingToName;
 
   @override
   void initState() {
@@ -49,6 +51,29 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
         setState(() {
           _isLiking = false;
         });
+      }
+    }
+  }
+
+
+  Future<void> _toggleCommentLike(int commentId, int index, bool isReply, int? parentIndex) async {
+    try {
+      final newLikesData = await ref.read(communityRepositoryProvider).toggleCommentLike(commentId);
+      if (mounted) {
+        setState(() {
+          // Find the comment and update it
+          for (var i = 0; i < _comments.length; i++) {
+            if (_comments[i]['id'] == commentId) {
+              _comments[i]['likes'] = newLikesData['likes'];
+              _comments[i]['is_liked_by_user'] = newLikesData['status'] == 'liked';
+              break;
+            }
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -85,7 +110,9 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
         await ref.read(communityRepositoryProvider).editComment(_editingCommentId!, text);
         _editingCommentId = null;
       } else {
-        await ref.read(communityRepositoryProvider).addComment(widget.post.id, text);
+        await ref.read(communityRepositoryProvider).addComment(widget.post.id, text, parentId: _replyingToCommentId);
+        _replyingToCommentId = null;
+        _replyingToName = null;
       }
       _commentController.clear();
       FocusScope.of(context).unfocus();
@@ -164,7 +191,7 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('কমিউনিটি আলোচনা', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: const Text('প্রশ্নোত্তর', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 0,
@@ -403,10 +430,58 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
                                           ],
                                         ),
                                         const SizedBox(height: 6),
+
                                         Text(
                                           comment['content'] ?? '',
                                           style: TextStyle(color: Colors.grey.shade800, fontSize: 14, height: 1.4),
                                         ),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () => _toggleCommentLike(comment['id'], index, false, null),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    comment['is_liked_by_user'] == true ? Icons.thumb_up : Icons.thumb_up_alt_outlined,
+                                                    size: 14,
+                                                    color: comment['is_liked_by_user'] == true ? Colors.blue : Colors.grey.shade600,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    '${comment['likes'] ?? 0} লাইক',
+                                                    style: TextStyle(
+                                                      color: comment['is_liked_by_user'] == true ? Colors.blue : Colors.grey.shade600,
+                                                      fontSize: 12,
+                                                      fontWeight: comment['is_liked_by_user'] == true ? FontWeight.bold : FontWeight.normal,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(width: 16),
+                                            GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  _replyingToCommentId = comment['parent'] ?? comment['id'];
+                                                  _replyingToName = comment['author_name'] ?? 'Unknown User';
+                                                  FocusScope.of(context).requestFocus(FocusNode()); // To trigger keyboard if needed
+                                                });
+                                              },
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.reply, size: 14, color: Colors.grey.shade600),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    'রিপ্লাই',
+                                                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+
                                       ],
                                     ),
                                   ),
@@ -422,7 +497,30 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
             ),
           ),
           
+
+          // Replying Badge
+          if (_replyingToName != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              color: Colors.grey.shade100,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Replying to $_replyingToName...', style: TextStyle(color: Colors.grey.shade700, fontSize: 13, fontWeight: FontWeight.bold)),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _replyingToCommentId = null;
+                        _replyingToName = null;
+                      });
+                    },
+                    child: const Icon(Icons.close, size: 16, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
           // Sticky Bottom Input Bar
+
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(

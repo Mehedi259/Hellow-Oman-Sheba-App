@@ -23,7 +23,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -169,6 +169,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
           tabAlignment: TabAlignment.center,
           tabs: const [
             Tab(text: 'আমার পোস্ট'),
+            Tab(text: 'আমার প্রশ্ন'),
             Tab(text: 'পছন্দের তালিকা'),
             Tab(text: 'আমার কমেন্ট'),
           ],
@@ -178,6 +179,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
         controller: _tabController,
         children: [
           _buildPostsTab(),
+          _buildMyQuestionsTab(),
           _buildFavoritesTab(),
           _buildCommentsTab(),
         ],
@@ -430,6 +432,152 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
                           ),
                         ],
                       ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF0056D2))),
+        error: (e, st) => const Center(child: Text('কোনো ত্রুটি হয়েছে। আবার চেষ্টা করুন।')),
+      ),
+    );
+  }
+
+  void _showEditPostDialog(Post post) {
+    final titleController = TextEditingController(text: post.title);
+    final contentController = TextEditingController(text: post.content);
+    
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('প্রশ্ন এডিট করুন'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration: const InputDecoration(labelText: 'শিরোনাম'),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: contentController,
+                  decoration: const InputDecoration(labelText: 'বিস্তারিত'),
+                  maxLines: 5,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('বাতিল')),
+            TextButton(
+              onPressed: () async {
+                final newTitle = titleController.text.trim();
+                final newContent = contentController.text.trim();
+                if (newTitle.isNotEmpty && newContent.isNotEmpty) {
+                  Navigator.pop(context);
+                  try {
+                    await ref.read(apiClientProvider).dio.patch('/community/forum/posts/${post.id}/', data: {
+                      'title': newTitle,
+                      'content': newContent,
+                    });
+                    ref.refresh(myForumPostsProvider);
+                    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('সফলভাবে আপডেট হয়েছে'), backgroundColor: Colors.green));
+                  } catch (e) {
+                    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+                  }
+                }
+              },
+              child: const Text('সেভ করুন'),
+            ),
+          ],
+        );
+      }
+    );
+  }
+
+  Widget _buildMyQuestionsTab() {
+    final myQuestionsAsync = ref.watch(myForumPostsProvider);
+    return RefreshIndicator(
+      onRefresh: () async => ref.refresh(myForumPostsProvider),
+      child: myQuestionsAsync.when(
+        data: (posts) {
+          if (posts.isEmpty) {
+            return const _EmptyStateView(
+              icon: Icons.question_answer_rounded,
+              title: 'আপনার কোনো প্রশ্ন নেই',
+              subtitle: 'কমিউনিটিতে আপনার প্রশ্নগুলো এখানে দেখাবে',
+            );
+          }
+          return ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            itemCount: posts.length,
+            itemBuilder: (context, index) {
+              final post = posts[index];
+              return _buildCard(
+                onTap: () => _navigateToItem(context, 'forum_post', post.id),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(color: Colors.blue.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                      child: const Icon(Icons.forum, color: Colors.blue, size: 24),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(post.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B)), maxLines: 2, overflow: TextOverflow.ellipsis),
+                          const SizedBox(height: 4),
+                          Text(post.content, style: const TextStyle(color: Color(0xFF64748B), fontSize: 13), maxLines: 2, overflow: TextOverflow.ellipsis),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('${post.likes} পছন্দ • ${post.commentsCount} মন্তব্য', style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuButton<String>(
+                      icon: const Icon(Icons.more_vert, color: Colors.grey),
+                      onSelected: (val) async {
+                        if (val == 'edit') {
+                          _showEditPostDialog(post);
+                        } else if (val == 'delete') {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('নিশ্চিত করুন'),
+                              content: const Text('আপনি কি এই প্রশ্নটি মুছে ফেলতে চান?'),
+                              actions: [
+                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('না')),
+                                TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('হ্যাঁ', style: TextStyle(color: Colors.red))),
+                              ],
+                            ),
+                          );
+                          if (confirm == true) {
+                            try {
+                              await ref.read(apiClientProvider).dio.delete('/community/forum/posts/${post.id}/');
+                              ref.refresh(myForumPostsProvider);
+                              if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('মুছে ফেলা হয়েছে'), backgroundColor: Colors.green));
+                            } catch (e) {
+                              if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+                            }
+                          }
+                        }
+                      },
+                      itemBuilder: (ctx) => [
+                        const PopupMenuItem(value: 'edit', child: Row(children: [Icon(Icons.edit, size: 18), SizedBox(width: 8), Text('এডিট করুন')])),
+                        const PopupMenuItem(value: 'delete', child: Row(children: [Icon(Icons.delete, color: Colors.red, size: 18), SizedBox(width: 8), Text('ডিলিট করুন', style: TextStyle(color: Colors.red))])),
+                      ],
                     ),
                   ],
                 ),
