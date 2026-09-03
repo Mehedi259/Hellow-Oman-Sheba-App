@@ -6,7 +6,7 @@ import '../../data/models/job.dart';
 import '../../data/models/classifieds_models.dart';
 import '../../data/models/post.dart';
 import '../classifieds/classifieds_detail_screens.dart';
-import '../community/post_detail_screen.dart';
+import '../community/community_detail_screen.dart';
 import '../../core/api/api_client.dart';
 import '../auth/auth_provider.dart';
 
@@ -61,7 +61,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
         nextScreen = ServiceDetailScreen(service: Service.fromJson(res.data));
       } else if (type == 'post' || type == 'forum_post' || type == 'community') {
         final res = await apiClient.dio.get('/community/forum/posts/$id/');
-        nextScreen = PostDetailScreen(post: Post.fromJson(res.data));
+        nextScreen = CommunityDetailScreen(post: Post.fromJson(res.data));
       } else {
         if (!context.mounted) return;
         if (isDialogShowing) Navigator.of(context, rootNavigator: true).pop();

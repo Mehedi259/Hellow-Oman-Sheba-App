@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'community_provider.dart';
-import 'post_detail_screen.dart';
+import 'community_detail_screen.dart';
 
 class CommunityScreen extends ConsumerWidget {
   const CommunityScreen({super.key});
@@ -51,7 +51,7 @@ class CommunityScreen extends ConsumerWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => PostDetailScreen(post: post)),
+                      MaterialPageRoute(builder: (context) => CommunityDetailScreen(post: post)),
                     );
                   },
                   child: Container(

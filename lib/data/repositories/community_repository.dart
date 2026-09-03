@@ -62,4 +62,22 @@ class CommunityRepository {
       throw Exception(e.response?.data['detail'] ?? 'Failed to toggle like');
     }
   }
+
+  Future<void> editComment(int commentId, String content) async {
+    try {
+      await apiClient.dio.patch('/community/forum/comments/$commentId/', data: {
+        'content': content,
+      });
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to edit comment');
+    }
+  }
+
+  Future<void> deleteComment(int commentId) async {
+    try {
+      await apiClient.dio.delete('/community/forum/comments/$commentId/');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to delete comment');
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/models/post.dart';
+import '../auth/auth_provider.dart';
 import 'community_provider.dart';
 
 class CommunityDetailScreen extends ConsumerStatefulWidget {
@@ -80,12 +81,17 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
     });
 
     try {
-      await ref.read(communityRepositoryProvider).addComment(widget.post.id, text);
+      if (_editingCommentId != null) {
+        await ref.read(communityRepositoryProvider).editComment(_editingCommentId!, text);
+        _editingCommentId = null;
+      } else {
+        await ref.read(communityRepositoryProvider).addComment(widget.post.id, text);
+      }
       _commentController.clear();
       FocusScope.of(context).unfocus();
       await _fetchComments();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Comment posted successfully!'), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('সফলভাবে সংরক্ষিত হয়েছে!'), backgroundColor: Colors.green));
       }
     } catch (e) {
       if (mounted) {
@@ -96,6 +102,44 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
         setState(() {
           _isPostingComment = false;
         });
+      }
+    }
+  }
+
+  int? _editingCommentId;
+
+  void _startEditingComment(Map<String, dynamic> comment) {
+    setState(() {
+      _editingCommentId = comment['id'];
+      _commentController.text = comment['content'] ?? '';
+    });
+    FocusScope.of(context).requestFocus();
+  }
+
+  Future<void> _deleteComment(int commentId) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('নিশ্চিত করুন'),
+        content: const Text('আপনি কি সত্যিই এই মন্তব্যটি মুছে ফেলতে চান?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('না')),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('হ্যাঁ', style: TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      await ref.read(communityRepositoryProvider).deleteComment(commentId);
+      await _fetchComments();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('মন্তব্য মুছে ফেলা হয়েছে।'), backgroundColor: Colors.green));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
       }
     }
   }
@@ -116,6 +160,7 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = ref.watch(authStateProvider).value;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -311,11 +356,50 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
                                               comment['author_name'] ?? 'Unknown User',
                                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                             ),
-                                            if (createdAt != null)
-                                              Text(
-                                                _formatTime(createdAt),
-                                                style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
-                                              ),
+                                            Row(
+                                              children: [
+                                                if (createdAt != null)
+                                                  Text(
+                                                    _formatTime(createdAt),
+                                                    style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
+                                                  ),
+                                                if (currentUser != null && comment['author'] == currentUser.id)
+                                                  PopupMenuButton<String>(
+                                                    padding: EdgeInsets.zero,
+                                                    iconSize: 18,
+                                                    icon: Icon(Icons.more_vert, color: Colors.grey.shade500),
+                                                    onSelected: (value) {
+                                                      if (value == 'edit') {
+                                                        _startEditingComment(comment);
+                                                      } else if (value == 'delete') {
+                                                        _deleteComment(comment['id']);
+                                                      }
+                                                    },
+                                                    itemBuilder: (context) => [
+                                                      const PopupMenuItem(
+                                                        value: 'edit',
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(Icons.edit, size: 16),
+                                                            SizedBox(width: 8),
+                                                            Text('এডিট করুন', style: TextStyle(fontSize: 14)),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      PopupMenuItem(
+                                                        value: 'delete',
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(Icons.delete, size: 16, color: Colors.red),
+                                                            SizedBox(width: 8),
+                                                            Text('ডিলিট করুন', style: TextStyle(fontSize: 14, color: Colors.red)),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                              ],
+                                            ),
                                           ],
                                         ),
                                         const SizedBox(height: 6),
@@ -354,7 +438,7 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
                     child: TextField(
                       controller: _commentController,
                       decoration: InputDecoration(
-                        hintText: 'আপনার মন্তব্য লিখুন...',
+                        hintText: _editingCommentId != null ? 'মন্তব্য এডিট করুন...' : 'আপনার মন্তব্য লিখুন...',
                         hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
                         filled: true,
                         fillColor: Colors.grey.shade100,
@@ -363,6 +447,18 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
                           borderRadius: BorderRadius.circular(24),
                           borderSide: BorderSide.none,
                         ),
+                        suffixIcon: _editingCommentId != null 
+                            ? IconButton(
+                                icon: const Icon(Icons.close, size: 18),
+                                onPressed: () {
+                                  setState(() {
+                                    _editingCommentId = null;
+                                    _commentController.clear();
+                                  });
+                                  FocusScope.of(context).unfocus();
+                                },
+                              )
+                            : null,
                       ),
                       maxLines: 1,
                     ),
