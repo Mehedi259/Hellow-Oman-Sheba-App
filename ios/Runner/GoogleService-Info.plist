@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>426790430741-vptvc5lmjjd6dou9lbhialos1fofak4g.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.426790430741-vptvc5lmjjd6dou9lbhialos1fofak4g</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>426790430741-7msjbbc46v867gl5m134qh48s7r53k0a.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyANHUT9wD0Z7B7rlahqhIXrQFI_Kcl_DiU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>426790430741</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.sheba.hellowOmanShebaApp</string>
+	<key>PROJECT_ID</key>
+	<string>sheba-platform</string>
+	<key>STORAGE_BUCKET</key>
+	<string>sheba-platform.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:426790430741:ios:d8fba3e276d3929584461c</string>
+</dict>
+</plist>

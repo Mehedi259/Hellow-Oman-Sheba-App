@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "426790430741",
+    "project_id": "sheba-platform",
+    "storage_bucket": "sheba-platform.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:426790430741:android:798472aeda42ca7184461c",
+        "android_client_info": {
+          "package_name": "com.sheba.hellowOmanShebaApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "426790430741-89du8066jkn0cjkbqugq7ej6v6s5ep5v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDSdG144w34jN0VdcyfTpGyFB1VR8Z4M8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "426790430741-89du8066jkn0cjkbqugq7ej6v6s5ep5v.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "426790430741-vptvc5lmjjd6dou9lbhialos1fofak4g.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sheba.hellowOmanShebaApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
