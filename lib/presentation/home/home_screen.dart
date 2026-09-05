@@ -15,11 +15,25 @@ import 'widgets/vehicles_widget.dart';
 import 'widgets/call_to_action_widget.dart';
 import '../community/community_provider.dart';
 
-class HomeScreen extends ConsumerWidget {
+import '../../core/services/fcm_service.dart';
+
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize push notifications when app starts
+    Future.microtask(() => FCMService.initialize(context));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
     final jobsState = ref.watch(jobsProvider);
     final slidersState = ref.watch(slidersProvider);
