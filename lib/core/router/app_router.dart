@@ -80,7 +80,7 @@ final appRouter = GoRouter(
           path: '/classifieds',
           builder: (context, state) {
             final tab = state.uri.queryParameters['tab'];
-            return ClassifiedsScreen(initialTab: tab);
+            return ClassifiedsScreen(key: ValueKey('classifieds_$tab'), initialTab: tab);
           },
         ),
         GoRoute(

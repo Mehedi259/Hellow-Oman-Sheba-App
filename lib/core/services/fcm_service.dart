@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../router/app_router.dart';
 
 class FCMService {
   static const String _updateTokenUrl = 'http://188.245.212.240/api/users/update-fcm-token/';
@@ -30,7 +31,19 @@ class FCMService {
     const androidInit = AndroidInitializationSettings('@mipmap/launcher_icon');
     const iosInit = DarwinInitializationSettings();
     const initSettings = InitializationSettings(android: androidInit, iOS: iosInit);
-    await _localNotifications.initialize(settings: initSettings);
+    await _localNotifications.initialize(
+      settings: initSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        if (response.payload != null) {
+          try {
+            final data = jsonDecode(response.payload!);
+            _handleNotificationRouting(data);
+          } catch (e) {
+            debugPrint("Payload error: $e");
+          }
+        }
+      },
+    );
 
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel', // id
@@ -79,9 +92,38 @@ class FCMService {
               ),
             ),
           ),
+          payload: jsonEncode(message.data),
         );
       }
     });
+
+    // Handle terminated state (app launched from notification)
+    RemoteMessage? initialMessage = await messaging.getInitialMessage();
+    if (initialMessage != null) {
+      _handleNotificationRouting(initialMessage.data);
+    }
+
+    // Handle background state (app running in background, user taps notification)
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleNotificationRouting(message.data);
+    });
+  }
+
+  static void _handleNotificationRouting(Map<String, dynamic> data) {
+    if (data.containsKey('type')) {
+      final type = data['type'];
+      if (type == 'chat') {
+        appRouter.go('/messages');
+      } else if (type == 'new_job' || type == 'job_application') {
+        appRouter.go('/classifieds?tab=jobs');
+      } else if (type == 'forum_reply' || type == 'forum_comment') {
+        appRouter.go('/community');
+      } else {
+        appRouter.go('/notifications');
+      }
+    } else {
+      appRouter.go('/notifications');
+    }
   }
 
   static Future<void> _sendTokenToServer(String token) async {

@@ -98,6 +98,16 @@ class _JobsViewState extends ConsumerState<JobsView> {
   bool _isFindingWorkers = false;
 
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (mounted) {
+        ref.invalidate(jobsProvider);
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
@@ -126,10 +136,10 @@ class _JobsViewState extends ConsumerState<JobsView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Hero Search Banner
+            // 1. Minimized Search Banner
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(20, 32, 20, 40),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Color(0xFF2563EB), Color(0xFF9333EA)],
@@ -245,44 +255,43 @@ class _JobsViewState extends ConsumerState<JobsView> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Filter Section
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.filter_alt_outlined, size: 24),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'ফিল্টার',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            // Filter Section in ExpansionTile
+            Theme(
+              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: ExpansionTile(
+                  title: const Text('ফিল্টার করুন', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  leading: const Icon(Icons.filter_alt_outlined, color: Color(0xFF2563EB)),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'চাকরির ধরন',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 12),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              _buildFilterChip('FULL_TIME', 'ফুল টাইম', filterState),
+                              _buildFilterChip('PART_TIME', 'পার্ট টাইম', filterState),
+                              _buildFilterChip('CONTRACT', 'কন্ট্রাক্ট', filterState),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'চাকরির ধরন',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _buildFilterChip('FULL_TIME', 'ফুল টাইম', filterState),
-                      _buildFilterChip('PART_TIME', 'পার্ট টাইম', filterState),
-                      _buildFilterChip('CONTRACT', 'কন্ট্রাক্ট', filterState),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -1002,10 +1011,10 @@ class MarketView extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1. Hero Search Banner
+                // 1. Minimized Search Banner
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(20, 32, 20, 40),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       colors: [Color(0xFF0F9D58), Color(0xFF0F9D58)], // Solid green to match screenshot
@@ -1013,96 +1022,84 @@ class MarketView extends ConsumerWidget {
                       end: Alignment.bottomCenter,
                     ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                  child: Row(
                     children: [
-                      const Text(
-                        'মার্কেট',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'কিনুন, বিক্রি করুন এবং বিনিময় করুন',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: TextButton.icon(
-                                onPressed: () {
-                                  // TODO: Search functionality
-                                },
-                                icon: const Icon(Icons.search, color: Colors.grey),
-                                label: const Text(
-                                  'পণ্য খুঁজুন...',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                style: TextButton.styleFrom(
-                                  alignment: Alignment.centerLeft,
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                                ),
-                              ),
+                      Expanded(
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: TextButton.icon(
+                            onPressed: () {
+                              // TODO: Search functionality
+                            },
+                            icon: const Icon(Icons.search, color: Colors.grey),
+                            label: const Text(
+                              'পণ্য খুঁজুন...',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            style: TextButton.styleFrom(
+                              alignment: Alignment.centerLeft,
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Container(
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: TextButton.icon(
-                                onPressed: () {
-                                  // TODO: Post ad functionality
-                                },
-                                icon: const Icon(Icons.add, color: Color(0xFF0F9D58)),
-                                label: const Text(
-                                  'বিজ্ঞাপন দিন',
-                                  style: TextStyle(color: Color(0xFF0F9D58)),
-                                ),
-                              ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: TextButton.icon(
+                            onPressed: () {
+                              // TODO: Post ad functionality
+                            },
+                            icon: const Icon(Icons.add, color: Color(0xFF0F9D58)),
+                            label: const Text(
+                              'বিজ্ঞাপন দিন',
+                              style: TextStyle(color: Color(0xFF0F9D58)),
                             ),
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
                 ),
 
-                // 2. Categories Grid
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: GridView.count(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    crossAxisCount: 2,
-                    childAspectRatio: 1.5,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
+                // 2. Categories in ExpansionTile
+                Theme(
+                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    title: const Text('ক্যাটাগরি সমূহ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    leading: const Icon(Icons.category, color: Color(0xFF0F9D58)),
+                    initiallyExpanded: false,
                     children: [
-                      _buildCategoryItem('Electronics', 'ইলেকট্রনিক্স', Icons.phone_android, '2', filterState, ref),
-                      _buildCategoryItem('Computer', 'কম্পিউটার', Icons.laptop, '0', filterState, ref),
-                      _buildCategoryItem('Furniture', 'ফার্নিচার', Icons.home, '1', filterState, ref),
-                      _buildCategoryItem('Clothing', 'পোশাক', Icons.checkroom, '1', filterState, ref),
-                      _buildCategoryItem('Baby', 'শিশু সামগ্রী', Icons.child_care, '0', filterState, ref),
-                      _buildCategoryItem('Machinery', 'যন্ত্রপাতি', Icons.build, '0', filterState, ref),
-                      _buildCategoryItem('Books', 'বই', Icons.menu_book, '0', filterState, ref),
-                      _buildCategoryItem('Others', 'অন্যান্য', Icons.favorite_border, '2', filterState, ref),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        child: GridView.count(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          crossAxisCount: 2,
+                          childAspectRatio: 2.0, // Flatter buttons to save space
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          children: [
+                            _buildCategoryItem('Electronics', 'ইলেকট্রনিক্স', Icons.phone_android, '2', filterState, ref),
+                            _buildCategoryItem('Computer', 'কম্পিউটার', Icons.laptop, '0', filterState, ref),
+                            _buildCategoryItem('Furniture', 'ফার্নিচার', Icons.home, '1', filterState, ref),
+                            _buildCategoryItem('Clothing', 'পোশাক', Icons.checkroom, '1', filterState, ref),
+                            _buildCategoryItem('Baby', 'শিশু সামগ্রী', Icons.child_care, '0', filterState, ref),
+                            _buildCategoryItem('Machinery', 'যন্ত্রপাতি', Icons.build, '0', filterState, ref),
+                            _buildCategoryItem('Books', 'বই', Icons.menu_book, '0', filterState, ref),
+                            _buildCategoryItem('Others', 'অন্যান্য', Icons.favorite_border, '2', filterState, ref),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
