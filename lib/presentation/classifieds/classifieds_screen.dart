@@ -880,109 +880,262 @@ class ServicesView extends ConsumerWidget {
     final state = ref.watch(servicesProvider);
     return state.when(
       data: (items) {
-        if (items.isEmpty) return const Center(child: Text('No services found.'));
+        if (items.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.handyman_outlined, size: 64, color: Colors.grey.shade300),
+                const SizedBox(height: 16),
+                Text('কোনো সার্ভিস পাওয়া যায়নি', style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
+              ],
+            ),
+          );
+        }
+
+        // Group services by category
+        final Map<String, List<Service>> groupedServices = {};
+        for (var item in items) {
+          if (!groupedServices.containsKey(item.category)) {
+            groupedServices[item.category] = [];
+          }
+          groupedServices[item.category]!.add(item);
+        }
+
         return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: items.length,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          itemCount: groupedServices.length,
           itemBuilder: (context, index) {
-            final item = items[index];
-            return Card(
-              margin: const EdgeInsets.only(bottom: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey.shade200),
-              ),
-              elevation: 2,
-              shadowColor: Colors.grey.shade100,
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ServiceDetailScreen(service: item)),
-                  );
-                },
-                borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+            final category = groupedServices.keys.elementAt(index);
+            final categoryItems = groupedServices[category]!;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2563EB).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: const Icon(Icons.category, size: 18, color: Color(0xFF2563EB)),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        _formatCategoryName(category),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF1E293B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: categoryItems.length,
+                  itemBuilder: (context, i) {
+                    final item = categoryItems[i];
+                    return _buildPremiumServiceCard(context, item);
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+            );
+          },
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB))),
+      error: (e, _) => Center(child: Text('Error: $e')),
+    );
+  }
+
+  String _formatCategoryName(String raw) {
+    if (raw.isEmpty) return 'অন্যান্য সার্ভিস';
+    
+    // Mapping of common categories to Bengali
+    final Map<String, String> categoryTranslations = {
+      'APPLIANCE_REPAIR': 'অ্যাপ্লায়েন্স মেরামত',
+      'MOBILE_TECHNICIAN': 'মোবাইল টেকনিশিয়ান',
+      'MAKTAB_SANAD': 'মাকতাব সানাদ',
+      'AC_REPAIR': 'এসি মেরামত',
+      'PLUMBING': 'প্লাম্বিং',
+      'ELECTRICAL': 'ইলেকট্রিক্যাল',
+      'CLEANING': 'ক্লিনিং',
+      'CARPENTRY': 'কার্পেন্ট্রি',
+      'PAINTING': 'পেইন্টিং',
+      'PEST_CONTROL': 'পেস্ট কন্ট্রোল',
+      'AMBULANCE': 'অ্যাম্বুলেন্স',
+      'TRAVEL_AGENCY': 'ট্রাভেল এজেন্সি',
+      'TOUR_AND_TRAVEL': 'ট্যুর ও ট্রাভেল',
+      'RENT_A_CAR': 'রেন্ট এ কার',
+      'OTHER': 'অন্যান্য',
+      'OTHERS': 'অন্যান্য',
+    };
+
+    final normalizedKey = raw.toUpperCase().replaceAll(' ', '_');
+    if (categoryTranslations.containsKey(normalizedKey)) {
+      return categoryTranslations[normalizedKey]!;
+    }
+
+    final parts = raw.split('_');
+    return parts.map((e) {
+      if (e.isEmpty) return '';
+      return e[0].toUpperCase() + e.substring(1).toLowerCase();
+    }).join(' ');
+  }
+
+  Widget _buildPremiumServiceCard(BuildContext context, Service item) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: const Color(0xFF2563EB).withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.shade100, width: 1.5),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ServiceDetailScreen(service: item)),
+            );
+          },
+          borderRadius: BorderRadius.circular(20),
+          highlightColor: const Color(0xFF2563EB).withOpacity(0.05),
+          splashColor: const Color(0xFF2563EB).withOpacity(0.1),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Icon / Image Section
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFEFF6FF), Color(0xFFDBEAFE)], // blue-50 to blue-100
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.blue.shade100),
+                  ),
+                  child: Center(
+                    child: Icon(Icons.business_center_rounded, size: 32, color: Colors.blue.shade600),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                
+                // Content Section
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(
+                        item.title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF0F172A),
+                          height: 1.3,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 6),
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.teal.shade50,
-                              shape: BoxShape.circle,
+                          Icon(Icons.star_rounded, size: 16, color: Colors.amber.shade500),
+                          const SizedBox(width: 4),
+                          Text(
+                            item.rating.toStringAsFixed(1),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF334155),
                             ),
-                            child: Icon(Icons.handyman_outlined, color: Colors.teal.shade600, size: 24),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            '(${item.reviewCount} টি রিভিউ)',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      // Contact Button & Location
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
                           Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Row(
                               children: [
-                                Text(
-                                  item.title,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                Icon(Icons.location_on_outlined, size: 14, color: Colors.grey.shade400),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    'ওমান',
+                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade100,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    item.category,
-                                    style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2563EB),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.call, size: 14, color: Colors.white),
+                                SizedBox(width: 6),
+                                Text(
+                                  'যোগাযোগ',
+                                  style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      const Divider(height: 1),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.phone_outlined, size: 16, color: Colors.grey.shade600),
-                              const SizedBox(width: 8),
-                              Text(
-                                item.contactInfo,
-                                style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey.shade400),
-                        ],
-                      ),
                     ],
                   ),
                 ),
-              ),
-            );
-          },
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Error: $e')),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
