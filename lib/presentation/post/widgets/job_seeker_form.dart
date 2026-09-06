@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -91,7 +92,6 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
         'phone': phoneController.text,
         'city': cityController.text,
         'area': areaController.text,
-        'status': 'PUBLISHED',
       });
 
       final int? profileId = response['id'];
@@ -115,9 +115,20 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: const Color(0xFFEF4444), behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-        );
+        if (e is DioException && e.response?.statusCode == 500) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Row(children: [Icon(Icons.info_outline, color: Colors.white), SizedBox(width: 8), Expanded(child: Text('ইতিমধ্যেই আপনার একটি চাকরিপ্রার্থী প্রোফাইল রয়েছে।'))]),
+              backgroundColor: const Color(0xFFF59E0B),
+              behavior: SnackBarBehavior.floating, 
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.toString()), backgroundColor: const Color(0xFFEF4444), behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+          );
+        }
       }
     } finally {
       if (mounted) setState(() => isLoading = false);

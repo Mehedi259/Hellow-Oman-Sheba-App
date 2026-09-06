@@ -204,14 +204,9 @@ class ClassifiedsRepository {
     try {
       final formData = FormData.fromMap({
         'image': await MultipartFile.fromFile(filePath),
-        'category': category,
+        'content_type': category,
+        'content_id': id,
         'is_primary': isPrimary.toString(),
-        if (category == 'market' || category == 'marketitem') 'market_item': id
-        else if (category == 'job') 'job': id
-        else if (category == 'property') 'property': id
-        else if (category == 'vehicle') 'vehicle': id
-        else if (category == 'service') 'service': id
-        else 'content_id': id,
       });
       await apiClient.dio.post('/classifieds/images/', data: formData);
     } on DioException catch (e) {
