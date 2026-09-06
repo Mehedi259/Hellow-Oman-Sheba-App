@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import '../models/post.dart';
 import '../../core/api/api_client.dart';
@@ -33,13 +34,36 @@ class CommunityRepository {
     }
   }
 
-  Future<void> createPost(String title, String content) async {
+  Future<List<Map<String, dynamic>>> getCategories() async {
     try {
-      await apiClient.dio.post('/community/forum/posts/', data: {
+      final response = await apiClient.dio.get('/community/forum/categories/');
+      final results = response.data['results'] as List? ?? response.data as List;
+      return results.cast<Map<String, dynamic>>();
+    } catch (e) {
+      if (e is DioException) {
+        throw Exception(e.response?.data['detail'] ?? e.message ?? 'Failed to load categories');
+      }
+      throw Exception('Parsing error: $e');
+    }
+  }
+
+  Future<void> createPost(String title, String category, String content, String tags, {File? image}) async {
+    try {
+      final formData = FormData.fromMap({
         'title': title,
+        'category': category,
         'content': content,
-        'category': 1, // Default category
+        'tags': tags,
       });
+
+      if (image != null) {
+        formData.files.add(MapEntry(
+          'image',
+          await MultipartFile.fromFile(image.path),
+        ));
+      }
+
+      await apiClient.dio.post('/community/forum/posts/', data: formData);
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to create post');
     }

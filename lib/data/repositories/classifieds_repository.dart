@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../models/job.dart';
@@ -168,25 +169,43 @@ class ClassifiedsRepository {
     }
   }
 
-  Future<void> createVehicle(Map<String, dynamic> data) async {
+  Future<void> createVehicle(Map<String, dynamic> data, {List<File>? images}) async {
     try {
-      await apiClient.dio.post('/classifieds/vehicles/', data: data);
+      final response = await apiClient.dio.post('/classifieds/vehicles/', data: data);
+      final id = response.data['id'];
+      if (images != null && images.isNotEmpty && id != null) {
+        for (int i = 0; i < images.length; i++) {
+          await uploadClassifiedImage(images[i].path, 'vehicle', id, i == 0);
+        }
+      }
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to create vehicle post');
     }
   }
 
-  Future<void> createService(Map<String, dynamic> data) async {
+  Future<void> createService(Map<String, dynamic> data, {List<File>? images}) async {
     try {
-      await apiClient.dio.post('/classifieds/services/', data: data);
+      final response = await apiClient.dio.post('/classifieds/services/', data: data);
+      final id = response.data['id'];
+      if (images != null && images.isNotEmpty && id != null) {
+        for (int i = 0; i < images.length; i++) {
+          await uploadClassifiedImage(images[i].path, 'service', id, i == 0);
+        }
+      }
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to create service post');
     }
   }
 
-  Future<void> createMarketItem(Map<String, dynamic> data) async {
+  Future<void> createMarketItem(Map<String, dynamic> data, {List<File>? images}) async {
     try {
-      await apiClient.dio.post('/community/classifieds/', data: data);
+      final response = await apiClient.dio.post('/community/classifieds/', data: data);
+      final id = response.data['id'];
+      if (images != null && images.isNotEmpty && id != null) {
+        for (int i = 0; i < images.length; i++) {
+          await uploadClassifiedImage(images[i].path, 'others', id, i == 0);
+        }
+      }
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to create market post');
     }
