@@ -10,6 +10,12 @@ class AppTheme {
         brightness: Brightness.light,
       ),
       textTheme: GoogleFonts.interTextTheme(),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 6,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      ),
     );
   }
 
@@ -21,6 +27,12 @@ class AppTheme {
         brightness: Brightness.dark,
       ),
       textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 6,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      ),
     );
   }
 }

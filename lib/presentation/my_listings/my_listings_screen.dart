@@ -123,11 +123,11 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
       if (endpoint.isNotEmpty) {
         await apiClient.dio.delete(endpoint);
       }
-      if (context.mounted) Navigator.pop(context);
+      if (context.mounted) Navigator.of(context, rootNavigator: true).pop();
       ref.invalidate(myPostsProvider);
     } catch(e) {
       if (context.mounted) {
-        Navigator.pop(context);
+        Navigator.of(context, rootNavigator: true).pop();
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('মুছে ফেলা সম্ভব হয়নি।'), backgroundColor: Colors.red));
       }
     }
@@ -472,13 +472,13 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('বাতিল')),
+            TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(), child: const Text('বাতিল')),
             TextButton(
               onPressed: () async {
                 final newTitle = titleController.text.trim();
                 final newContent = contentController.text.trim();
                 if (newTitle.isNotEmpty && newContent.isNotEmpty) {
-                  Navigator.pop(context);
+                  Navigator.of(context, rootNavigator: true).pop();
                   try {
                     await ref.read(apiClientProvider).dio.patch('/community/forum/posts/${post.id}/', data: {
                       'title': newTitle,

@@ -51,6 +51,7 @@ class _MarketFormState extends ConsumerState<MarketForm> {
         'condition': conditionController.text,
         'city': cityController.text,
         'area': areaController.text,
+        'status': 'PUBLISHED',
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Item posted successfully!')));
@@ -103,6 +104,7 @@ class _MarketFormState extends ConsumerState<MarketForm> {
                 ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                 : const Text('Post Item', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
+          const SizedBox(height: 120),
         ],
       ),
     );

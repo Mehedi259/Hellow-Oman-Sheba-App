@@ -44,6 +44,7 @@ class _PropertyFormState extends ConsumerState<PropertyForm> {
         'price': priceController.text,
         'location': locationController.text,
         'property_type': typeController.text,
+        'status': 'PUBLISHED',
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Property posted successfully!')));
@@ -84,6 +85,7 @@ class _PropertyFormState extends ConsumerState<PropertyForm> {
                 ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                 : const Text('Post Property', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
+          const SizedBox(height: 120),
         ],
       ),
     );

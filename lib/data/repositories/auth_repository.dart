@@ -78,7 +78,14 @@ class AuthRepository {
 
   Future<void> deleteMyPost(String type, int id) async {
     try {
-      await apiClient.dio.delete('/community/posts/$id/'); // Assumption based on generic delete
+      String endpoint = '';
+      if (type == 'job') endpoint = '/classifieds/jobs/$id/';
+      else if (type == 'property') endpoint = '/classifieds/properties/$id/';
+      else if (type == 'vehicle') endpoint = '/classifieds/vehicles/$id/';
+      else if (type == 'service') endpoint = '/classifieds/services/$id/';
+      else endpoint = '/community/forum/posts/$id/';
+      
+      await apiClient.dio.delete(endpoint);
     } catch (e) {
       throw Exception('Delete failed');
     }

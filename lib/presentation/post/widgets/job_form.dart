@@ -83,11 +83,18 @@ class _JobFormState extends ConsumerState<JobForm> {
     
     setState(() => isLoading = true);
     try {
+      final typeMap = {
+        'Full-time': 'FULL_TIME',
+        'Part-time': 'PART_TIME',
+        'Contract': 'CONTRACT',
+        'Internship': 'INTERNSHIP',
+      };
+
       final repo = ClassifiedsRepository(ref.read(apiClientProvider));
       await repo.createJob({
         'title': titleController.text,
-        'company': companyController.text,
-        'type': typeValue,
+        'company_name_en': companyController.text,
+        'type': typeMap[typeValue] ?? 'FULL_TIME',
         'city': cityValue,
         'area': areaController.text,
         'salary_min': minSalaryController.text,
@@ -98,6 +105,8 @@ class _JobFormState extends ConsumerState<JobForm> {
         'benefits': benefitsController.text,
         'contact_name': contactNameController.text,
         'contact_phone': contactPhoneController.text,
+        'status': 'PUBLISHED',
+        'job_status': 'PUBLISHED',
       });
       
       if (mounted) {
@@ -136,13 +145,13 @@ class _JobFormState extends ConsumerState<JobForm> {
           const SizedBox(height: 14),
           _buildTextField(companyController, 'কোম্পানির নাম', hint: 'কোম্পানির নাম লিখুন', icon: Icons.business_rounded, isRequired: true),
           const SizedBox(height: 14),
-          _buildDropdown('চাকরির ধরন', ['Full-time', 'Part-time', 'Contract', 'Internship'], typeValue, (val) => setState(() => typeValue = val), icon: Icons.category_rounded, isRequired: true),
+          _buildDropdown('চাকরির ধরন', ['Full-time', 'Part-time'], typeValue, (val) => setState(() => typeValue = val), icon: Icons.category_rounded, isRequired: true),
 
           const SizedBox(height: 28),
           // --- Section: Location ---
           _buildSectionHeader(Icons.location_on_rounded, 'লোকেশন', const Color(0xFF10B981)),
           const SizedBox(height: 16),
-          _buildDropdown('শহর', ['Muscat', 'Salalah', 'Sohar', 'Nizwa', 'Sur'], cityValue, (val) => setState(() => cityValue = val), icon: Icons.location_city_rounded, isRequired: true),
+          _buildDropdown('শহর', ['Muscat', 'Seeb', 'Salalah', 'Bawshar', 'Sohar', 'As Suwayq', 'Ibri', 'Saham', 'Barka', 'Rustaq', 'Nizwa', 'Buraimi', 'Sur', 'Ibra', 'Khasab', 'Duqm'], cityValue, (val) => setState(() => cityValue = val), icon: Icons.location_city_rounded, isRequired: true),
           const SizedBox(height: 14),
           _buildTextField(areaController, 'এলাকা', hint: 'যেমন: Al Khuwair', icon: Icons.pin_drop_rounded, isRequired: true),
 
@@ -192,7 +201,7 @@ class _JobFormState extends ConsumerState<JobForm> {
           const SizedBox(height: 36),
           // Submit button
           _buildSubmitButton(),
-          const SizedBox(height: 40),
+          const SizedBox(height: 120),
         ],
       ),
     );

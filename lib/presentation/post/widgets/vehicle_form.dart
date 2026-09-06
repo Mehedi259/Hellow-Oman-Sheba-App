@@ -50,6 +50,7 @@ class _VehicleFormState extends ConsumerState<VehicleForm> {
         'price': priceController.text,
         'year': int.tryParse(yearController.text) ?? DateTime.now().year,
         'mileage': mileageController.text,
+        'status': 'PUBLISHED',
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vehicle posted successfully!')));
@@ -102,6 +103,7 @@ class _VehicleFormState extends ConsumerState<VehicleForm> {
                 ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                 : const Text('Post Vehicle', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
+          const SizedBox(height: 120),
         ],
       ),
     );

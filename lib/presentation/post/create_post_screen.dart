@@ -190,28 +190,30 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
   }
 
   void _showJobTypeDialog() {
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
       builder: (context) {
-        return Container(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Handle bar
-              Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 24), decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2))),
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(28),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
               const Text('আপনি কী করতে চান?', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Color(0xFF1E293B))),
               const SizedBox(height: 8),
               Text('আপনার প্রয়োজন অনুযায়ী একটি বিকল্প বেছে নিন', style: TextStyle(fontSize: 14, color: Colors.grey.shade500)),
               const SizedBox(height: 28),
-              Row(
-                children: [
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
                   Expanded(
                     child: _buildJobTypeCard(
                       icon: Icons.business_center_rounded,
@@ -239,12 +241,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
                   ),
                 ],
               ),
+            ),
             ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
   Widget _buildJobTypeCard({required IconData icon, required String label, required String subtitle, required List<Color> gradient, required VoidCallback onTap}) {
     return Material(
@@ -271,9 +275,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
                 child: Icon(icon, size: 28, color: Colors.white),
               ),
               const SizedBox(height: 14),
-              Text(label, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: gradient[0])),
+              Text(label, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: gradient[0])),
               const SizedBox(height: 4),
-              Text(subtitle, style: TextStyle(fontSize: 11, color: gradient[0].withOpacity(0.6))),
+              Text(subtitle, textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: gradient[0].withOpacity(0.6))),
             ],
           ),
         ),

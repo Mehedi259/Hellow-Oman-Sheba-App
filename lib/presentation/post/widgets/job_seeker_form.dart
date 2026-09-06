@@ -91,6 +91,7 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
         'phone': phoneController.text,
         'city': cityController.text,
         'area': areaController.text,
+        'status': 'PUBLISHED',
       });
 
       final int? profileId = response['id'];
@@ -183,7 +184,7 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
 
           const SizedBox(height: 36),
           _buildSubmitButton(),
-          const SizedBox(height: 40),
+          const SizedBox(height: 120),
         ],
       ),
     );

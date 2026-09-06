@@ -487,12 +487,67 @@ class _ProfileInfoTabState extends ConsumerState<_ProfileInfoTab> {
 }
 
 // ==================== MY POSTS TAB ====================
-class _MyPostsTab extends ConsumerWidget {
+class _MyPostsTab extends ConsumerStatefulWidget {
   const _MyPostsTab();
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_MyPostsTab> createState() => _MyPostsTabState();
+}
+
+class _MyPostsTabState extends ConsumerState<_MyPostsTab> {
+  Future<List<dynamic>>? _postsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _postsFuture = ref.read(authRepositoryProvider).getMyPosts();
+  }
+
+  Future<void> _deletePost(String type, int id) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('নিশ্চিত করুন'),
+        content: const Text('আপনি কি এই পোস্টটি মুছে ফেলতে চান?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('না')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('হ্যাঁ'),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      await ref.read(authRepositoryProvider).deleteMyPost(type, id);
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop(); // close loading
+        setState(() {
+          _postsFuture = ref.read(authRepositoryProvider).getMyPosts();
+        });
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('সফলভাবে মুছে ফেলা হয়েছে'), backgroundColor: Colors.green));
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('মুছে ফেলা সম্ভব হয়নি।'), backgroundColor: Colors.red));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return FutureBuilder(
-      future: ref.read(authRepositoryProvider).getMyPosts(),
+      future: _postsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED)));
         final posts = snapshot.data as List? ?? [];
@@ -538,7 +593,7 @@ class _MyPostsTab extends ConsumerWidget {
                     decoration: BoxDecoration(color: const Color(0xFFEF4444).withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
                     child: const Icon(Icons.delete_rounded, color: Color(0xFFEF4444), size: 18),
                   ),
-                  onPressed: () => ref.read(authRepositoryProvider).deleteMyPost(post['post_type'] ?? 'post', post['id']),
+                  onPressed: () => _deletePost(post['post_type'] ?? 'post', post['id']),
                 ),
               ),
             );

@@ -41,6 +41,7 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
         'description': descriptionController.text,
         'category': categoryController.text,
         'contact_info': contactInfoController.text,
+        'status': 'PUBLISHED',
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Service posted successfully!')));
@@ -79,6 +80,7 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
                 ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                 : const Text('Post Service', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
+          const SizedBox(height: 120),
         ],
       ),
     );
