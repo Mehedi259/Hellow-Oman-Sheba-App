@@ -200,6 +200,60 @@ class ClassifiedsRepository {
     }
   }
 
+  /// Fetches the current user's job seeker profile from the list.
+  /// Returns null if no profile exists for this user.
+  Future<Map<String, dynamic>?> getMyJobSeekerProfile() async {
+    try {
+      final response = await apiClient.dio.get('/classifieds/job-seekers/');
+      final data = response.data;
+      final results = data is List ? data : (data['results'] as List? ?? []);
+      
+      // The API returns profiles ordered by newest first.
+      // We need to find the one belonging to the current user.
+      // Get the current user's username first.
+      final profileResponse = await apiClient.dio.get('/users/profile/');
+      final username = profileResponse.data['username'];
+      
+      for (final profile in results) {
+        if (profile['user_name'] == username) {
+          return profile as Map<String, dynamic>;
+        }
+      }
+      
+      // Check all pages if not found on first page
+      String? nextUrl = data is Map ? data['next'] : null;
+      while (nextUrl != null) {
+        if (nextUrl.startsWith('http')) {
+          final uri = Uri.parse(nextUrl);
+          nextUrl = '${uri.path}?${uri.query}';
+        }
+        final nextResponse = await apiClient.dio.get(nextUrl);
+        final nextData = nextResponse.data;
+        final nextResults = nextData['results'] as List? ?? [];
+        for (final profile in nextResults) {
+          if (profile['user_name'] == username) {
+            return profile as Map<String, dynamic>;
+          }
+        }
+        nextUrl = nextData['next'];
+      }
+      
+      return null;
+    } on DioException {
+      return null;
+    }
+  }
+
+  /// Update an existing job seeker profile
+  Future<Map<String, dynamic>> updateJobSeekerProfile(int id, Map<String, dynamic> data) async {
+    try {
+      final response = await apiClient.dio.patch('/classifieds/job-seekers/$id/', data: data);
+      return response.data is Map<String, dynamic> ? response.data : {};
+    } on DioException catch (e) {
+      throw Exception(e.response?.data?.toString() ?? 'Failed to update profile');
+    }
+  }
+
   Future<void> uploadClassifiedImage(String filePath, String category, int id, bool isPrimary) async {
     try {
       final formData = FormData.fromMap({

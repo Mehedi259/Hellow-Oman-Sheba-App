@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../data/repositories/classifieds_repository.dart';
-import '../../../core/api/api_client.dart';
 import '../../auth/auth_provider.dart';
 
 class JobSeekerForm extends ConsumerStatefulWidget {
@@ -27,8 +26,18 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
 
   List<File> selectedImages = [];
   bool isLoading = false;
+  bool isCheckingProfile = true;
+  bool isEditMode = false;
+  Map<String, dynamic>? existingProfile;
+  int? existingProfileId;
 
   final picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkExistingProfile();
+  }
 
   @override
   void dispose() {
@@ -42,6 +51,59 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
     cityController.dispose();
     areaController.dispose();
     super.dispose();
+  }
+
+  Future<void> _checkExistingProfile() async {
+    setState(() => isCheckingProfile = true);
+    try {
+      final repo = ClassifiedsRepository(ref.read(apiClientProvider));
+      final profile = await repo.getMyJobSeekerProfile();
+      if (profile != null && mounted) {
+        setState(() {
+          existingProfile = profile;
+          existingProfileId = profile['id'];
+          isCheckingProfile = false;
+        });
+      } else if (mounted) {
+        setState(() {
+          existingProfile = null;
+          isCheckingProfile = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => isCheckingProfile = false);
+      }
+    }
+  }
+
+  void _populateFormWithExistingData() {
+    if (existingProfile == null) return;
+    final p = existingProfile!;
+    titleController.text = p['professional_title'] ?? '';
+    experienceController.text = (p['years_of_experience'] ?? 0).toString();
+    educationController.text = p['education_level'] ?? '';
+    summaryController.text = p['summary'] ?? '';
+    
+    final salary = p['expected_salary'];
+    if (salary != null) {
+      // Remove trailing .00 if present
+      final salaryStr = salary.toString();
+      expectedSalaryController.text = salaryStr.endsWith('.00') 
+          ? salaryStr.substring(0, salaryStr.length - 3) 
+          : salaryStr;
+    }
+    
+    final skills = p['skills'];
+    if (skills is List && skills.isNotEmpty) {
+      skillsController.text = skills.join(', ');
+    }
+    
+    phoneController.text = p['phone'] ?? '';
+    cityController.text = p['city'] ?? '';
+    areaController.text = p['area'] ?? '';
+    
+    setState(() => isEditMode = true);
   }
 
   Future<void> pickImages() async {
@@ -82,7 +144,7 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
       
       final skillsList = skillsController.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
       
-      final response = await repo.createJobSeekerProfile({
+      final data = {
         'professional_title': titleController.text,
         'years_of_experience': int.tryParse(experienceController.text) ?? 0,
         'education_level': educationController.text,
@@ -92,9 +154,19 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
         'phone': phoneController.text,
         'city': cityController.text,
         'area': areaController.text,
-      });
+      };
 
-      final int? profileId = response['id'];
+      Map<String, dynamic> response;
+
+      if (isEditMode && existingProfileId != null) {
+        // Update existing profile
+        response = await repo.updateJobSeekerProfile(existingProfileId!, data);
+      } else {
+        // Create new profile
+        response = await repo.createJobSeekerProfile(data);
+      }
+
+      final int? profileId = response['id'] ?? existingProfileId;
       
       if (profileId != null && selectedImages.isNotEmpty) {
         for (var i = 0; i < selectedImages.length; i++) {
@@ -105,7 +177,11 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Row(children: [Icon(Icons.check_circle_rounded, color: Colors.white), SizedBox(width: 8), Expanded(child: Text('আপনার প্রোফাইল সফলভাবে তৈরি হয়েছে!'))]),
+            content: Row(children: [
+              const Icon(Icons.check_circle_rounded, color: Colors.white), 
+              const SizedBox(width: 8), 
+              Expanded(child: Text(isEditMode ? 'প্রোফাইল সফলভাবে আপডেট হয়েছে!' : 'আপনার প্রোফাইল সফলভাবে তৈরি হয়েছে!')),
+            ]),
             backgroundColor: const Color(0xFF10B981),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -118,7 +194,7 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
         if (e is DioException && e.response?.statusCode == 500) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Row(children: [Icon(Icons.info_outline, color: Colors.white), SizedBox(width: 8), Expanded(child: Text('ইতিমধ্যেই আপনার একটি চাকরিপ্রার্থী প্রোফাইল রয়েছে।'))]),
+              content: const Row(children: [Icon(Icons.info_outline, color: Colors.white), SizedBox(width: 8), Expanded(child: Text('ইতিমধ্যেই আপনার একটি চাকরিপ্রার্থী প্রোফাইল রয়েছে।'))]),
               backgroundColor: const Color(0xFFF59E0B),
               behavior: SnackBarBehavior.floating, 
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
@@ -137,11 +213,271 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
 
   @override
   Widget build(BuildContext context) {
+    if (isCheckingProfile) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(color: Color(0xFF8B5CF6)),
+            SizedBox(height: 16),
+            Text('প্রোফাইল চেক করা হচ্ছে...', style: TextStyle(color: Color(0xFF64748B), fontSize: 14)),
+          ],
+        ),
+      );
+    }
+
+    // If existing profile found and not yet in edit mode, show the profile card
+    if (existingProfile != null && !isEditMode) {
+      return _buildExistingProfileView();
+    }
+
+    return _buildForm();
+  }
+
+  Widget _buildExistingProfileView() {
+    final p = existingProfile!;
+    final skills = (p['skills'] as List?)?.cast<String>() ?? [];
+    final salary = p['expected_salary'];
+    final userAvatar = p['user_avatar'];
+    final fullName = p['user_full_name'] ?? 'অজ্ঞাত';
+    final views = p['views'] ?? 0;
+
+
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Info banner
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [const Color(0xFF8B5CF6).withValues(alpha: 0.08), const Color(0xFF6D28D9).withValues(alpha: 0.04)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              border: Border.all(color: const Color(0xFF8B5CF6).withValues(alpha: 0.2), width: 1.5),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF8B5CF6).withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.verified_user_rounded, size: 36, color: Color(0xFF8B5CF6)),
+                ),
+                const SizedBox(height: 14),
+                const Text(
+                  'আপনার প্রোফাইল তৈরি আছে!',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF1E293B)),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'চাইলে নিচের তথ্য পরিবর্তন করতে পারেন',
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 20),
+
+          // Profile card
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 6)),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Avatar & name row
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 28,
+                      backgroundColor: const Color(0xFF8B5CF6).withValues(alpha: 0.1),
+                      backgroundImage: userAvatar != null && userAvatar.toString().isNotEmpty
+                          ? NetworkImage(userAvatar) 
+                          : null,
+                      child: userAvatar == null || userAvatar.toString().isEmpty
+                          ? const Icon(Icons.person_rounded, size: 28, color: Color(0xFF8B5CF6))
+                          : null,
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(fullName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
+                          const SizedBox(height: 3),
+                          Text(p['professional_title'] ?? '', style: const TextStyle(fontSize: 14, color: Color(0xFF8B5CF6), fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.visibility_rounded, size: 14, color: Color(0xFF10B981)),
+                          const SizedBox(width: 4),
+                          Text('$views', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF10B981))),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 20),
+                const Divider(height: 1),
+                const SizedBox(height: 16),
+                
+                // Details
+                _buildProfileInfoRow(Icons.timeline_rounded, 'অভিজ্ঞতা', '${p['years_of_experience'] ?? 0} বছর'),
+                if ((p['education_level'] ?? '').isNotEmpty)
+                  _buildProfileInfoRow(Icons.school_rounded, 'শিক্ষা', p['education_level']),
+                if (salary != null)
+                  _buildProfileInfoRow(Icons.payments_rounded, 'প্রত্যাশিত বেতন', '$salary ${p['salary_currency'] ?? 'OMR'}'),
+                if ((p['city'] ?? '').isNotEmpty)
+                  _buildProfileInfoRow(Icons.location_on_rounded, 'লোকেশন', '${p['city']}${(p['area'] ?? '').isNotEmpty ? ', ${p['area']}' : ''}'),
+                if ((p['phone'] ?? '').isNotEmpty)
+                  _buildProfileInfoRow(Icons.phone_rounded, 'ফোন', p['phone']),
+                
+                // Skills
+                if (skills.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  const Text('দক্ষতা', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: skills.map((s) => Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF8B5CF6).withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: const Color(0xFF8B5CF6).withValues(alpha: 0.15)),
+                      ),
+                      child: Text(s, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF7C3AED))),
+                    )).toList(),
+                  ),
+                ],
+                
+                // Summary
+                if ((p['summary'] ?? '').isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  const Text('সংক্ষিপ্ত বিবরণ', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
+                  const SizedBox(height: 6),
+                  Text(p['summary'], style: const TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.5)),
+                ],
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Edit button
+          Container(
+            height: 56,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(color: const Color(0xFF8B5CF6).withValues(alpha: 0.35), blurRadius: 16, offset: const Offset(0, 8)),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _populateFormWithExistingData,
+                borderRadius: BorderRadius.circular(16),
+                child: const Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.edit_rounded, color: Colors.white, size: 22),
+                      SizedBox(width: 10),
+                      Text('প্রোফাইল এডিট করুন', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 0.3)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 120),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileInfoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: const Color(0xFF94A3B8)),
+          const SizedBox(width: 10),
+          Text('$label: ', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF94A3B8))),
+          Expanded(
+            child: Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildForm() {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Edit mode banner
+          if (isEditMode) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF59E0B).withValues(alpha: 0.1),
+                border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.edit_note_rounded, size: 22, color: Color(0xFFF59E0B)),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    child: Text('এডিট মোড — তথ্য পরিবর্তন করে আপডেট করুন', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFFB45309))),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      setState(() => isEditMode = false);
+                    },
+                    child: const Icon(Icons.close_rounded, size: 20, color: Color(0xFFB45309)),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+
           // --- Section: Professional Info ---
           _buildSectionHeader(Icons.work_history_rounded, 'পেশাগত তথ্য', const Color(0xFF8B5CF6)),
           const SizedBox(height: 16),
@@ -206,12 +542,12 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
       children: [
         Container(
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
           child: Icon(icon, size: 18, color: color),
         ),
         const SizedBox(width: 10),
         Expanded(child: Text(title, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: color))),
-        Expanded(child: Container(height: 1, color: color.withOpacity(0.15))),
+        Expanded(child: Container(height: 1, color: color.withValues(alpha: 0.15))),
       ],
     );
   }
@@ -258,15 +594,15 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 28),
             decoration: BoxDecoration(
-              color: const Color(0xFF14B8A6).withOpacity(0.05),
-              border: Border.all(color: const Color(0xFF14B8A6).withOpacity(0.3), width: 1.5),
+              color: const Color(0xFF14B8A6).withValues(alpha: 0.05),
+              border: Border.all(color: const Color(0xFF14B8A6).withValues(alpha: 0.3), width: 1.5),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
               children: [
                 Container(
                   padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(color: const Color(0xFF14B8A6).withOpacity(0.1), shape: BoxShape.circle),
+                  decoration: BoxDecoration(color: const Color(0xFF14B8A6).withValues(alpha: 0.1), shape: BoxShape.circle),
                   child: const Icon(Icons.cloud_upload_rounded, size: 32, color: Color(0xFF14B8A6)),
                 ),
                 const SizedBox(height: 12),
@@ -299,7 +635,7 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(color: Colors.grey.shade200, width: 2),
                           image: DecorationImage(image: FileImage(selectedImages[index]), fit: BoxFit.cover),
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 8, offset: const Offset(0, 4))],
+                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 8, offset: const Offset(0, 4))],
                         ),
                       ),
                       Positioned(
@@ -312,7 +648,7 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
                             decoration: BoxDecoration(
                               color: const Color(0xFFEF4444),
                               shape: BoxShape.circle,
-                              boxShadow: [BoxShadow(color: const Color(0xFFEF4444).withOpacity(0.3), blurRadius: 6)],
+                              boxShadow: [BoxShadow(color: const Color(0xFFEF4444).withValues(alpha: 0.3), blurRadius: 6)],
                             ),
                             child: const Icon(Icons.close_rounded, size: 14, color: Colors.white),
                           ),
@@ -333,10 +669,20 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
     return Container(
       height: 56,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)], begin: Alignment.centerLeft, end: Alignment.centerRight),
+        gradient: LinearGradient(
+          colors: isEditMode 
+              ? [const Color(0xFFF59E0B), const Color(0xFFD97706)]
+              : [const Color(0xFF8B5CF6), const Color(0xFF6D28D9)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: const Color(0xFF8B5CF6).withOpacity(0.35), blurRadius: 16, offset: const Offset(0, 8)),
+          BoxShadow(
+            color: (isEditMode ? const Color(0xFFF59E0B) : const Color(0xFF8B5CF6)).withValues(alpha: 0.35), 
+            blurRadius: 16, 
+            offset: const Offset(0, 8),
+          ),
         ],
       ),
       child: Material(
@@ -347,12 +693,15 @@ class _JobSeekerFormState extends ConsumerState<JobSeekerForm> {
           child: Center(
             child: isLoading
                 ? const SizedBox(height: 22, width: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
-                : const Row(
+                : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.person_add_rounded, color: Colors.white, size: 22),
-                      SizedBox(width: 10),
-                      Text('প্রোফাইল তৈরি করুন', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 0.3)),
+                      Icon(isEditMode ? Icons.save_rounded : Icons.person_add_rounded, color: Colors.white, size: 22),
+                      const SizedBox(width: 10),
+                      Text(
+                        isEditMode ? 'প্রোফাইল আপডেট করুন' : 'প্রোফাইল তৈরি করুন', 
+                        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 0.3),
+                      ),
                     ],
                   ),
           ),
