@@ -6,7 +6,14 @@ import '../../auth/auth_provider.dart';
 
 class VehicleForm extends ConsumerStatefulWidget {
   final VoidCallback onSuccess;
-  const VehicleForm({super.key, required this.onSuccess});
+  final Map<String, dynamic>? initialData;
+  final int? editId;
+  const VehicleForm({
+    super.key,
+    required this.onSuccess,
+    this.initialData,
+    this.editId,
+  });
   @override
   ConsumerState<VehicleForm> createState() => _VehicleFormState();
 }
@@ -20,6 +27,21 @@ class _VehicleFormState extends ConsumerState<VehicleForm> {
   final yearController = TextEditingController();
   final mileageController = TextEditingController();
   bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialData != null) {
+      final data = widget.initialData!;
+      titleController.text = data['title'] ?? data['title_bn'] ?? '';
+      descriptionController.text = data['description'] ?? data['description_bn'] ?? '';
+      makeController.text = data['make'] ?? '';
+      modelController.text = data['model'] ?? '';
+      priceController.text = data['price']?.toString() ?? '';
+      yearController.text = data['year']?.toString() ?? '';
+      mileageController.text = data['mileage'] ?? '';
+    }
+  }
 
   @override
   void dispose() {
@@ -42,7 +64,7 @@ class _VehicleFormState extends ConsumerState<VehicleForm> {
     setState(() => isLoading = true);
     try {
       final repo = ClassifiedsRepository(ref.read(apiClientProvider));
-      await repo.createVehicle({
+      final payload = {
         'title': titleController.text,
         'description': descriptionController.text,
         'make': makeController.text,
@@ -51,9 +73,16 @@ class _VehicleFormState extends ConsumerState<VehicleForm> {
         'year': int.tryParse(yearController.text) ?? DateTime.now().year,
         'mileage': mileageController.text,
         'status': 'PUBLISHED',
-      });
+      };
+
+      if (widget.editId != null) {
+        await repo.updateVehicle(widget.editId!, payload);
+      } else {
+        await repo.createVehicle(payload);
+      }
+      
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vehicle posted successfully!')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(widget.editId != null ? 'Vehicle updated successfully!' : 'Vehicle posted successfully!')));
         widget.onSuccess();
       }
     } catch (e) {
@@ -101,7 +130,7 @@ class _VehicleFormState extends ConsumerState<VehicleForm> {
             onPressed: isLoading ? null : submit,
             child: isLoading
                 ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : const Text('Post Vehicle', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                : Text(widget.editId != null ? 'Update Vehicle' : 'Post Vehicle', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(height: 120),
         ],

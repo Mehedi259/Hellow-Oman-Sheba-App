@@ -6,7 +6,14 @@ import '../../auth/auth_provider.dart';
 
 class ServiceForm extends ConsumerStatefulWidget {
   final VoidCallback onSuccess;
-  const ServiceForm({super.key, required this.onSuccess});
+  final Map<String, dynamic>? initialData;
+  final int? editId;
+  const ServiceForm({
+    super.key,
+    required this.onSuccess,
+    this.initialData,
+    this.editId,
+  });
   @override
   ConsumerState<ServiceForm> createState() => _ServiceFormState();
 }
@@ -17,6 +24,18 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
   final categoryController = TextEditingController();
   final contactInfoController = TextEditingController();
   bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialData != null) {
+      final data = widget.initialData!;
+      titleController.text = data['title'] ?? data['title_bn'] ?? '';
+      descriptionController.text = data['description'] ?? data['description_bn'] ?? '';
+      categoryController.text = data['category'] ?? '';
+      contactInfoController.text = data['contact_info'] ?? '';
+    }
+  }
 
   @override
   void dispose() {
@@ -36,15 +55,22 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
     setState(() => isLoading = true);
     try {
       final repo = ClassifiedsRepository(ref.read(apiClientProvider));
-      await repo.createService({
+      final payload = {
         'title': titleController.text,
         'description': descriptionController.text,
         'category': categoryController.text,
         'contact_info': contactInfoController.text,
         'status': 'PUBLISHED',
-      });
+      };
+
+      if (widget.editId != null) {
+        await repo.updateService(widget.editId!, payload);
+      } else {
+        await repo.createService(payload);
+      }
+      
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Service posted successfully!')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(widget.editId != null ? 'Service updated successfully!' : 'Service posted successfully!')));
         widget.onSuccess();
       }
     } catch (e) {
@@ -78,7 +104,7 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
             onPressed: isLoading ? null : submit,
             child: isLoading
                 ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : const Text('Post Service', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                : Text(widget.editId != null ? 'Update Service' : 'Post Service', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(height: 120),
         ],

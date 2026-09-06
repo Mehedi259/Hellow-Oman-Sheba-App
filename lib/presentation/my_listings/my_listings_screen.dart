@@ -9,6 +9,7 @@ import '../classifieds/classifieds_detail_screens.dart';
 import '../community/community_detail_screen.dart';
 import '../../core/api/api_client.dart';
 import '../auth/auth_provider.dart';
+import '../post/edit_post_screen.dart';
 
 class MyListingsScreen extends ConsumerStatefulWidget {
   const MyListingsScreen({super.key});
@@ -287,10 +288,47 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
                         ],
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
-                      onPressed: () => _deletePost(type, id),
-                      tooltip: 'মুছুন',
+                    PopupMenuButton<String>(
+                      icon: const Icon(Icons.more_vert_rounded, color: Color(0xFF64748B)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      onSelected: (value) {
+                        if (value == 'edit') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditPostScreen(
+                                type: type,
+                                editId: id,
+                                initialData: post,
+                              ),
+                            ),
+                          ).then((_) => ref.refresh(myPostsProvider));
+                        } else if (value == 'delete') {
+                          _deletePost(type, id);
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit_rounded, color: Color(0xFF0056D2), size: 20),
+                              SizedBox(width: 8),
+                              Text('এডিট করুন'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
+                              SizedBox(width: 8),
+                              Text('মুছে ফেলুন', style: TextStyle(color: Colors.redAccent)),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

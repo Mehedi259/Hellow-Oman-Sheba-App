@@ -6,7 +6,14 @@ import '../../auth/auth_provider.dart';
 
 class MarketForm extends ConsumerStatefulWidget {
   final VoidCallback onSuccess;
-  const MarketForm({super.key, required this.onSuccess});
+  final Map<String, dynamic>? initialData;
+  final int? editId;
+  const MarketForm({
+    super.key,
+    required this.onSuccess,
+    this.initialData,
+    this.editId,
+  });
   @override
   ConsumerState<MarketForm> createState() => _MarketFormState();
 }
@@ -20,6 +27,21 @@ class _MarketFormState extends ConsumerState<MarketForm> {
   final cityController = TextEditingController();
   final areaController = TextEditingController();
   bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialData != null) {
+      final data = widget.initialData!;
+      titleController.text = data['title'] ?? data['title_bn'] ?? '';
+      descriptionController.text = data['description'] ?? data['description_bn'] ?? '';
+      categoryController.text = data['category_name'] ?? data['category']?.toString() ?? '';
+      priceController.text = data['price']?.toString() ?? '';
+      conditionController.text = data['condition'] ?? '';
+      cityController.text = data['city'] ?? '';
+      areaController.text = data['area'] ?? '';
+    }
+  }
 
   @override
   void dispose() {
@@ -42,7 +64,7 @@ class _MarketFormState extends ConsumerState<MarketForm> {
     setState(() => isLoading = true);
     try {
       final repo = ClassifiedsRepository(ref.read(apiClientProvider));
-      await repo.createMarketItem({
+      final payload = {
         'title': titleController.text,
         'description': descriptionController.text,
         'category_name': categoryController.text,
@@ -52,9 +74,16 @@ class _MarketFormState extends ConsumerState<MarketForm> {
         'city': cityController.text,
         'area': areaController.text,
         'status': 'PUBLISHED',
-      });
+      };
+
+      if (widget.editId != null) {
+        await repo.updateMarketItem(widget.editId!, payload);
+      } else {
+        await repo.createMarketItem(payload);
+      }
+      
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Item posted successfully!')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(widget.editId != null ? 'Item updated successfully!' : 'Item posted successfully!')));
         widget.onSuccess();
       }
     } catch (e) {
@@ -102,7 +131,7 @@ class _MarketFormState extends ConsumerState<MarketForm> {
             onPressed: isLoading ? null : submit,
             child: isLoading
                 ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : const Text('Post Item', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                : Text(widget.editId != null ? 'Update Item' : 'Post Item', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(height: 120),
         ],

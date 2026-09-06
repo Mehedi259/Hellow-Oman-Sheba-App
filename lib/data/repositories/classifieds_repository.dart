@@ -159,11 +159,12 @@ class ClassifiedsRepository {
     }
   }
 
-  Future<void> createProperty(Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> createProperty(Map<String, dynamic> data) async {
     try {
-      await apiClient.dio.post('/classifieds/properties/', data: data);
+      final response = await apiClient.dio.post('/classifieds/properties/', data: data);
+      return response.data is Map<String, dynamic> ? response.data : {'id': response.data['id']};
     } on DioException catch (e) {
-      throw Exception(e.response?.data['detail'] ?? 'Failed to create property post');
+      throw Exception(e.response?.data?.toString() ?? 'Failed to create property post');
     }
   }
 
@@ -197,6 +198,51 @@ class ClassifiedsRepository {
       return response.data is Map<String, dynamic> ? response.data : {'id': response.data['id']};
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to create job seeker profile');
+    }
+  }
+
+  Future<Map<String, dynamic>> updateProperty(int id, Map<String, dynamic> data) async {
+    try {
+      final response = await apiClient.dio.patch('/classifieds/properties/$id/', data: data);
+      return response.data is Map<String, dynamic> ? response.data : {};
+    } on DioException catch (e) {
+      throw Exception(e.response?.data?.toString() ?? 'Failed to update property');
+    }
+  }
+
+  Future<Map<String, dynamic>> updateVehicle(int id, Map<String, dynamic> data) async {
+    try {
+      final response = await apiClient.dio.patch('/classifieds/vehicles/$id/', data: data);
+      return response.data is Map<String, dynamic> ? response.data : {};
+    } on DioException catch (e) {
+      throw Exception(e.response?.data?.toString() ?? 'Failed to update vehicle');
+    }
+  }
+
+  Future<Map<String, dynamic>> updateJob(int id, Map<String, dynamic> data) async {
+    try {
+      final response = await apiClient.dio.patch('/classifieds/jobs/$id/', data: data);
+      return response.data is Map<String, dynamic> ? response.data : {};
+    } on DioException catch (e) {
+      throw Exception(e.response?.data?.toString() ?? 'Failed to update job');
+    }
+  }
+
+  Future<Map<String, dynamic>> updateService(int id, Map<String, dynamic> data) async {
+    try {
+      final response = await apiClient.dio.patch('/classifieds/services/$id/', data: data);
+      return response.data is Map<String, dynamic> ? response.data : {};
+    } on DioException catch (e) {
+      throw Exception(e.response?.data?.toString() ?? 'Failed to update service');
+    }
+  }
+
+  Future<Map<String, dynamic>> updateMarketItem(int id, Map<String, dynamic> data) async {
+    try {
+      final response = await apiClient.dio.patch('/community/classifieds/$id/', data: data);
+      return response.data is Map<String, dynamic> ? response.data : {};
+    } on DioException catch (e) {
+      throw Exception(e.response?.data?.toString() ?? 'Failed to update market post');
     }
   }
 

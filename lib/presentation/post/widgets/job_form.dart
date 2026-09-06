@@ -8,7 +8,14 @@ import '../../auth/auth_provider.dart';
 
 class JobForm extends ConsumerStatefulWidget {
   final VoidCallback onSuccess;
-  const JobForm({super.key, required this.onSuccess});
+  final Map<String, dynamic>? initialData;
+  final int? editId;
+  const JobForm({
+    super.key,
+    required this.onSuccess,
+    this.initialData,
+    this.editId,
+  });
   @override
   ConsumerState<JobForm> createState() => _JobFormState();
 }
@@ -33,6 +40,27 @@ class _JobFormState extends ConsumerState<JobForm> {
   bool isLoading = false;
 
   final picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialData != null) {
+      final data = widget.initialData!;
+      titleController.text = data['title'] ?? data['title_bn'] ?? '';
+      companyController.text = data['company_name'] ?? '';
+      areaController.text = data['area'] ?? '';
+      minSalaryController.text = data['salary_min']?.toString() ?? '';
+      maxSalaryController.text = data['salary_max']?.toString() ?? '';
+      descriptionController.text = data['description'] ?? data['description_bn'] ?? '';
+      requirementsController.text = data['requirements'] ?? '';
+      benefitsController.text = data['benefits'] ?? '';
+      contactNameController.text = data['contact_name'] ?? '';
+      contactPhoneController.text = data['contact_phone'] ?? '';
+      
+      typeValue = data['type'] ?? typeValue;
+      cityValue = data['city'] ?? cityValue;
+    }
+  }
 
   @override
   void dispose() {
@@ -91,7 +119,7 @@ class _JobFormState extends ConsumerState<JobForm> {
       };
 
       final repo = ClassifiedsRepository(ref.read(apiClientProvider));
-      await repo.createJob({
+      final payload = {
         'title': titleController.text,
         'company_name_en': companyController.text,
         'type': typeMap[typeValue] ?? 'FULL_TIME',
@@ -107,12 +135,22 @@ class _JobFormState extends ConsumerState<JobForm> {
         'contact_phone': contactPhoneController.text,
         'status': 'PUBLISHED',
         'job_status': 'PUBLISHED',
-      });
+      };
+
+      if (widget.editId != null) {
+        await repo.updateJob(widget.editId!, payload);
+      } else {
+        await repo.createJob(payload);
+      }
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Row(children: [Icon(Icons.check_circle_rounded, color: Colors.white), SizedBox(width: 8), Expanded(child: Text('চাকরির বিজ্ঞাপন সফলভাবে পোস্ট করা হয়েছে!'))]),
+            content: Row(children: [
+              const Icon(Icons.check_circle_rounded, color: Colors.white), 
+              const SizedBox(width: 8), 
+              Expanded(child: Text(widget.editId != null ? 'চাকরির বিজ্ঞাপন সফলভাবে আপডেট করা হয়েছে!' : 'চাকরির বিজ্ঞাপন সফলভাবে পোস্ট করা হয়েছে!'))
+            ]),
             backgroundColor: const Color(0xFF10B981),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -418,12 +456,12 @@ class _JobFormState extends ConsumerState<JobForm> {
           child: Center(
             child: isLoading
                 ? const SizedBox(height: 22, width: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
-                : const Row(
+                : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.publish_rounded, color: Colors.white, size: 22),
-                      SizedBox(width: 10),
-                      Text('পোস্ট প্রকাশ করুন', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 0.3)),
+                      Icon(widget.editId != null ? Icons.save_rounded : Icons.publish_rounded, color: Colors.white, size: 22),
+                      const SizedBox(width: 10),
+                      Text(widget.editId != null ? 'আপডেট করুন' : 'বিজ্ঞাপন পোস্ট করুন', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 0.3)),
                     ],
                   ),
           ),
