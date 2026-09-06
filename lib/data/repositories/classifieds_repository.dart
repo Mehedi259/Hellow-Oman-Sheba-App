@@ -10,6 +10,35 @@ class ClassifiedsRepository {
 
   ClassifiedsRepository(this.apiClient);
 
+  Future<List<T>> _fetchAllPages<T>(String endpoint, T Function(Map<String, dynamic>) fromJson) async {
+    List<T> allItems = [];
+    String? nextUrl = endpoint;
+    
+    while (nextUrl != null) {
+      final response = await apiClient.dio.get(nextUrl);
+      final data = response.data;
+      
+      if (data is List) {
+        allItems.addAll(data.map((json) => fromJson(json as Map<String, dynamic>)).toList());
+        nextUrl = null;
+      } else {
+        final results = data['results'] as List? ?? [];
+        allItems.addAll(results.map((json) => fromJson(json as Map<String, dynamic>)).toList());
+        
+        if (data['next'] != null) {
+          nextUrl = data['next'] as String;
+          // Strip base url if present
+          if (nextUrl.startsWith(apiClient.dio.options.baseUrl)) {
+            nextUrl = nextUrl.substring(apiClient.dio.options.baseUrl.length);
+          }
+        } else {
+          nextUrl = null;
+        }
+      }
+    }
+    return allItems;
+  }
+
   Future<Map<String, dynamic>> getJobSeekers({String? search, String? sort, int? page}) async {
     try {
       final queryParams = <String, dynamic>{};
@@ -29,7 +58,7 @@ class ClassifiedsRepository {
       
       final List results = data is List ? data : (data['results'] as List? ?? []);
       final int total = data is List ? data.length : (data['count'] ?? 0);
-      final int totalPages = data is List ? 1 : (data['total_pages'] ?? 1);
+      final int totalPages = data is List ? 1 : (data['total_pages'] ?? (total / 20).ceil());
 
       return {
         'items': results.map((json) => JobSeeker.fromJson(json)).toList(),
@@ -43,10 +72,7 @@ class ClassifiedsRepository {
 
   Future<List<Job>> getJobs() async {
     try {
-      final response = await apiClient.dio.get('/classifieds/jobs/');
-      final data = response.data;
-      final results = data is List ? data : (data['results'] as List? ?? []);
-      return results.map((json) => Job.fromJson(json)).toList();
+      return await _fetchAllPages('/classifieds/jobs/', Job.fromJson);
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load jobs');
     }
@@ -54,10 +80,7 @@ class ClassifiedsRepository {
 
   Future<List<Property>> getProperties() async {
     try {
-      final response = await apiClient.dio.get('/classifieds/properties/');
-      final data = response.data;
-      final results = data is List ? data : (data['results'] as List? ?? []);
-      return results.map((json) => Property.fromJson(json)).toList();
+      return await _fetchAllPages('/classifieds/properties/', Property.fromJson);
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load properties');
     }
@@ -65,10 +88,7 @@ class ClassifiedsRepository {
 
   Future<List<Vehicle>> getVehicles() async {
     try {
-      final response = await apiClient.dio.get('/classifieds/vehicles/');
-      final data = response.data;
-      final results = data is List ? data : (data['results'] as List? ?? []);
-      return results.map((json) => Vehicle.fromJson(json)).toList();
+      return await _fetchAllPages('/classifieds/vehicles/', Vehicle.fromJson);
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load vehicles');
     }
@@ -77,10 +97,7 @@ class ClassifiedsRepository {
   Future<List<Service>> getServices({String? category}) async {
     try {
       final query = category != null ? "?category=$category" : "";
-      final response = await apiClient.dio.get('/classifieds/services/$query');
-      final data = response.data;
-      final results = data is List ? data : (data['results'] as List? ?? []);
-      return results.map((json) => Service.fromJson(json)).toList();
+      return await _fetchAllPages('/classifieds/services/$query', Service.fromJson);
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load services');
     }
@@ -129,10 +146,7 @@ class ClassifiedsRepository {
   }
   Future<List<MarketItem>> getMarketItems() async {
     try {
-      final response = await apiClient.dio.get('/community/classifieds/');
-      final data = response.data;
-      final results = data is List ? data : (data['results'] as List? ?? []);
-      return results.map((json) => MarketItem.fromJson(json)).toList();
+      return await _fetchAllPages('/community/classifieds/', MarketItem.fromJson);
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load market items');
     }

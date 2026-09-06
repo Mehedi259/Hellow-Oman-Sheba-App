@@ -28,7 +28,12 @@ class Post {
       id: json['id'],
       title: json['title'] ?? '',
       content: json['content'] ?? '',
-      authorName: json['author_first_name'] ?? json['author_name'] ?? 'অজ্ঞাত',
+            authorName: () {
+        String name = (json['author_first_name'] ?? '').toString().trim();
+        if (name.isEmpty) name = (json['author_name'] ?? '').toString().trim();
+        if (name.isEmpty) name = 'অজ্ঞাত';
+        return name;
+      }(),
       authorId: json['author_id'] ?? json['user'] ?? json['user_id'] ?? 1,
       authorProfilePicture: json['author_profile_picture'] ?? json['user_profile_picture'],
       categoryName: json['category'] != null ? (json['category']['nameBn'] ?? json['category']['name'] ?? 'সাধারণ আলোচনা') : 'সাধারণ আলোচনা',

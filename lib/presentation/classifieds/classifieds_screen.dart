@@ -380,6 +380,7 @@ class _JobsViewState extends ConsumerState<JobsView> {
                   ],
                 ),
               ),
+            const SizedBox(height: 120),
           ],
         );
       },
@@ -534,6 +535,7 @@ class _JobsViewState extends ConsumerState<JobsView> {
               ],
             ),
           ),
+        const SizedBox(height: 120),
       ],
     );
   }

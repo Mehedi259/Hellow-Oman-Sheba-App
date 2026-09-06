@@ -46,7 +46,7 @@ class _CommunityWidgetState extends State<CommunityWidget> {
               crossAxisCount: 2,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
-              childAspectRatio: 0.78,
+              childAspectRatio: 0.73,
             ),
             itemCount: displayCount,
             itemBuilder: (context, index) {
@@ -71,6 +71,18 @@ class _CommunityWidgetState extends State<CommunityWidget> {
 class CommunityCardWidget extends StatelessWidget {
   final Post post;
   const CommunityCardWidget({super.key, required this.post});
+
+  Widget _buildDefaultAvatar() {
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        shape: BoxShape.circle,
+      ),
+      child: const Icon(Icons.person, size: 16, color: Color(0xFF64748B)),
+    );
+  }
 
   String _formatTime(DateTime time) {
     final difference = DateTime.now().difference(time);
@@ -156,26 +168,45 @@ class CommunityCardWidget extends StatelessWidget {
               const Spacer(),
               // Author and Time row
               Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(Icons.person_outline_rounded, size: 14, color: Color(0xFF64748B)),
-                  const SizedBox(width: 4),
-                  Flexible(
-                    child: Text(
-                      post.authorName.isNotEmpty ? post.authorName : 'অজ্ঞাত',
-                      style: const TextStyle(color: Color(0xFF64748B), fontSize: 11, fontWeight: FontWeight.w500),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                  if (post.authorProfilePicture != null && post.authorProfilePicture!.isNotEmpty)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        post.authorProfilePicture!,
+                        width: 24,
+                        height: 24,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => _buildDefaultAvatar(),
+                      ),
+                    )
+                  else
+                    _buildDefaultAvatar(),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          post.authorName.isNotEmpty ? post.authorName : 'অজ্ঞাত',
+                          style: const TextStyle(color: Color(0xFF1E293B), fontSize: 11, fontWeight: FontWeight.w600),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            const Icon(Icons.access_time_rounded, size: 10, color: Color(0xFF64748B)),
+                            const SizedBox(width: 3),
+                            Text(
+                              _formatTime(post.createdAt),
+                              style: const TextStyle(color: Color(0xFF64748B), fontSize: 9),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 6),
-                    child: Text('•', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 11)),
-                  ),
-                  const Icon(Icons.access_time_rounded, size: 14, color: Color(0xFF64748B)),
-                  const SizedBox(width: 4),
-                  Text(
-                    _formatTime(post.createdAt),
-                    style: const TextStyle(color: Color(0xFF64748B), fontSize: 11),
                   ),
                 ],
               ),

@@ -1012,9 +1012,13 @@ class _MarketItemDetailScreenState extends State<MarketItemDetailScreen> {
                     children: [
                       const Icon(Icons.location_on_outlined, color: Colors.white70, size: 16),
                       const SizedBox(width: 4),
-                      Text(
-                        '${widget.item.city}${widget.item.area.isNotEmpty ? ', ${widget.item.area}' : ''}',
-                        style: const TextStyle(color: Colors.white70, fontSize: 14),
+                      Flexible(
+                        child: Text(
+                          '${widget.item.city}${widget.item.area.isNotEmpty ? ', ${widget.item.area}' : ''}',
+                          style: const TextStyle(color: Colors.white70, fontSize: 14),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       const SizedBox(width: 16),
                       const Icon(Icons.calendar_today_outlined, color: Colors.white70, size: 16),
