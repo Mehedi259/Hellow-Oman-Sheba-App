@@ -787,75 +787,105 @@ class VehiclesView extends ConsumerWidget {
           itemBuilder: (context, index) {
             final item = items[index];
             return Container(
-              margin: const EdgeInsets.only(bottom: 12),
+              margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 12,
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                  BoxShadow(
+                    color: const Color(0xFF8B5CF6).withOpacity(0.02),
+                    blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
                 ],
+                border: Border.all(color: Colors.grey.shade100, width: 1.5),
               ),
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => VehicleDetailScreen(vehicle: item)),
-                  );
-                },
-                borderRadius: BorderRadius.circular(16),
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Row(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => VehicleDetailScreen(vehicle: item)),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(20),
+                  highlightColor: const Color(0xFF8B5CF6).withOpacity(0.05),
+                  splashColor: const Color(0xFF8B5CF6).withOpacity(0.1),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: Colors.purple.shade50,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: Icon(Icons.directions_car_filled_rounded, color: Colors.purple.shade500, size: 36),
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
+                      // Image Section
+                      if (item.imageUrl != null && item.imageUrl!.isNotEmpty)
+                        ClipRRect(
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: Image.network(
+                              item.imageUrl!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
+                            ),
+                          ),
+                        )
+                      else
+                        _buildPlaceholder(),
+
+                      // Content Section
+                      Padding(
+                        padding: const EdgeInsets.all(16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              item.title,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF1E293B),
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 6),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.calendar_today_outlined, size: 14, color: Colors.grey.shade500),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '${item.make} ${item.model} (${item.year})',
-                                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                                Expanded(
+                                  child: Text(
+                                    item.title,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF1E293B),
+                                      height: 1.3,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF8B5CF6).withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    '\$${item.price}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF7C3AED),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '\$${item.price}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF059669),
-                              ),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                _buildBadge(Icons.calendar_month_rounded, item.year.toString()),
+                                const SizedBox(width: 8),
+                                _buildBadge(Icons.speed_rounded, '${item.mileage} কিমি'),
+                                const SizedBox(width: 8),
+                                Expanded(child: _buildBadge(Icons.directions_car_rounded, '${item.make} ${item.model}')),
+                              ],
                             ),
                           ],
                         ),
@@ -872,7 +902,47 @@ class VehiclesView extends ConsumerWidget {
       error: (e, _) => Center(child: Text('Error: $e')),
     );
   }
+
+  Widget _buildPlaceholder() {
+    return Container(
+      height: 180,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.purple.shade50,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Center(
+        child: Icon(Icons.directions_car_filled_rounded, color: Colors.purple.shade200, size: 64),
+      ),
+    );
+  }
+
+  Widget _buildBadge(IconData icon, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: Colors.grey.shade600),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
+
 
 class ServicesView extends ConsumerWidget {
   const ServicesView({super.key});
@@ -1314,9 +1384,9 @@ class MarketView extends ConsumerWidget {
                           shrinkWrap: true,
                           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8,
-                            childAspectRatio: 0.58,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 0.75,
                           ),
                           itemCount: items.length,
                           itemBuilder: (context, index) {

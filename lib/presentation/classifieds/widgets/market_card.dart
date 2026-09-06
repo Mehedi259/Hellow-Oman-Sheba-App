@@ -26,122 +26,140 @@ class _MarketCardWidgetState extends State<MarketCardWidget> {
           ),
         );
       },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image with Overlays
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  // Image
-                  widget.item.images.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: widget.item.images[0].startsWith('http') 
-                              ? widget.item.images[0] 
-                              : 'http://188.245.212.240${widget.item.images[0]}',
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            color: Colors.grey.shade100,
-                            child: Center(
-                              child: SizedBox(
-                                width: 24, height: 24,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.grey.shade400),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 15,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(color: Colors.grey.shade100, width: 1.5),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image with Overlays
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Image
+                    widget.item.images.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: widget.item.images[0].startsWith('http') 
+                                ? widget.item.images[0] 
+                                : 'http://188.245.212.240${widget.item.images[0]}',
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey.shade100,
+                              child: Center(
+                                child: SizedBox(
+                                  width: 24, height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.grey.shade400),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.store, color: Colors.grey, size: 50),
-                        )
-                      : const Icon(Icons.store, color: Colors.grey, size: 50),
-                  
-                  // Favorite Button (Top Right)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isFavorite = !isFavorite;
-                        });
-                        // In a real app, you would also trigger an API call or update a provider here
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              isFavorite 
-                                  ? 'পছন্দের তালিকায় যুক্ত করা হয়েছে' 
-                                  : 'পছন্দের তালিকা থেকে সরানো হয়েছে'
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.storefront_rounded, color: Colors.grey, size: 50),
+                          )
+                        : const Icon(Icons.storefront_rounded, color: Colors.grey, size: 50),
+                    
+                    // Favorite Button (Top Right)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isFavorite = !isFavorite;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                isFavorite 
+                                    ? 'পছন্দের তালিকায় যুক্ত করা হয়েছে' 
+                                    : 'পছন্দের তালিকা থেকে সরানো হয়েছে'
+                              ),
+                              duration: const Duration(seconds: 1),
+                              behavior: SnackBarBehavior.floating,
                             ),
-                            duration: const Duration(seconds: 1),
-                            behavior: SnackBarBehavior.floating,
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.9),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4),
+                            ],
                           ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded, 
-                          color: isFavorite ? const Color(0xFFEF4444) : Colors.white, // Red or White
-                          size: 18,
+                          child: Icon(
+                            isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded, 
+                            color: isFavorite ? const Color(0xFFEF4444) : Colors.grey.shade600,
+                            size: 18,
+                          ),
                         ),
                       ),
                     ),
+                  ],
+                ),
+              ),
+            ),
+            
+            // Details Section
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.item.title,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1E293B),
+                      height: 1.2,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-
-                  // Price Tag (Bottom Right)
-                  Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.85),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        '${widget.item.price} ${widget.item.currency}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                        ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0F9D58).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      '${widget.item.price} ${widget.item.currency}',
+                      style: const TextStyle(
+                        color: Color(0xFF0F9D58),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-          
-          // Details Section (Just the title)
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0, left: 4, right: 4, bottom: 4),
-            child: Text(
-              widget.item.title,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF1E293B),
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

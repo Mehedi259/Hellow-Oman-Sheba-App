@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../data/repositories/classifieds_repository.dart';
 import '../../auth/auth_provider.dart';
+import '../../classifieds/classifieds_provider.dart';
+import '../../my_listings/providers/my_listings_provider.dart';
 
 class ServiceForm extends ConsumerStatefulWidget {
   final VoidCallback onSuccess;
@@ -125,7 +127,7 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
         'title_bn': titleController.text,
         'description': descriptionController.text,
         'description_bn': descriptionController.text,
-        'category': selectedCategory,
+        'service_type': selectedCategory,
         'price': double.tryParse(priceController.text) ?? 0,
         'currency': 'OMR',
         'city': selectedCity,
@@ -154,6 +156,8 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
+        ref.invalidate(servicesProvider);
+        ref.invalidate(myPostsProvider);
         widget.onSuccess();
       }
     } catch (e) {
@@ -185,6 +189,7 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
           ),
           child: DropdownButtonFormField<String>(
             value: value,
+            isExpanded: true,
             items: items,
             onChanged: onChanged,
             decoration: const InputDecoration(

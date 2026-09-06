@@ -549,7 +549,9 @@ class _MyPostsTabState extends ConsumerState<_MyPostsTab> {
     return FutureBuilder(
       future: _postsFuture,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED)));
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED)));
+        }
         final posts = snapshot.data as List? ?? [];
         if (posts.isEmpty) {
           return _buildEmptyState(Icons.article_rounded, 'আপনি এখনো কোনো পোস্ট করেননি', 'পোস্ট করলে এখানে দেখাবে');
@@ -560,40 +562,65 @@ class _MyPostsTabState extends ConsumerState<_MyPostsTab> {
           itemCount: posts.length,
           itemBuilder: (context, index) {
             final post = posts[index];
+            final postType = post['post_type']?.toString() ?? 'post';
+            final icon = _getPostIcon(postType);
+            final color = _getPostColor(postType);
+            final label = _getPostLabel(postType);
+            final title = post['title_bn']?.toString().isNotEmpty == true
+                ? post['title_bn'].toString()
+                : post['title']?.toString() ?? 'শিরোনাম নেই';
+
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 3))],
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 12, offset: const Offset(0, 3))],
               ),
               child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 leading: Container(
-                  width: 44, height: 44,
-                  decoration: BoxDecoration(color: const Color(0xFF3B82F6).withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-                  child: const Icon(Icons.article_rounded, color: Color(0xFF3B82F6), size: 22),
+                  width: 48, height: 48,
+                  decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(12)),
+                  child: Icon(icon, color: color, size: 24),
                 ),
-                title: Text(post['title'] ?? 'Untitled', style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
-                subtitle: Container(
-                  margin: const EdgeInsets.only(top: 6),
+                title: Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF1E293B), fontSize: 14),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 6),
                   child: Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(color: const Color(0xFF8B5CF6).withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
-                        child: Text(post['post_type']?.toString().toUpperCase() ?? 'POST', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF8B5CF6))),
+                        decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
+                        child: Text(label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: color)),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _formatDate(post['created_at']?.toString() ?? ''),
+                        style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
                       ),
                     ],
                   ),
                 ),
-                trailing: IconButton(
-                  icon: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(color: const Color(0xFFEF4444).withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(Icons.delete_rounded, color: Color(0xFFEF4444), size: 18),
-                  ),
-                  onPressed: () => _deletePost(post['post_type'] ?? 'post', post['id']),
+                trailing: PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert, color: Color(0xFF94A3B8)),
+                  onSelected: (value) {
+                    if (value == 'delete') {
+                      _deletePost(postType, post['id']);
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(value: 'delete', child: Row(children: [
+                      Icon(Icons.delete_rounded, color: Colors.red, size: 18),
+                      SizedBox(width: 8),
+                      Text('মুছে ফেলুন', style: TextStyle(color: Colors.red)),
+                    ])),
+                  ],
                 ),
               ),
             );
@@ -601,6 +628,54 @@ class _MyPostsTabState extends ConsumerState<_MyPostsTab> {
         );
       },
     );
+  }
+
+  IconData _getPostIcon(String postType) {
+    switch (postType) {
+      case 'job': return Icons.work_rounded;
+      case 'property': return Icons.apartment_rounded;
+      case 'vehicle': return Icons.directions_car_rounded;
+      case 'market': return Icons.storefront_rounded;
+      case 'service': return Icons.handyman_rounded;
+      default: return Icons.article_rounded;
+    }
+  }
+
+  Color _getPostColor(String postType) {
+    switch (postType) {
+      case 'job': return const Color(0xFF3B82F6);
+      case 'property': return const Color(0xFF10B981);
+      case 'vehicle': return const Color(0xFF8B5CF6);
+      case 'market': return const Color(0xFFF59E0B);
+      case 'service': return const Color(0xFF14B8A6);
+      default: return const Color(0xFF7C3AED);
+    }
+  }
+
+  String _getPostLabel(String postType) {
+    switch (postType) {
+      case 'job': return 'চাকরি';
+      case 'property': return 'প্রপার্টি';
+      case 'vehicle': return 'গাড়ি';
+      case 'market': return 'মার্কেট';
+      case 'service': return 'সেবা';
+      default: return 'পোস্ট';
+    }
+  }
+
+  String _formatDate(String dateStr) {
+    if (dateStr.isEmpty) return '';
+    try {
+      final date = DateTime.parse(dateStr).toLocal();
+      final now = DateTime.now();
+      final diff = now.difference(date);
+      if (diff.inDays > 0) return '${diff.inDays} দিন আগে';
+      if (diff.inHours > 0) return '${diff.inHours} ঘন্টা আগে';
+      if (diff.inMinutes > 0) return '${diff.inMinutes} মিনিট আগে';
+      return 'এখনই';
+    } catch (_) {
+      return '';
+    }
   }
 }
 

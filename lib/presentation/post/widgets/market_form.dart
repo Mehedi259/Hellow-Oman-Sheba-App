@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../data/repositories/classifieds_repository.dart';
 import '../../auth/auth_provider.dart';
+import '../../classifieds/classifieds_provider.dart';
+import '../../my_listings/providers/my_listings_provider.dart';
 
 class MarketForm extends ConsumerStatefulWidget {
   final VoidCallback onSuccess;
@@ -155,6 +157,8 @@ class _MarketFormState extends ConsumerState<MarketForm> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
+        ref.invalidate(marketItemsProvider);
+        ref.invalidate(myPostsProvider);
         widget.onSuccess();
       }
     } catch (e) {
