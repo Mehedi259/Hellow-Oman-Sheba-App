@@ -1,5 +1,6 @@
 import '../chat/widgets/chat_initiator_button.dart';
 import 'package:flutter/material.dart';
+import '../widgets/custom_cached_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/job.dart';
@@ -79,13 +80,9 @@ class JobDetailScreen extends ConsumerWidget {
                 fit: StackFit.expand,
                 children: [
                   if (hasImages)
-                    Image.network(
-                      heroImageUrl,
+                    CustomCachedImage(
+                      imageUrl: heroImageUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        color: const Color(0xFF1E3A5F),
-                        child: const Icon(Icons.work_outline, color: Colors.white38, size: 80),
-                      ),
                     )
                   else
                     Container(
@@ -452,13 +449,9 @@ class JobDetailScreen extends ConsumerWidget {
                                       boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 8, offset: const Offset(0, 3))],
                                     ),
                                     clipBehavior: Clip.antiAlias,
-                                    child: Image.network(
-                                      imgUrl,
+                                    child: CustomCachedImage(
+                                      imageUrl: imgUrl,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => Container(
-                                        color: Colors.grey.shade200,
-                                        child: const Icon(Icons.broken_image, color: Colors.grey),
-                                      ),
                                     ),
                                   );
                                 },
@@ -647,14 +640,10 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                             final imgUrl = images[index].startsWith('http') 
                                 ? images[index] 
                                 : 'http://188.245.212.240${images[index]}';
-                            return Image.network(
-                              imgUrl,
+                            return CustomCachedImage(
+                              imageUrl: imgUrl,
                               fit: BoxFit.cover,
                               width: double.infinity,
-                              errorBuilder: (context, error, stackTrace) => Container(
-                                color: Colors.grey.shade200,
-                                child: const Icon(Icons.broken_image, color: Colors.grey, size: 50),
-                              ),
                             );
                           },
                         ),
@@ -867,13 +856,11 @@ class VehicleDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (vehicle.imageUrl != null)
-              Image.network(
-                vehicle.imageUrl!.startsWith('http') ? vehicle.imageUrl! : 'http://188.245.212.240${vehicle.imageUrl}',
+              CustomCachedImage(
+                imageUrl: vehicle.imageUrl!.startsWith('http') ? vehicle.imageUrl! : 'http://188.245.212.240${vehicle.imageUrl}',
                 height: 250,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    Container(height: 250, color: Colors.grey[200], child: const Icon(Icons.broken_image, color: Colors.grey, size: 50)),
               ),
             const SizedBox(height: 16),
             Text(vehicle.title, style: Theme.of(context).textTheme.headlineMedium),
@@ -912,13 +899,11 @@ class ServiceDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (service.imageUrl != null)
-              Image.network(
-                service.imageUrl!.startsWith('http') ? service.imageUrl! : 'http://188.245.212.240${service.imageUrl}',
+              CustomCachedImage(
+                imageUrl: service.imageUrl!.startsWith('http') ? service.imageUrl! : 'http://188.245.212.240${service.imageUrl}',
                 height: 250,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    Container(height: 250, color: Colors.grey[200], child: const Icon(Icons.broken_image, color: Colors.grey, size: 50)),
               ),
             const SizedBox(height: 16),
             Text(service.title, style: Theme.of(context).textTheme.headlineMedium),
@@ -1053,13 +1038,11 @@ class _MarketItemDetailScreenState extends State<MarketItemDetailScreen> {
                     height: 250,
                     width: double.infinity,
                     color: Colors.grey.shade100,
-                    child: Image.network(
-                      widget.item.images[_currentImageIndex].startsWith('http') 
+                    child: CustomCachedImage(
+                      imageUrl: widget.item.images[_currentImageIndex].startsWith('http') 
                           ? widget.item.images[_currentImageIndex] 
                           : 'http://188.245.212.240${widget.item.images[_currentImageIndex]}',
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.broken_image, color: Colors.grey, size: 50),
                     ),
                   ),
                   // Thumbnails

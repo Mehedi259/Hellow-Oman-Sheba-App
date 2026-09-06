@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/custom_cached_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/phase3_models.dart';
 import '../../data/repositories/phase3_repository.dart';
@@ -44,7 +45,7 @@ class NewsScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (news.imageUrl != null)
-                        Image.network(news.imageUrl!, height: 200, width: double.infinity, fit: BoxFit.cover),
+                        CustomCachedImage(imageUrl: news.imageUrl!, height: 200, width: double.infinity, fit: BoxFit.cover),
                       Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(

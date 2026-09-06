@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/custom_cached_image.dart';
 import '../../../data/models/job_seeker.dart';
 
 class JobSeekerCardWidget extends StatelessWidget {
@@ -31,17 +32,13 @@ class JobSeekerCardWidget extends StatelessWidget {
                   border: Border.all(color: Colors.blue.shade100, width: 2),
                 ),
                 child: jobSeeker.userAvatar != null && jobSeeker.userAvatar!.isNotEmpty
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(32),
-                        child: Image.network(
-                          jobSeeker.userAvatar!.startsWith('http')
-                              ? jobSeeker.userAvatar!
-                              : 'http://188.245.212.240${jobSeeker.userAvatar}',
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.person, color: Colors.grey, size: 32),
-                        ),
-                      )
+                  ? CustomCachedImage(
+                      imageUrl: jobSeeker.userAvatar!.startsWith('http')
+                          ? jobSeeker.userAvatar!
+                          : 'http://188.245.212.240${jobSeeker.userAvatar}',
+                      fit: BoxFit.cover,
+                      borderRadius: 32,
+                    )
                     : const Icon(Icons.person, color: Colors.grey, size: 32),
               ),
               const SizedBox(width: 16),

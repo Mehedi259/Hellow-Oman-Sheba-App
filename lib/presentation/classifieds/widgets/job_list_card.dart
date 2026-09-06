@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/custom_cached_image.dart';
 import '../../../data/models/job.dart';
 import '../classifieds_detail_screens.dart';
 import 'favorite_button.dart';
@@ -43,17 +44,13 @@ class JobListCardWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: job.images.isNotEmpty
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      job.images[0].startsWith('http')
+                  ? CustomCachedImage(
+                      imageUrl: job.images[0].startsWith('http')
                           ? job.images[0]
                           : 'http://188.245.212.240${job.images[0]}',
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Icon(Icons.business, color: Colors.grey.shade400, size: 32),
-                    ),
-                  )
+                      borderRadius: 8,
+                    )
                 : Icon(Icons.business, color: Colors.grey.shade400, size: 32),
           ),
           const SizedBox(width: 16),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/custom_cached_image.dart';
 import '../../data/models/phase3_models.dart';
 
 class NewsDetailScreen extends StatelessWidget {
@@ -15,7 +16,7 @@ class NewsDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (news.imageUrl != null)
-              Image.network(news.imageUrl!, height: 250, width: double.infinity, fit: BoxFit.cover),
+              CustomCachedImage(imageUrl: news.imageUrl!, height: 250, width: double.infinity, fit: BoxFit.cover),
             const SizedBox(height: 16),
             Text(news.title, style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
