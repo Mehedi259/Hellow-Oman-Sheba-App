@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../my_listings/providers/my_listings_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../data/repositories/classifieds_repository.dart';
 import '../../../core/api/api_client.dart';
@@ -156,6 +157,7 @@ class _JobFormState extends ConsumerState<JobForm> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
+        ref.invalidate(myPostsProvider);
         widget.onSuccess();
       }
     } catch (e) {

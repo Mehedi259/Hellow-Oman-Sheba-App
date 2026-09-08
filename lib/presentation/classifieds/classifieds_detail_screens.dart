@@ -462,41 +462,7 @@ class JobDetailScreen extends ConsumerWidget {
                       ),
                     ],
 
-                    const SizedBox(height: 28),
 
-                    // Reviews Section
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4)),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF59E0B).withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const Icon(Icons.star_rounded, color: Color(0xFFF59E0B), size: 20),
-                              ),
-                              const SizedBox(width: 12),
-                              const Text('রিভিউ ও মতামত', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          ReviewsSection(contentType: 'job', contentId: job.id),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 100),
                   ],
                 ),
               ),
@@ -518,40 +484,51 @@ class JobDetailScreen extends ConsumerWidget {
         child: SafeArea(
           child: Row(
             children: [
-              // Call Button
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade200),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: IconButton(
-                  onPressed: () async {
-                    try {
-                      await ref.read(classifiedsRepositoryProvider).applyForJob(job.id);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Row(
-                              children: [
-                                Icon(Icons.check_circle, color: Colors.white, size: 20),
-                                SizedBox(width: 8),
-                                Text('সফলভাবে আবেদন করা হয়েছে!'),
-                              ],
-                            ),
-                            backgroundColor: Color(0xFF10B981),
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-                          ),
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('ত্রুটি: $e'), backgroundColor: Colors.red));
-                      }
-                    }
+              // Apply Button
+              Expanded(
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    return ElevatedButton.icon(
+                      onPressed: () async {
+                        try {
+                          await ref.read(classifiedsRepositoryProvider).applyForJob(job.id);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Row(
+                                  children: [
+                                    Icon(Icons.check_circle, color: Colors.white, size: 20),
+                                    SizedBox(width: 8),
+                                    Text('সফলভাবে আবেদন করা হয়েছে!'),
+                                  ],
+                                ),
+                                backgroundColor: Color(0xFF10B981),
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('ত্রুটি: $e'), backgroundColor: Colors.red));
+                          }
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF2563EB),
+                        elevation: 0,
+                        side: const BorderSide(color: Color(0xFF2563EB)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      icon: const Icon(Icons.send_rounded, size: 20),
+                      label: const Text(
+                        'এপ্লাই জব',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
+                    );
                   },
-                  icon: const Icon(Icons.send_rounded, color: Color(0xFF2563EB), size: 22),
-                  tooltip: 'আবেদন করুন',
                 ),
               ),
               const SizedBox(width: 12),
@@ -786,8 +763,6 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     ),
                     
                     const SizedBox(height: 32),
-                    ReviewsSection(contentType: 'property', contentId: widget.property.id),
-                    const SizedBox(height: 40),
                   ],
                 ),
               ),
@@ -877,7 +852,6 @@ class VehicleDetailScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(vehicle.contactInfo),
             const SizedBox(height: 32),
-            ReviewsSection(contentType: 'vehicle', contentId: vehicle.id),
           ],
         ),
       ),
@@ -918,7 +892,6 @@ class ServiceDetailScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(service.contactInfo),
             const SizedBox(height: 32),
-            ReviewsSection(contentType: 'service', contentId: service.id),
           ],
         ),
       ),
@@ -1129,12 +1102,6 @@ class _MarketItemDetailScreenState extends State<MarketItemDetailScreen> {
                   ),
                   
                   const SizedBox(height: 32),
-                  const Text(
-                    'রিভিউ',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  ReviewsSection(contentType: 'market_item', contentId: widget.item.id),
                 ],
               ),
             ),

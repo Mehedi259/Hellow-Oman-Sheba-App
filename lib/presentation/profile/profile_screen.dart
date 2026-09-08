@@ -10,6 +10,7 @@ import 'privacy_policy_screen.dart';
 import 'terms_conditions_screen.dart';
 import 'faq_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../chat/widgets/chat_initiator_button.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -24,7 +25,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 6, vsync: this);
+    _tabController = TabController(length: 7, vsync: this);
   }
 
   @override
@@ -75,6 +76,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
               children: [
                 _ProfileInfoTab(user: user),
                 const _MyPostsTab(),
+                const _JobApplicantsTab(),
                 const _FavoritesTab(),
                 const _ApplicationsTab(),
                 const _SecurityTab(),
@@ -262,6 +264,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
             tabs: const [
               Tab(icon: Icon(Icons.person_rounded, size: 20), text: 'প্রোফাইল'),
               Tab(icon: Icon(Icons.article_rounded, size: 20), text: 'আমার পোস্ট'),
+              Tab(icon: Icon(Icons.people_rounded, size: 20), text: 'আবেদনকারী'),
               Tab(icon: Icon(Icons.favorite_rounded, size: 20), text: 'পছন্দ'),
               Tab(icon: Icon(Icons.work_rounded, size: 20), text: 'আবেদন'),
               Tab(icon: Icon(Icons.lock_rounded, size: 20), text: 'পাসওয়ার্ড'),
@@ -454,7 +457,7 @@ class _ProfileInfoTabState extends ConsumerState<_ProfileInfoTab> {
                     children: [
                       Icon(Icons.logout_rounded, color: const Color(0xFFEF4444).withOpacity(0.8), size: 20),
                       const SizedBox(width: 8),
-                      Text('লগআউট করুন', style: TextStyle(color: const Color(0xFFEF4444).withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 15)),
+                      const Text('লগ আউট করুন', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16)),
                     ],
                   ),
                 ),
@@ -1088,3 +1091,98 @@ Widget _buildEmptyState(IconData icon, String title, String subtitle) {
     ),
   );
 }
+
+// ==================== JOB APPLICANTS TAB ====================
+class _JobApplicantsTab extends ConsumerWidget {
+  const _JobApplicantsTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return FutureBuilder(
+      future: ref.read(authRepositoryProvider).getJobApplicants(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED)));
+        final apps = snapshot.data as List? ?? [];
+        if (apps.isEmpty) {
+          return _buildEmptyState(Icons.people_alt_rounded, 'কোনো আবেদনকারী নেই', 'আপনার পোস্ট করা জবগুলোতে কেউ আবেদন করলে এখানে তাদের তালিকা দেখা যাবে।');
+        }
+        return ListView.builder(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.all(20),
+          itemCount: apps.length,
+          itemBuilder: (context, index) {
+            final app = apps[index];
+            
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 3))],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48, height: 48,
+                      decoration: BoxDecoration(color: const Color(0xFF10B981).withOpacity(0.1), borderRadius: BorderRadius.circular(14)),
+                      child: const Icon(Icons.person_rounded, color: Color(0xFF10B981), size: 24),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(app['applicant_name'] ?? 'Applicant', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Color(0xFF1E293B))),
+                          const SizedBox(height: 2),
+                          Text(app['job_title'] ?? 'Job', style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
+                          const SizedBox(height: 4),
+                          if (app['applicant_phone'] != null && app['applicant_phone'].toString().isNotEmpty)
+                            Text(app['applicant_phone'], style: const TextStyle(fontSize: 12, color: Color(0xFF3B82F6))),
+                        ],
+                      ),
+                    ),
+                    // Message Button
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF3B82F6).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.message_rounded, size: 20, color: Color(0xFF3B82F6)),
+                        onPressed: () {
+                          final targetId = app['applicant_id'];
+                          if (targetId != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Scaffold(
+                                  appBar: AppBar(title: Text(app['applicant_name'] ?? 'Message')),
+                                  body: ChatInitiatorButton(
+                                    targetUserId: targetId,
+                                    title: app['applicant_name'] ?? 'Candidate',
+                                    initialMessage: 'আপনার ${app['job_title'] ?? 'জবে'} আবেদন সম্পর্কে কথা বলতে চাই।',
+                                    relatedObjectType: 'job',
+                                    relatedObjectId: app['job_id'] ?? 0,
+                                    backgroundColor: const Color(0xFF2563EB),
+                                    label: 'মেসেজ পাঠান',
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+

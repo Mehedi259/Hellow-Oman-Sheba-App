@@ -10,6 +10,10 @@ import '../community/community_detail_screen.dart';
 import '../../core/api/api_client.dart';
 import '../auth/auth_provider.dart';
 import '../post/edit_post_screen.dart';
+import '../classifieds/classifieds_provider.dart';
+import '../classifieds/widgets/job_list_card.dart';
+import '../classifieds/widgets/market_card.dart';
+import '../chat/widgets/chat_initiator_button.dart';
 
 class MyListingsScreen extends ConsumerStatefulWidget {
   const MyListingsScreen({super.key});
@@ -24,7 +28,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -170,6 +174,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
           tabAlignment: TabAlignment.center,
           tabs: const [
             Tab(text: 'আমার পোস্ট'),
+            Tab(text: 'আবেদনকারী'),
             Tab(text: 'আমার প্রশ্ন'),
             Tab(text: 'পছন্দের তালিকা'),
             Tab(text: 'আমার কমেন্ট'),
@@ -180,6 +185,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
         controller: _tabController,
         children: [
           _buildPostsTab(),
+          const _JobApplicantsTab(),
           _buildMyQuestionsTab(),
           _buildFavoritesTab(),
           _buildCommentsTab(),
@@ -343,75 +349,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
   }
 
   Widget _buildFavoritesTab() {
-    final myFavoritesAsync = ref.watch(myFavoritesProvider);
-    return RefreshIndicator(
-      onRefresh: () async => ref.refresh(myFavoritesProvider),
-      child: myFavoritesAsync.when(
-        data: (favorites) {
-          if (favorites.isEmpty) {
-            return const _EmptyStateView(
-              icon: Icons.favorite_border_rounded,
-              title: 'পছন্দের তালিকা খালি',
-              subtitle: 'কোনো পোস্টে লাইক দিলে সেটি এখানে দেখা যাবে',
-            );
-          }
-          return ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(16),
-            itemCount: favorites.length,
-            itemBuilder: (context, index) {
-              final fav = favorites[index];
-              final type = fav['favorite_type'] ?? 'unknown';
-              final contentId = fav['favorite_id'] ?? 0;
-              final details = fav['item_details'] ?? {};
-              
-              return _buildCard(
-                onTap: () => _navigateToItem(context, type, contentId),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 48, height: 48,
-                      decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-                      child: const Icon(Icons.favorite_rounded, color: Colors.red, size: 24),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            details['title'] ?? 'Favorite Item',
-                            style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF1E293B), fontSize: 16),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 6),
-                          Row(
-                            children: [
-                              Text('Type: ${type.toString().toUpperCase()}', style: const TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-                              const Spacer(),
-                              const Text('বিস্তারিত দেখুন →', style: TextStyle(color: Color(0xFF0056D2), fontSize: 12, fontWeight: FontWeight.w600)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.favorite, color: Colors.red),
-                      onPressed: () => _removeFavorite(fav['id']),
-                      tooltip: 'রিমুভ',
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF0056D2))),
-        error: (e, st) => const Center(child: Text('কোনো ত্রুটি হয়েছে। আবার চেষ্টা করুন।')),
-      ),
-    );
+    return const _FavoritesTab();
   }
 
   Widget _buildCommentsTab() {
@@ -661,6 +599,203 @@ class _EmptyStateView extends StatelessWidget {
             const SizedBox(height: 80),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ==================== JOB APPLICANTS TAB ====================
+class _JobApplicantsTab extends ConsumerWidget {
+  const _JobApplicantsTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return FutureBuilder(
+      future: ref.read(authRepositoryProvider).getJobApplicants(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED)));
+        final apps = snapshot.data as List? ?? [];
+        if (apps.isEmpty) {
+          return const _EmptyStateView(icon: Icons.people_alt_rounded, title: 'কোনো আবেদনকারী নেই', subtitle: 'আপনার পোস্ট করা জবগুলোতে কেউ আবেদন করলে এখানে তাদের তালিকা দেখা যাবে।');
+        }
+        return ListView.builder(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.all(20),
+          itemCount: apps.length,
+          itemBuilder: (context, index) {
+            final app = apps[index];
+            
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 3))],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48, height: 48,
+                      decoration: BoxDecoration(color: const Color(0xFF10B981).withOpacity(0.1), borderRadius: BorderRadius.circular(14)),
+                      child: const Icon(Icons.person_rounded, color: Color(0xFF10B981), size: 24),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(app['applicant_name'] ?? 'Applicant', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Color(0xFF1E293B))),
+                          const SizedBox(height: 2),
+                          Text(app['job_title'] ?? 'Job', style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
+                          const SizedBox(height: 4),
+                          if (app['applicant_phone'] != null && app['applicant_phone'].toString().isNotEmpty)
+                            Text(app['applicant_phone'], style: const TextStyle(fontSize: 12, color: Color(0xFF3B82F6))),
+                        ],
+                      ),
+                    ),
+                    // Message Button
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF3B82F6).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.message_rounded, size: 20, color: Color(0xFF3B82F6)),
+                        onPressed: () {
+                          final targetId = app['applicant_id'];
+                          if (targetId != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Scaffold(
+                                  appBar: AppBar(title: Text(app['applicant_name'] ?? 'Message')),
+                                  body: ChatInitiatorButton(
+                                    targetUserId: targetId,
+                                    title: app['applicant_name'] ?? 'Candidate',
+                                    initialMessage: 'আপনার ${app['job_title'] ?? 'জবে'} আবেদন সম্পর্কে কথা বলতে চাই।',
+                                    relatedObjectType: 'job',
+                                    relatedObjectId: app['job_id'] ?? 0,
+                                    backgroundColor: const Color(0xFF2563EB),
+                                    label: 'মেসেজ পাঠান',
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+// ==================== FAVORITES TAB ====================
+class _FavoritesTab extends ConsumerWidget {
+  const _FavoritesTab();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final jobsAsync = ref.watch(jobsProvider);
+    final marketAsync = ref.watch(marketItemsProvider);
+
+    return FutureBuilder<List<dynamic>>(
+      future: ref.read(authRepositoryProvider).getFavorites(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED)));
+        if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
+        final items = snapshot.data ?? [];
+        if (items.isEmpty) {
+          return const _EmptyStateView(icon: Icons.favorite_rounded, title: 'পছন্দের তালিকায় কোনো আইটেম নেই', subtitle: 'পছন্দে যোগ করলে এখানে দেখাবে');
+        }
+        return ListView.builder(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.all(20),
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final item = items[index];
+            final String contentType = item['favorite_type'] ?? item['content_type'] ?? '';
+            final String contentIdStr = (item['favorite_id'] ?? item['content_id'] ?? '').toString();
+            final int favId = item['id'];
+
+            Widget contentWidget;
+
+            if (contentType == 'job' && jobsAsync.hasValue) {
+              final job = jobsAsync.value!.where((j) => j.id.toString() == contentIdStr).firstOrNull;
+              if (job != null) {
+                contentWidget = JobListCardWidget(job: job);
+              } else {
+                contentWidget = _fallbackCard(context, ref, item, favId);
+              }
+            } else if ((contentType == 'market' || contentType == 'marketitem' || contentType == 'property' || contentType == 'vehicle' || contentType == 'service') && marketAsync.hasValue) {
+              final marketItem = marketAsync.value!.where((m) => m.id.toString() == contentIdStr).firstOrNull;
+              if (marketItem != null) {
+                contentWidget = MarketCardWidget(item: marketItem);
+              } else {
+                contentWidget = _fallbackCard(context, ref, item, favId);
+              }
+            } else {
+              contentWidget = _fallbackCard(context, ref, item, favId);
+            }
+
+            return Stack(
+              children: [
+                contentWidget,
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: GestureDetector(
+                    onTap: () async {
+                      try {
+                        await ref.read(authRepositoryProvider).removeFavorite(favId);
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Removed from favorites')));
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEF4444),
+                        shape: BoxShape.circle,
+                        boxShadow: [BoxShadow(color: const Color(0xFFEF4444).withOpacity(0.3), blurRadius: 8)],
+                      ),
+                      child: const Icon(Icons.close_rounded, color: Colors.white, size: 16),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _fallbackCard(BuildContext context, WidgetRef ref, dynamic item, int favId) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 3))],
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(16),
+        leading: Container(
+          width: 44, height: 44,
+          decoration: BoxDecoration(color: const Color(0xFFEC4899).withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+          child: const Icon(Icons.favorite_rounded, color: Color(0xFFEC4899), size: 22),
+        ),
+        title: Text(item['title'] ?? item['favorite_type'] ?? item['content_type'] ?? 'Favorite Item', style: const TextStyle(fontWeight: FontWeight.w600)),
+        subtitle: Text('ID: ${item['favorite_id'] ?? item['content_id'] ?? ''}', style: TextStyle(color: Colors.grey.shade500)),
       ),
     );
   }

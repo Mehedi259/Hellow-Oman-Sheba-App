@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../my_listings/providers/my_listings_provider.dart';
 import '../../../data/repositories/classifieds_repository.dart';
 import '../../auth/auth_provider.dart';
 
@@ -180,6 +181,7 @@ class _PropertyFormState extends ConsumerState<PropertyForm> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
+        ref.invalidate(myPostsProvider);
         widget.onSuccess();
       }
     } catch (e) {

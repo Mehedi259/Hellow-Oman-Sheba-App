@@ -149,6 +149,16 @@ class AuthRepository {
     }
   }
 
+  Future<List<dynamic>> getJobApplicants() async {
+    try {
+      final response = await apiClient.dio.get('/users/job-applicants/');
+      if (response.data is List) return response.data as List;
+      return (response.data['results'] as List?) ?? [];
+    } catch (e) {
+      return [];
+    }
+  }
+
   Future<void> deleteMyPost(String type, int id) async {
     try {
       String endpoint = '';
