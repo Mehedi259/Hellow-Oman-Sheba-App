@@ -639,7 +639,16 @@ class _JobApplicantsTab extends ConsumerWidget {
                     Container(
                       width: 48, height: 48,
                       decoration: BoxDecoration(color: const Color(0xFF10B981).withOpacity(0.1), borderRadius: BorderRadius.circular(14)),
-                      child: const Icon(Icons.person_rounded, color: Color(0xFF10B981), size: 24),
+                      clipBehavior: Clip.antiAlias,
+                      child: app['applicant_avatar'] != null
+                          ? Image.network(
+                              app['applicant_avatar'].toString().startsWith('http') 
+                                  ? app['applicant_avatar'] 
+                                  : '${ApiClient.baseUrl}${app['applicant_avatar']}',
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => const Icon(Icons.person_rounded, color: Color(0xFF10B981), size: 24),
+                            )
+                          : const Icon(Icons.person_rounded, color: Color(0xFF10B981), size: 24),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -661,31 +670,17 @@ class _JobApplicantsTab extends ConsumerWidget {
                         color: const Color(0xFF3B82F6).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: IconButton(
-                        icon: const Icon(Icons.message_rounded, size: 20, color: Color(0xFF3B82F6)),
-                        onPressed: () {
-                          final targetId = app['applicant_id'];
-                          if (targetId != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Scaffold(
-                                  appBar: AppBar(title: Text(app['applicant_name'] ?? 'Message')),
-                                  body: ChatInitiatorButton(
-                                    targetUserId: targetId,
-                                    title: app['applicant_name'] ?? 'Candidate',
-                                    initialMessage: 'আপনার ${app['job_title'] ?? 'জবে'} আবেদন সম্পর্কে কথা বলতে চাই।',
-                                    relatedObjectType: 'job',
-                                    relatedObjectId: app['job_id'] ?? 0,
-                                    backgroundColor: const Color(0xFF2563EB),
-                                    label: 'মেসেজ পাঠান',
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                      ),
+                      child: app['applicant_id'] != null 
+                        ? ChatInitiatorButton(
+                            targetUserId: app['applicant_id'],
+                            title: app['applicant_name'] ?? 'Candidate',
+                            initialMessage: 'আপনার ${app['job_title'] ?? 'জবে'} আবেদন সম্পর্কে কথা বলতে চাই।',
+                            relatedObjectType: 'job',
+                            relatedObjectId: app['job_id'] ?? 0,
+                            isIconButton: true,
+                            icon: const Icon(Icons.message_rounded, size: 20, color: Color(0xFF3B82F6)),
+                          )
+                        : const SizedBox(),
                     ),
                   ],
                 ),

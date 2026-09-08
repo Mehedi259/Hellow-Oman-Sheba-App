@@ -13,6 +13,7 @@ class ChatInitiatorButton extends ConsumerStatefulWidget {
   final Widget? icon;
   final String label;
   final Color backgroundColor;
+  final bool isIconButton;
 
   const ChatInitiatorButton({
     super.key,
@@ -24,6 +25,7 @@ class ChatInitiatorButton extends ConsumerStatefulWidget {
     this.icon,
     this.label = 'মেসেজ',
     this.backgroundColor = const Color(0xFF25D366),
+    this.isIconButton = false,
   });
 
   @override
@@ -89,6 +91,21 @@ class _ChatInitiatorButtonState extends ConsumerState<ChatInitiatorButton> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.isIconButton) {
+      if (_isLoading) {
+        return Container(
+          width: 40, height: 40,
+          padding: const EdgeInsets.all(10),
+          child: const CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.blue)),
+        );
+      }
+      return IconButton(
+        icon: widget.icon ?? const Icon(Icons.chat_rounded),
+        color: widget.backgroundColor,
+        onPressed: _initiateChat,
+      );
+    }
+
     if (_isLoading) {
       return ElevatedButton.icon(
         onPressed: null,
