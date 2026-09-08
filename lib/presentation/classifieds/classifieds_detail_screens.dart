@@ -358,49 +358,201 @@ class JobDetailScreen extends ConsumerWidget {
                     const SizedBox(height: 28),
 
                     // Description Section
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4)),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF0EA5E9).withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10),
+                    if (job.description.isNotEmpty) ...[
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4)),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF0EA5E9).withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Icon(Icons.description_rounded, color: Color(0xFF0EA5E9), size: 20),
                                 ),
-                                child: const Icon(Icons.description_rounded, color: Color(0xFF0EA5E9), size: 20),
+                                const SizedBox(width: 12),
+                                const Text('বিস্তারিত বিবরণ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF8FAFC),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFFE2E8F0)),
                               ),
-                              const SizedBox(width: 12),
-                              const Text('বিস্তারিত বিবরণ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF8FAFC),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: const Color(0xFFE2E8F0)),
+                              child: Text(
+                                job.description,
+                                style: const TextStyle(fontSize: 15, color: Color(0xFF475569), height: 1.7, letterSpacing: 0.1),
+                              ),
                             ),
-                            child: Text(
-                              job.description.isNotEmpty ? job.description : 'কোনো বিবরণ দেওয়া নেই',
-                              style: const TextStyle(fontSize: 15, color: Color(0xFF475569), height: 1.7, letterSpacing: 0.1),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 20),
+                    ],
+
+                    // Qualifications Section
+                    if (job.experience.isNotEmpty) ...[
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4)),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF59E0B).withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Icon(Icons.school_rounded, color: Color(0xFFF59E0B), size: 20),
+                                ),
+                                const SizedBox(width: 12),
+                                const Text('প্রয়োজনীয় যোগ্যতা', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFFBEB),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFFFDE68A)),
+                              ),
+                              child: Text(
+                                job.experience,
+                                style: const TextStyle(fontSize: 15, color: Color(0xFF475569), height: 1.7, letterSpacing: 0.1),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+
+                    // Benefits Section
+                    if (job.benefits.isNotEmpty) ...[
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4)),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF8B5CF6).withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Icon(Icons.stars_rounded, color: Color(0xFF8B5CF6), size: 20),
+                                ),
+                                const SizedBox(width: 12),
+                                const Text('সুবিধাসমূহ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF5F3FF),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFFEDE9FE)),
+                              ),
+                              child: Text(
+                                job.benefits,
+                                style: const TextStyle(fontSize: 15, color: Color(0xFF475569), height: 1.7, letterSpacing: 0.1),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+
+                    // Contact Info
+                    if (job.contactPhone.isNotEmpty || job.contactName.isNotEmpty) ...[
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4)),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF10B981).withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Icon(Icons.contact_phone_rounded, color: Color(0xFF10B981), size: 20),
+                                ),
+                                const SizedBox(width: 12),
+                                const Text('যোগাযোগ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            if (job.contactName.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.person_outline_rounded, color: Colors.grey, size: 18),
+                                    const SizedBox(width: 8),
+                                    Text(job.contactName, style: const TextStyle(fontSize: 15, color: Color(0xFF334155), fontWeight: FontWeight.w500)),
+                                  ],
+                                ),
+                              ),
+                            if (job.contactPhone.isNotEmpty)
+                              Row(
+                                children: [
+                                  const Icon(Icons.phone_rounded, color: Colors.grey, size: 18),
+                                  const SizedBox(width: 8),
+                                  Text(job.contactPhone, style: const TextStyle(fontSize: 15, color: Color(0xFF334155), fontWeight: FontWeight.w500)),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
 
                     // Images gallery (if more than 1)
                     if (job.images.length > 1) ...[

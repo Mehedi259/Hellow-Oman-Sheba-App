@@ -122,6 +122,7 @@ class _JobFormState extends ConsumerState<JobForm> {
       final repo = ClassifiedsRepository(ref.read(apiClientProvider));
       final payload = {
         'title': titleController.text,
+        'title_bn': titleController.text,
         'company_name_en': companyController.text,
         'type': typeMap[typeValue] ?? 'FULL_TIME',
         'city': cityValue,
@@ -130,9 +131,11 @@ class _JobFormState extends ConsumerState<JobForm> {
         'salary_max': maxSalaryController.text,
         'salary_currency': currencyValue,
         'description': descriptionController.text,
+        'description_bn': descriptionController.text,
         'requirements': requirementsController.text,
+        'experience': requirementsController.text, // API expects experience instead of requirements
         'benefits': benefitsController.text,
-        'contact_name': contactNameController.text,
+        'contact_name': '${companyController.text} (${contactNameController.text})',
         'contact_phone': contactPhoneController.text,
         'status': 'PUBLISHED',
         'job_status': 'PUBLISHED',
