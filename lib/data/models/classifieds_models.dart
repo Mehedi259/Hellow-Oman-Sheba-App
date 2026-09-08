@@ -111,9 +111,16 @@ class Service {
   final String category;
   final String contactInfo;
   final String? imageUrl;
+  final List<String> images;
   final DateTime createdAt;
   final double rating;
   final int reviewCount;
+  final String city;
+  final String area;
+  final String contactPhone;
+  final String serviceType;
+  final int views;
+  final bool verified;
 
   Service({
     required this.id,
@@ -123,21 +130,55 @@ class Service {
     required this.contactInfo,
     required this.createdAt,
     this.imageUrl,
+    this.images = const [],
     this.rating = 0.0,
     this.reviewCount = 0,
+    this.city = '',
+    this.area = '',
+    this.contactPhone = '',
+    this.serviceType = '',
+    this.views = 0,
+    this.verified = false,
   });
 
+  String get location {
+    if (city.isNotEmpty && area.isNotEmpty) return '$city, $area';
+    return city.isNotEmpty ? city : area;
+  }
+
+  String get primaryImage {
+    if (images.isNotEmpty) return images.first;
+    if (imageUrl != null && imageUrl!.isNotEmpty) return imageUrl!;
+    return '';
+  }
+
   factory Service.fromJson(Map<String, dynamic> json) {
+    // Parse images array
+    final rawImages = json['images'];
+    List<String> imagesList = [];
+    if (rawImages is List) {
+      imagesList = rawImages.map((e) => e.toString()).where((e) => e.isNotEmpty).toList();
+    } else if (json['image_url'] != null && json['image_url'].toString().isNotEmpty) {
+      imagesList = [json['image_url'].toString()];
+    }
+
     return Service(
       id: json['id'],
       title: json['title']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
       category: json['category']?.toString() ?? '',
-      contactInfo: json['contact_info']?.toString() ?? '',
+      contactInfo: json['contact_info']?.toString() ?? json['contact_phone']?.toString() ?? '',
       createdAt: DateTime.parse(json['created_at']),
-      imageUrl: json['image_url']?.toString(),
+      imageUrl: imagesList.isNotEmpty ? imagesList.first : json['image_url']?.toString(),
+      images: imagesList,
       rating: (json['rating'] ?? 0.0).toDouble(),
       reviewCount: json['review_count'] ?? 0,
+      city: json['city']?.toString() ?? '',
+      area: json['area']?.toString() ?? '',
+      contactPhone: json['contact_phone']?.toString() ?? json['contact_info']?.toString() ?? '',
+      serviceType: json['service_type']?.toString() ?? '',
+      views: json['views'] ?? 0,
+      verified: json['verified'] ?? false,
     );
   }
 }

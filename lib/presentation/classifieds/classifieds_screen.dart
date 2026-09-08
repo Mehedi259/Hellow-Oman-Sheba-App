@@ -4,6 +4,7 @@ import 'classifieds_provider.dart';
 import 'job_seekers_provider.dart';
 import 'widgets/job_seeker_card.dart';
 import 'classifieds_detail_screens.dart';
+import '../categories/service_list_screen.dart' show ServiceDetailScreen;
 import '../../data/models/job.dart';
 import '../../data/models/classifieds_models.dart';
 import 'find_jobs_provider.dart';

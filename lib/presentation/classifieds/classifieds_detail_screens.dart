@@ -859,45 +859,8 @@ class VehicleDetailScreen extends StatelessWidget {
   }
 }
 
-class ServiceDetailScreen extends StatelessWidget {
-  final Service service;
-  const ServiceDetailScreen({super.key, required this.service});
+// ServiceDetailScreen has been moved to service_list_screen.dart with premium design.
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(service.title), actions: [FavoriteButton(contentType: 'service', contentId: service.id)]),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (service.imageUrl != null)
-              CustomCachedImage(
-                imageUrl: service.imageUrl!.startsWith('http') ? service.imageUrl! : 'http://188.245.212.240${service.imageUrl}',
-                height: 250,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            const SizedBox(height: 16),
-            Text(service.title, style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 8),
-            Text(service.category, style: const TextStyle(fontSize: 18, color: Colors.teal)),
-            const SizedBox(height: 24),
-            const Text('Description', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text(service.description),
-            const SizedBox(height: 24),
-            const Text('Contact Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text(service.contactInfo),
-            const SizedBox(height: 32),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class MarketItemDetailScreen extends StatefulWidget {
   final MarketItem item;

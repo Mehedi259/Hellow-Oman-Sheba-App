@@ -6,6 +6,7 @@ import '../../data/models/job.dart';
 import '../../data/models/classifieds_models.dart';
 import '../../data/models/post.dart';
 import '../classifieds/classifieds_detail_screens.dart';
+import '../categories/service_list_screen.dart' show ServiceDetailScreen;
 import '../community/community_detail_screen.dart';
 import '../../core/api/api_client.dart';
 import '../auth/auth_provider.dart';
