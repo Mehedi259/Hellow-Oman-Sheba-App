@@ -152,9 +152,15 @@ class ClassifiedsRepository {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load market items');
     }
   }
-  Future<void> createJob(Map<String, dynamic> data) async {
+  Future<void> createJob(Map<String, dynamic> data, {List<File>? images}) async {
     try {
-      await apiClient.dio.post('/classifieds/jobs/', data: data);
+      final response = await apiClient.dio.post('/classifieds/jobs/', data: data);
+      final id = response.data['id'];
+      if (images != null && images.isNotEmpty && id != null) {
+        for (int i = 0; i < images.length; i++) {
+          await uploadClassifiedImage(images[i].path, 'job', id, i == 0);
+        }
+      }
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to create job post');
     }

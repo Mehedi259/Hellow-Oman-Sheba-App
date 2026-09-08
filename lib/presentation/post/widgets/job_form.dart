@@ -144,7 +144,7 @@ class _JobFormState extends ConsumerState<JobForm> {
       if (widget.editId != null) {
         await repo.updateJob(widget.editId!, payload);
       } else {
-        await repo.createJob(payload);
+        await repo.createJob(payload, images: selectedImages);
       }
       
       if (mounted) {
