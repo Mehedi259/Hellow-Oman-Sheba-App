@@ -5,7 +5,7 @@ import '../../presentation/home/main_scaffold.dart';
 import '../../presentation/auth/login_screen.dart';
 import '../../presentation/classifieds/classifieds_screen.dart';
 import '../../presentation/community/community_screen.dart';
-import '../../presentation/news/news_screen.dart';
+import '../../presentation/news/news_feed_screen.dart';
 import '../../presentation/profile/profile_screen.dart';
 import '../../presentation/emergency/emergency_screen.dart';
 
@@ -89,7 +89,7 @@ final appRouter = GoRouter(
         ),
         GoRoute(
           path: '/news',
-          builder: (context, state) => const NewsScreen(),
+          builder: (context, state) => const NewsFeedScreen(),
         ),
         GoRoute(
           path: '/profile',

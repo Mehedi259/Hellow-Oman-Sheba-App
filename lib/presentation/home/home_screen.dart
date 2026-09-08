@@ -14,6 +14,8 @@ import 'widgets/properties_widget.dart';
 import 'widgets/vehicles_widget.dart';
 import 'widgets/call_to_action_widget.dart';
 import '../community/community_provider.dart';
+import '../news/news_ticker_widget.dart';
+import '../../data/repositories/news_repository.dart';
 
 import '../../core/services/fcm_service.dart';
 
@@ -199,6 +201,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ref.invalidate(vehiclesProvider);
           ref.invalidate(marketItemsProvider);
           ref.invalidate(postsProvider);
+          ref.invalidate(allNewsProvider);
         },
         child: ListView(
           padding: const EdgeInsets.only(top: 8.0),
@@ -209,6 +212,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               error: (e, _) => Center(child: Text('Slider Error: $e')),
             ),
             const CategoryGridWidget(),
+            const SizedBox(height: 8),
+            const NewsTickerWidget(),
             const SizedBox(height: 4),
             jobsState.when(
               data: (jobs) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: LatestJobsWidget(jobs: jobs)),
