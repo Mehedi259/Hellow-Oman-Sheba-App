@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../data/models/news_article.dart';
 
 /// Renders a news image supporting both base64 and URL formats
@@ -53,13 +54,14 @@ class NewsImageWidget extends StatelessWidget {
     } else {
       final url = article.image.startsWith('http')
           ? article.image
-          : 'http://46.225.103.236:8000${article.image}';
-      image = Image.network(
-        url,
+          : 'https://helloomanbangla.com${article.image}';
+      image = CachedNetworkImage(
+        imageUrl: url,
         height: height,
         width: width ?? double.infinity,
         fit: fit,
-        errorBuilder: (_, __, ___) => _placeholder(),
+        placeholder: (context, url) => _placeholder(),
+        errorWidget: (context, url, error) => _placeholder(),
       );
     }
 

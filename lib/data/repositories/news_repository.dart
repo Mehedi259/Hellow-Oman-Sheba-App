@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import '../models/news_article.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const String _newsApiBase = 'http://46.225.103.236:8000/api';
+const String _newsApiBase = 'https://helloomanbangla.com/api';
 
 class NewsRepository {
   final Dio _dio;

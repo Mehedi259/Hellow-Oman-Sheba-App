@@ -72,21 +72,18 @@ class _NewsTickerWidgetState extends ConsumerState<NewsTickerWidget> {
       child: Row(
         children: [
           // "সর্বশেষ" label
-          GestureDetector(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NewsFeedScreen())),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              height: double.infinity,
-              color: const Color(0xFF880000),
-              child: const Center(
-                child: Text(
-                  '📰 সর্বশেষ',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 13,
-                    letterSpacing: 0.5,
-                  ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            height: double.infinity,
+            color: const Color(0xFF880000), // Original dark red
+            child: const Center(
+              child: Text(
+                '📰 সর্বশেষ',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13,
+                  letterSpacing: 0.5,
                 ),
               ),
             ),
@@ -145,7 +142,11 @@ class _NewsTickerWidgetState extends ConsumerState<NewsTickerWidget> {
   Widget _buildTickerSkeleton() {
     return Container(
       height: 40,
-      color: const Color(0xFFCC0000),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFCC0000), Color(0xFFFF1A1A)],
+        ),
+      ),
       child: Row(
         children: [
           Container(

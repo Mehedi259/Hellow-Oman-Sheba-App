@@ -258,12 +258,14 @@ class AboutOmanScreen extends StatelessWidget {
                                 children: [
                                   Icon(Icons.people_outline, color: Colors.orange.shade800, size: 20),
                                   const SizedBox(width: 8),
-                                  Text(
-                                    'প্রবাসীদের জন্য গুরুত্বপূর্ণ নিয়মাবলী',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      color: Colors.orange.shade800,
+                                  Expanded(
+                                    child: Text(
+                                      'প্রবাসীদের জন্য গুরুত্বপূর্ণ নিয়মাবলী',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: Colors.orange.shade800,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -395,12 +397,14 @@ class AboutOmanScreen extends StatelessWidget {
                     Icon(icon, color: iconColor, size: 24),
                     const SizedBox(width: 8),
                   ],
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
                   ),
                 ],

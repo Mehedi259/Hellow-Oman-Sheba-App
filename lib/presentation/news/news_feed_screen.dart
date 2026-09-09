@@ -3,9 +3,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../data/repositories/news_repository.dart';
 import '../../data/models/news_article.dart';
 import 'news_detail_screen_new.dart';
+import 'news_ticker_widget.dart';
 
 const List<String> _categories = [
   'সর্বশেষ', 'প্রবাস', 'বাংলাদেশ', 'আন্তর্জাতিক',
@@ -65,56 +67,65 @@ class _NewsFeedScreenState extends ConsumerState<NewsFeedScreen>
             floating: true,
             snap: true,
             expandedHeight: 0,
-            backgroundColor: const Color(0xFF8B0000),
-            foregroundColor: Colors.white,
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black87,
             elevation: 0,
             title: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.blue.shade50,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.white30),
+                    border: Border.all(color: Colors.blue.shade200),
                   ),
-                  child: const Text('HD', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                  child: Text('HD', style: TextStyle(color: Colors.blue.shade700, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
                 ),
                 const SizedBox(width: 10),
                 const Text(
                   'হ্যালো ওমান সংবাদ',
-                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: 0.3),
+                  style: TextStyle(color: Colors.black87, fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: 0.3),
                 ),
               ],
             ),
-            bottom: TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              indicatorColor: Colors.amber,
-              indicatorWeight: 3,
-              indicatorSize: TabBarIndicatorSize.label,
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.white54,
-              labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, letterSpacing: 0.3),
-              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 13),
-              dividerColor: Colors.transparent,
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              tabs: _categories.map((cat) {
-                final color = _getCategoryColor(cat);
-                return Tab(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 6, height: 6,
-                        decoration: BoxDecoration(color: color == const Color(0xFFCC0000) ? Colors.amber : color, shape: BoxShape.circle),
-                      ),
-                      const SizedBox(width: 5),
-                      Text(cat),
-                    ],
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(90), // 40 for Ticker + ~50 for TabBar
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const NewsTickerWidget(),
+                  TabBar(
+                    controller: _tabController,
+                    isScrollable: true,
+                    tabAlignment: TabAlignment.start,
+                    indicatorColor: Colors.blue.shade600,
+                    indicatorWeight: 3,
+                    indicatorSize: TabBarIndicatorSize.label,
+                    labelColor: Colors.blue.shade700,
+                    unselectedLabelColor: Colors.grey.shade600,
+                    labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, letterSpacing: 0.3),
+                    unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 13),
+                    dividerColor: Colors.transparent,
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    tabs: _categories.map((cat) {
+                      final color = _getCategoryColor(cat);
+                      return Tab(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 6, height: 6,
+                              decoration: BoxDecoration(color: color == const Color(0xFFCC0000) ? Colors.blue.shade600 : color, shape: BoxShape.circle),
+                            ),
+                            const SizedBox(width: 5),
+                            Text(cat),
+                          ],
+                        ),
+                      );
+                    }).toList(),
                   ),
-                );
-              }).toList(),
+                ],
+              ),
             ),
           ),
         ],
@@ -572,18 +583,20 @@ class _NewsImage extends StatelessWidget {
 
     final url = article.image.startsWith('http')
         ? article.image
-        : 'http://46.225.103.236:8000${article.image}';
+        : 'https://helloomanbangla.com${article.image}';
 
-    return Image.network(url, height: height, width: w, fit: BoxFit.cover,
-        loadingBuilder: (context, child, progress) {
-          if (progress == null) return child;
-          return Shimmer.fromColors(
-            baseColor: const Color(0xFFE5E7EB),
-            highlightColor: const Color(0xFFF9FAFB),
-            child: Container(height: height, width: w, color: Colors.white),
-          );
-        },
-        errorBuilder: (_, __, ___) => _placeholder(w));
+    return CachedNetworkImage(
+      imageUrl: url, 
+      height: height, 
+      width: w, 
+      fit: BoxFit.cover,
+      placeholder: (context, url) => Shimmer.fromColors(
+        baseColor: const Color(0xFFE5E7EB),
+        highlightColor: const Color(0xFFF9FAFB),
+        child: Container(height: height, width: w, color: Colors.white),
+      ),
+      errorWidget: (context, url, error) => _placeholder(w),
+    );
   }
 
   Widget _placeholder(double w) {
