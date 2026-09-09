@@ -252,10 +252,6 @@ class _ServiceCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Icons.star_rounded, size: 14, color: Color(0xFFF59E0B)),
-                      const SizedBox(width: 4),
-                      Text('${item.rating.toStringAsFixed(1)} (${item.reviewCount} রিভিউ)',
-                          style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280))),
                       const Spacer(),
                       if (item.contactPhone.isNotEmpty)
                         Row(children: [
@@ -495,8 +491,6 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       // Stats row
                       Row(
                         children: [
-                          _StatChip(icon: Icons.star_rounded, label: '${s.rating.toStringAsFixed(1)} (${s.reviewCount} রিভিউ)', color: const Color(0xFFF59E0B)),
-                          const SizedBox(width: 12),
                           _StatChip(icon: Icons.remove_red_eye_outlined, label: '${s.views} বার দেখা হয়েছে', color: const Color(0xFF6B7280)),
                         ],
                       ),
@@ -536,7 +530,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                         child: Row(mainAxisSize: MainAxisSize.min, children: [
                           Icon(Icons.check_circle_outline, size: 13, color: catColor),
                           const SizedBox(width: 5),
-                          Text(tag.trim(), style: TextStyle(fontSize: 12, color: catColor, fontWeight: FontWeight.w600)),
+                          Flexible(child: Text(tag.trim(), style: TextStyle(fontSize: 12, color: catColor, fontWeight: FontWeight.w600))),
                         ]),
                       )).toList(),
                     ),

@@ -1137,29 +1137,6 @@ class ServicesView extends ConsumerWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Icon(Icons.star_rounded, size: 16, color: Colors.amber.shade500),
-                          const SizedBox(width: 4),
-                          Text(
-                            item.rating.toStringAsFixed(1),
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF334155),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '(${item.reviewCount} টি রিভিউ)',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade500,
-                            ),
-                          ),
-                        ],
-                      ),
                       const SizedBox(height: 12),
                       
                       // Contact Button & Location
