@@ -491,7 +491,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       // Stats row
                       Row(
                         children: [
-                          _StatChip(icon: Icons.remove_red_eye_outlined, label: '${s.views} বার দেখা হয়েছে', color: const Color(0xFF6B7280)),
+                          _StatChip(icon: Icons.remove_red_eye_outlined, label: '${s.views} বার দেখা হয়েছে', color: const Color(0xFF4B5563)),
                         ],
                       ),
                       if (s.location.isNotEmpty) ...[
@@ -622,9 +622,9 @@ class _StatChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(mainAxisSize: MainAxisSize.min, children: [
-      Icon(icon, size: 14, color: color),
-      const SizedBox(width: 4),
-      Text(label, style: TextStyle(fontSize: 12, color: color)),
+      Icon(icon, size: 16, color: color),
+      const SizedBox(width: 6),
+      Text(label, style: TextStyle(fontSize: 13, color: color, fontWeight: FontWeight.w500)),
     ]);
   }
 }
