@@ -88,7 +88,7 @@ class MainScaffold extends ConsumerWidget {
   }
 }
 
-class _PremiumBottomNavBar extends StatelessWidget {
+class _PremiumBottomNavBar extends ConsumerWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
   final VoidCallback onFabTapped;
@@ -100,7 +100,9 @@ class _PremiumBottomNavBar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authStateProvider).value;
+    
     return Container(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 4, top: 0),
       child: Stack(
@@ -136,7 +138,7 @@ class _PremiumBottomNavBar extends StatelessWidget {
                 _buildNavItem(1, Icons.list_alt_rounded, Icons.list_alt_outlined, 'লিস্টিং'),
                 const SizedBox(width: 56), // Space for FAB
                 _buildNavItem(3, Icons.message_rounded, Icons.message_outlined, 'মেসেজ'),
-                _buildNavItem(4, Icons.person_rounded, Icons.person_outline_rounded, 'প্রোফাইল'),
+                _buildProfileNavItem(4, 'প্রোফাইল', user?.profilePicture),
               ],
             ),
           ),
@@ -209,6 +211,70 @@ class _PremiumBottomNavBar extends StatelessWidget {
                 size: 24,
                 color: isSelected ? activeColor : inactiveColor,
               ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 9.5,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected ? activeColor : inactiveColor,
+                letterSpacing: -0.2,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget _buildProfileNavItem(int index, String label, String? profilePicture) {
+    final isSelected = selectedIndex == index;
+    final Color activeColor = const Color(0xFF0056D2); // Logo Blue
+    final Color inactiveColor = const Color(0xFF94A3B8);
+
+    Widget avatarWidget;
+    if (profilePicture != null && profilePicture.isNotEmpty) {
+      avatarWidget = Container(
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: isSelected ? Border.all(color: activeColor, width: 2) : null,
+          image: DecorationImage(
+            image: NetworkImage(profilePicture),
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    } else {
+      avatarWidget = Icon(
+        isSelected ? Icons.person_rounded : Icons.person_outline_rounded,
+        size: 24,
+        color: isSelected ? activeColor : inactiveColor,
+      );
+    }
+
+    return GestureDetector(
+      onTap: () => onItemTapped(index),
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: 64,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: isSelected && (profilePicture == null || profilePicture.isEmpty) 
+                    ? activeColor.withOpacity(0.1) 
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: avatarWidget,
             ),
             const SizedBox(height: 3),
             Text(
