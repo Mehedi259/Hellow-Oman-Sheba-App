@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'providers/my_listings_provider.dart';
 import '../../data/models/job.dart';
+import '../../data/models/job_seeker.dart';
 import '../../data/models/classifieds_models.dart';
 import '../../data/models/post.dart';
 import '../classifieds/classifieds_detail_screens.dart';
+import '../classifieds/worker_detail_screen.dart';
 import '../categories/service_list_screen.dart' show ServiceDetailScreen;
 import '../community/community_detail_screen.dart';
 import '../../core/api/api_client.dart';
@@ -65,6 +67,9 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
       } else if (type == 'service') {
         final res = await apiClient.dio.get('/classifieds/services/$id/');
         nextScreen = ServiceDetailScreen(service: Service.fromJson(res.data));
+      } else if (type == 'job_seeker') {
+        final res = await apiClient.dio.get('/classifieds/job-seekers/$id/');
+        nextScreen = WorkerDetailScreen(jobSeeker: JobSeeker.fromJson(res.data));
       } else if (type == 'post' || type == 'forum_post' || type == 'community') {
         final res = await apiClient.dio.get('/community/forum/posts/$id/');
         nextScreen = CommunityDetailScreen(post: Post.fromJson(res.data));
@@ -124,6 +129,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
       else if (type == 'property') endpoint = '/classifieds/properties/$id/';
       else if (type == 'vehicle') endpoint = '/classifieds/vehicles/$id/';
       else if (type == 'service') endpoint = '/classifieds/services/$id/';
+      else if (type == 'job_seeker') endpoint = '/classifieds/job-seekers/$id/';
       else if (type == 'post' || type == 'forum_post') endpoint = '/community/forum/posts/$id/';
       
       if (endpoint.isNotEmpty) {
@@ -254,6 +260,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
               if (type == 'property') iconPath = '🏠';
               if (type == 'vehicle') iconPath = '🚗';
               if (type == 'service') iconPath = '🛠️';
+              if (type == 'job_seeker') iconPath = '👨‍🔧';
               
               return _buildCard(
                 onTap: () => _navigateToItem(context, type, id),
@@ -275,7 +282,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            post['title'] ?? post['title_bn'] ?? 'Untitled',
+                            post['title'] ?? post['title_bn'] ?? post['professional_title'] ?? post['professional_title_bn'] ?? 'Untitled',
                             style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF1E293B), fontSize: 16),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,

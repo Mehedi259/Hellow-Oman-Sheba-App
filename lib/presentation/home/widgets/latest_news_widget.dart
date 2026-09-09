@@ -51,71 +51,53 @@ class _AutoScrollingNewsList extends StatefulWidget {
 }
 
 class _AutoScrollingNewsListState extends State<_AutoScrollingNewsList> {
-  final ScrollController _scrollController = ScrollController();
+  final PageController _pageController = PageController(viewportFraction: 0.55);
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startAutoScroll();
-    });
+    _startAutoScroll();
   }
 
   void _startAutoScroll() {
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
-      if (_scrollController.hasClients) {
-        final maxScroll = _scrollController.position.maxScrollExtent;
-        final currentScroll = _scrollController.position.pixels;
-
-        if (currentScroll < maxScroll) {
-          _scrollController.animateTo(
-            currentScroll + 2.0, // Scroll speed
-            duration: const Duration(milliseconds: 50),
-            curve: Curves.linear,
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (_pageController.hasClients) {
+        if (_pageController.page?.toInt() == widget.articles.length - 1) {
+          _pageController.animateToPage(
+            0,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
           );
         } else {
-          // Smoothly reset or jump to 0
-          _scrollController.jumpTo(0.0);
+          _pageController.nextPage(
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
         }
       }
     });
   }
 
-  void _stopAutoScroll() {
-    _timer?.cancel();
-  }
-
   @override
   void dispose() {
     _timer?.cancel();
-    _scrollController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onPanDown: (_) => _stopAutoScroll(),
-      onPanCancel: () => _startAutoScroll(),
-      onPanEnd: (_) => _startAutoScroll(),
-      child: ListView.separated(
-        controller: _scrollController,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        scrollDirection: Axis.horizontal,
-        itemCount: widget.articles.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          return SizedBox(
-            width: 160,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _HomeNewsCard(article: widget.articles[index]),
-            ),
-          );
-        },
-      ),
+    return PageView.builder(
+      controller: _pageController,
+      itemCount: widget.articles.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6),
+          child: _HomeNewsCard(article: widget.articles[index]),
+        );
+      },
     );
   }
 }
