@@ -132,7 +132,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       title: const Text('সার্চ'),
                       onTap: () {
                         Navigator.pop(context);
-                        // TODO: Implement search
+                        context.push('/search');
                       },
                     ),
                     ListTile(
@@ -140,7 +140,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       title: const Text('পছন্দের তালিকা'),
                       onTap: () {
                         Navigator.pop(context);
-                        // TODO: Implement favorites
+                        context.go('/my-listings'); // Favorites is inside listings
                       },
                     ),
                     ListTile(
@@ -148,7 +148,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       title: const Text('নোটিফিকেশন'),
                       onTap: () {
                         Navigator.pop(context);
-                        // TODO: Implement notifications
+                        context.push('/notifications');
                       },
                     ),
                     ListTile(
@@ -176,7 +176,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      // TODO: Implement Post
+                      final user = ref.read(authStateProvider).value;
+                      if (user == null) {
+                        context.push('/login');
+                      } else {
+                        context.push('/post/create');
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue[600],

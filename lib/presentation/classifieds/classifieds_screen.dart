@@ -737,7 +737,7 @@ class PropertiesView extends ConsumerWidget {
                                 ),
                                 const Spacer(),
                                 Text(
-                                  '\$${item.price}',
+                                  'OMR ${item.price}',
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w800,
@@ -869,7 +869,7 @@ class VehiclesView extends ConsumerWidget {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
-                                    '\$${item.price}',
+                                    'OMR ${item.price}',
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w800,
