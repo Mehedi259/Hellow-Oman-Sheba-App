@@ -977,7 +977,7 @@ class ServicesView extends ConsumerWidget {
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.only(top: 16, bottom: 120),
           itemCount: groupedServices.length,
           itemBuilder: (context, index) {
             final category = groupedServices.keys.elementAt(index);

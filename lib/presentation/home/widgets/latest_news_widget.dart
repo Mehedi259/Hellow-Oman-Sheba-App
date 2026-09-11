@@ -64,7 +64,7 @@ class _AutoScrollingNewsListState extends State<_AutoScrollingNewsList> {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (_pageController.hasClients) {
-        if (_pageController.page?.toInt() == widget.articles.length - 1) {
+        if (_pageController.position.pixels >= _pageController.position.maxScrollExtent - 10) {
           _pageController.animateToPage(
             0,
             duration: const Duration(milliseconds: 500),
@@ -91,6 +91,7 @@ class _AutoScrollingNewsListState extends State<_AutoScrollingNewsList> {
   Widget build(BuildContext context) {
     return PageView.builder(
       controller: _pageController,
+      padEnds: false,
       itemCount: widget.articles.length,
       itemBuilder: (context, index) {
         return Padding(
