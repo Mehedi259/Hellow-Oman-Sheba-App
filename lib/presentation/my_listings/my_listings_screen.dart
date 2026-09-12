@@ -17,6 +17,7 @@ import '../classifieds/classifieds_provider.dart';
 import '../classifieds/widgets/job_list_card.dart';
 import '../classifieds/widgets/market_card.dart';
 import '../chat/widgets/chat_initiator_button.dart';
+import 'widgets/favorite_item_card.dart';
 
 class MyListingsScreen extends ConsumerStatefulWidget {
   const MyListingsScreen({super.key});
@@ -762,71 +763,38 @@ class _FavoritesTab extends ConsumerWidget {
               if (job != null) {
                 contentWidget = JobListCardWidget(job: job);
               } else {
-                contentWidget = _fallbackCard(context, ref, item, favId);
+                contentWidget = FavoriteItemCard(
+                  item: item, 
+                  favId: favId, 
+                  contentType: contentType, 
+                  contentIdStr: contentIdStr,
+                );
               }
             } else if ((contentType == 'market' || contentType == 'marketitem' || contentType == 'property' || contentType == 'vehicle' || contentType == 'service') && marketAsync.hasValue) {
               final marketItem = marketAsync.value!.where((m) => m.id.toString() == contentIdStr).firstOrNull;
               if (marketItem != null) {
                 contentWidget = MarketCardWidget(item: marketItem);
               } else {
-                contentWidget = _fallbackCard(context, ref, item, favId);
+                contentWidget = FavoriteItemCard(
+                  item: item, 
+                  favId: favId, 
+                  contentType: contentType, 
+                  contentIdStr: contentIdStr,
+                );
               }
             } else {
-              contentWidget = _fallbackCard(context, ref, item, favId);
+              contentWidget = FavoriteItemCard(
+                item: item, 
+                favId: favId, 
+                contentType: contentType, 
+                contentIdStr: contentIdStr,
+              );
             }
 
-            return Stack(
-              children: [
-                contentWidget,
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: GestureDetector(
-                    onTap: () async {
-                      try {
-                        await ref.read(authRepositoryProvider).removeFavorite(favId);
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Removed from favorites')));
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEF4444),
-                        shape: BoxShape.circle,
-                        boxShadow: [BoxShadow(color: const Color(0xFFEF4444).withOpacity(0.3), blurRadius: 8)],
-                      ),
-                      child: const Icon(Icons.close_rounded, color: Colors.white, size: 16),
-                    ),
-                  ),
-                ),
-              ],
-            );
+            return contentWidget;
           },
         );
       },
-    );
-  }
-
-  Widget _fallbackCard(BuildContext context, WidgetRef ref, dynamic item, int favId) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 3))],
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Container(
-          width: 44, height: 44,
-          decoration: BoxDecoration(color: const Color(0xFFEC4899).withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-          child: const Icon(Icons.favorite_rounded, color: Color(0xFFEC4899), size: 22),
-        ),
-        title: Text(item['title'] ?? item['favorite_type'] ?? item['content_type'] ?? 'Favorite Item', style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Text('ID: ${item['favorite_id'] ?? item['content_id'] ?? ''}', style: TextStyle(color: Colors.grey.shade500)),
-      ),
     );
   }
 }
