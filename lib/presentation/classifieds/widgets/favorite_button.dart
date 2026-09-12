@@ -28,7 +28,8 @@ class _FavoriteButtonState extends ConsumerState<FavoriteButton> {
     try {
       final favorites = await ref.read(authRepositoryProvider).getFavorites();
       for (var fav in favorites) {
-        if (fav['favorite_type'] == widget.contentType && fav['favorite_id'] == widget.contentId) {
+        if (fav['favorite_type']?.toString() == widget.contentType.toString() &&
+            fav['favorite_id']?.toString() == widget.contentId.toString()) {
           if (mounted) {
             setState(() {
               isFavorite = true;

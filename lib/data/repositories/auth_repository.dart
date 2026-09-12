@@ -208,7 +208,20 @@ class AuthRepository {
         'favorite_id': contentId,
       });
     } on DioException catch (e) {
-      throw Exception(e.response?.data['detail'] ?? 'Failed to add to favorites');
+      final data = e.response?.data;
+      String errMsg = 'Failed to add to favorites';
+      if (data is Map) {
+        errMsg = data['detail']?.toString() ?? data.values.first?.toString() ?? errMsg;
+      } else if (data is List && data.isNotEmpty) {
+        errMsg = data.first.toString();
+      } else if (data is String) {
+        if (data.trim().toLowerCase().startsWith('<!doctype html') || data.trim().toLowerCase().startsWith('<html')) {
+          errMsg = 'Server error occurred. Please try again later.';
+        } else {
+          errMsg = data;
+        }
+      }
+      throw Exception(errMsg);
     }
   }
 
@@ -216,7 +229,20 @@ class AuthRepository {
     try {
       await apiClient.dio.delete('/users/favorites/$favoriteId/');
     } on DioException catch (e) {
-      throw Exception(e.response?.data['detail'] ?? 'Failed to remove from favorites');
+      final data = e.response?.data;
+      String errMsg = 'Failed to remove from favorites';
+      if (data is Map) {
+        errMsg = data['detail']?.toString() ?? data.values.first?.toString() ?? errMsg;
+      } else if (data is List && data.isNotEmpty) {
+        errMsg = data.first.toString();
+      } else if (data is String) {
+        if (data.trim().toLowerCase().startsWith('<!doctype html') || data.trim().toLowerCase().startsWith('<html')) {
+          errMsg = 'Server error occurred. Please try again later.';
+        } else {
+          errMsg = data;
+        }
+      }
+      throw Exception(errMsg);
     }
   }
 }
