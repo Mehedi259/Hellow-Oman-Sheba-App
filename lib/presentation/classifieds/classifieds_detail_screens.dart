@@ -358,7 +358,7 @@ class JobDetailScreen extends ConsumerWidget {
                     const SizedBox(height: 28),
 
                     // Description Section
-                    if (job.description.isNotEmpty) ...[
+                    if (job.description.isNotEmpty && job.description != '[]') ...[
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
@@ -406,7 +406,7 @@ class JobDetailScreen extends ConsumerWidget {
                     ],
 
                     // Qualifications Section
-                    if (job.experience.isNotEmpty) ...[
+                    if (job.experience.isNotEmpty && job.experience != '[]') ...[
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
@@ -454,7 +454,7 @@ class JobDetailScreen extends ConsumerWidget {
                     ],
 
                     // Benefits Section
-                    if (job.benefits.isNotEmpty) ...[
+                    if (job.benefits.isNotEmpty && job.benefits != '[]') ...[
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(

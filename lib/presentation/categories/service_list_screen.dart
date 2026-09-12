@@ -299,26 +299,7 @@ class _ServiceCard extends StatelessWidget {
                             child: const Text('বিস্তারিত', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () async {
-                              final phone = item.contactPhone.isNotEmpty ? item.contactPhone : item.contactInfo;
-                              if (phone.isNotEmpty) {
-                                final url = Uri.parse('tel:$phone');
-                                if (await canLaunchUrl(url)) await launchUrl(url);
-                              }
-                            },
-                            icon: const Icon(Icons.phone_rounded, size: 15),
-                            label: const Text('যোগাযোগ করুন', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: catColor,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                            ),
-                          ),
-                        ),
+
                         const SizedBox(width: 8),
                         Container(
                           decoration: BoxDecoration(
