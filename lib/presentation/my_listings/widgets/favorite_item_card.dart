@@ -1,8 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../navigation_utils.dart';
 import '../../auth/auth_provider.dart';
 import '../providers/my_listings_provider.dart';
+
+final favoriteImageUrlProvider = FutureProvider.family<String?, String>((ref, key) async {
+  final parts = key.split(':');
+  if (parts.length != 2) return null;
+  final type = parts[0];
+  final id = parts[1];
+  
+  final apiClient = ref.read(apiClientProvider);
+  String endpoint = '';
+  
+  if (type == 'job') endpoint = '/classifieds/jobs/$id/';
+  else if (type == 'property') endpoint = '/classifieds/properties/$id/';
+  else if (type == 'vehicle') endpoint = '/classifieds/vehicles/$id/';
+  else if (type == 'service') endpoint = '/classifieds/services/$id/';
+  else if (type == 'job_seeker') endpoint = '/classifieds/job-seekers/$id/';
+  else if (type == 'post' || type == 'forum_post' || type == 'community') endpoint = '/community/forum/posts/$id/';
+  else if (type == 'market' || type == 'marketitem') endpoint = '/community/classifieds/$id/';
+  
+  if (endpoint.isEmpty) return null;
+  
+  try {
+    final res = await apiClient.dio.get(endpoint);
+    final data = res.data;
+    if (data['images'] != null && data['images'].isNotEmpty) {
+      return data['images'][0].toString();
+    } else if (data['avatar'] != null) {
+      return data['avatar'].toString();
+    }
+  } catch (e) {
+    // ignore
+  }
+  return null;
+});
 
 class FavoriteItemCard extends ConsumerWidget {
   final dynamic item;
@@ -28,6 +62,9 @@ class FavoriteItemCard extends ConsumerWidget {
     final String? price = details?['price'];
     final String iconStr = details?['icon'] ?? '❤️';
     
+    final imageUrlAsync = ref.watch(favoriteImageUrlProvider('$contentType:$contentIdStr'));
+    final String? imageUrl = imageUrlAsync.value;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -58,10 +95,11 @@ class FavoriteItemCard extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 56, height: 56,
+                  width: 64, height: 64,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
+                    color: imageUrl != null ? null : const Color(0xFFF3F4F6),
+                    gradient: imageUrl != null ? null : LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
@@ -71,8 +109,16 @@ class FavoriteItemCard extends ConsumerWidget {
                     ),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: const Color(0xFFEC4899).withOpacity(0.1)),
+                    image: imageUrl != null 
+                        ? DecorationImage(
+                            image: CachedNetworkImageProvider(
+                              imageUrl.startsWith('http') ? imageUrl : 'http://188.245.212.240$imageUrl'
+                            ),
+                            fit: BoxFit.cover,
+                          ) 
+                        : null,
                   ),
-                  child: Text(iconStr, style: const TextStyle(fontSize: 26)),
+                  child: imageUrl != null ? null : Text(iconStr, style: const TextStyle(fontSize: 28)),
                 ),
                 const SizedBox(width: 16),
                 Expanded(

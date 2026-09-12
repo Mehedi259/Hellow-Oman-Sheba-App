@@ -736,13 +736,12 @@ class _FavoritesTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final jobsAsync = ref.watch(jobsProvider);
     final marketAsync = ref.watch(marketItemsProvider);
+    final favoritesAsync = ref.watch(myFavoritesProvider);
 
-    return FutureBuilder<List<dynamic>>(
-      future: ref.read(authRepositoryProvider).getFavorites(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED)));
-        if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
-        final items = snapshot.data ?? [];
+    return favoritesAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED))),
+      error: (err, stack) => Center(child: Text('Error: $err')),
+      data: (items) {
         if (items.isEmpty) {
           return const _EmptyStateView(icon: Icons.favorite_rounded, title: 'পছন্দের তালিকায় কোনো আইটেম নেই', subtitle: 'পছন্দে যোগ করলে এখানে দেখাবে');
         }

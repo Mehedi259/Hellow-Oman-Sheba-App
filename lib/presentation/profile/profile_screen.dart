@@ -7,6 +7,7 @@ import '../classifieds/classifieds_provider.dart';
 import '../classifieds/widgets/job_list_card.dart';
 import '../classifieds/widgets/market_card.dart';
 import '../my_listings/widgets/favorite_item_card.dart';
+import '../my_listings/providers/my_listings_provider.dart';
 import 'privacy_policy_screen.dart';
 import 'terms_conditions_screen.dart';
 import 'faq_screen.dart';
@@ -691,13 +692,12 @@ class _FavoritesTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final jobsAsync = ref.watch(jobsProvider);
     final marketAsync = ref.watch(marketItemsProvider);
+    final favoritesAsync = ref.watch(myFavoritesProvider);
 
-    return FutureBuilder<List<dynamic>>(
-      future: ref.read(authRepositoryProvider).getFavorites(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED)));
-        if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
-        final items = snapshot.data ?? [];
+    return favoritesAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED))),
+      error: (err, stack) => Center(child: Text('Error: $err')),
+      data: (items) {
         if (items.isEmpty) {
           return _buildEmptyState(Icons.favorite_rounded, 'পছন্দের তালিকায় কোনো আইটেম নেই', 'পছন্দে যোগ করলে এখানে দেখাবে');
         }
