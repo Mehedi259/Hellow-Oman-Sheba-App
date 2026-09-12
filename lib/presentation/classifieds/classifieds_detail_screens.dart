@@ -975,37 +975,233 @@ class VehicleDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imgUrl = vehicle.imageUrl != null 
+        ? (vehicle.imageUrl!.startsWith('http') ? vehicle.imageUrl! : 'http://188.245.212.240${vehicle.imageUrl}')
+        : null;
+
     return Scaffold(
-      appBar: AppBar(title: Text(vehicle.title), actions: [FavoriteButton(contentType: 'vehicle', contentId: vehicle.id)]),
+      backgroundColor: const Color(0xFFF8FAFC),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleAvatar(
+            backgroundColor: Colors.white,
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.black87),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: FavoriteButton(contentType: 'vehicle', contentId: vehicle.id),
+            ),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (vehicle.imageUrl != null)
-              CustomCachedImage(
-                imageUrl: vehicle.imageUrl!.startsWith('http') ? vehicle.imageUrl! : 'http://188.245.212.240${vehicle.imageUrl}',
-                height: 250,
-                width: double.infinity,
-                fit: BoxFit.cover,
+            // Image Header
+            SizedBox(
+              height: 300,
+              width: double.infinity,
+              child: imgUrl != null
+                  ? CustomCachedImage(
+                      imageUrl: imgUrl,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    )
+                  : Container(
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.directions_car, color: Colors.grey, size: 80),
+                    ),
+            ),
+            
+            // Content Card
+            Container(
+              transform: Matrix4.translationValues(0.0, -20.0, 0.0),
+              decoration: const BoxDecoration(
+                color: Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
-            const SizedBox(height: 16),
-            Text(vehicle.title, style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 8),
-            Text('\$${vehicle.price}', style: const TextStyle(fontSize: 24, color: Colors.teal, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            Text('${vehicle.make} ${vehicle.model} • ${vehicle.year} • ${vehicle.mileage} km'),
-            const SizedBox(height: 24),
-            const Text('Description', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text(vehicle.description),
-            const SizedBox(height: 24),
-            const Text('Contact Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text(vehicle.contactInfo),
-            const SizedBox(height: 32),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title and Price
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            vehicle.title,
+                            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE0E7FF),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'OMR ${vehicle.price}',
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF4338CA)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Badges (Make, Model, Year, Mileage)
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildVehicleBadge(Icons.directions_car_rounded, '${vehicle.make} ${vehicle.model}'),
+                          const SizedBox(width: 8),
+                          _buildVehicleBadge(Icons.calendar_month_rounded, vehicle.year.toString()),
+                          const SizedBox(width: 8),
+                          _buildVehicleBadge(Icons.speed_rounded, '${vehicle.mileage} কিমি'),
+                        ],
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    const Text('বিস্তারিত বিবরণ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                    const SizedBox(height: 12),
+                    Text(
+                      vehicle.description,
+                      style: const TextStyle(fontSize: 15, height: 1.5, color: Color(0xFF475569)),
+                    ),
+                    
+                    const SizedBox(height: 32),
+                    const Text('যোগাযোগ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade200),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4)),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          const CircleAvatar(
+                            backgroundColor: Color(0xFFE2E8F0),
+                            radius: 24,
+                            child: Icon(Icons.person, color: Color(0xFF64748B), size: 28),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('মালিক/বিক্রেতা', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                                const SizedBox(height: 4),
+                                Text(
+                                  vehicle.contactInfo.isNotEmpty ? vehicle.contactInfo : 'যোগাযোগ নম্বর নেই',
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 32),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(16).copyWith(bottom: MediaQuery.of(context).padding.bottom + 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -4)),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  final phone = vehicle.contactInfo;
+                  if (phone.isNotEmpty) {
+                    final url = Uri.parse('tel:$phone');
+                    if (await canLaunchUrl(url)) await launchUrl(url);
+                  }
+                },
+                icon: const Icon(Icons.phone),
+                label: const Text('কল করুন', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF007BFF),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ChatInitiatorButton(
+                targetUserId: 1, // Vehicles don't have ownerId in the model yet, default to 1
+                title: vehicle.title,
+                initialMessage: 'আমি এই গাড়িটি সম্পর্কে জানতে চাচ্ছি: ${vehicle.title}',
+                relatedObjectType: 'vehicle',
+                relatedObjectId: vehicle.id,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVehicleBadge(IconData icon, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: const Color(0xFF475569)),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: const TextStyle(fontSize: 13, color: Color(0xFF334155), fontWeight: FontWeight.w500),
+          ),
+        ],
       ),
     );
   }

@@ -45,7 +45,7 @@ class SectionHeader extends StatelessWidget {
                         title,
                         style: const TextStyle(
                           fontSize: 28,
-                          fontWeight: FontWeight.w900, // Very bold as requested
+                          fontWeight: FontWeight.w700, // Bold (w700) instead of w900 to fix Bengali rendering artifacts
                           color: Colors.black87,
                         ),
                         maxLines: 1,

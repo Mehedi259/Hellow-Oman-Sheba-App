@@ -214,10 +214,15 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
             blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: const Color(0xFF0056D2).withOpacity(0.02),
+            blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: Colors.grey.shade100, width: 1.5),
       ),
       child: Material(
         color: Colors.transparent,
@@ -225,8 +230,10 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: onTap,
+          highlightColor: const Color(0xFF0056D2).withOpacity(0.05),
+          splashColor: const Color(0xFF0056D2).withOpacity(0.1),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(20.0),
             child: child,
           ),
         ),
@@ -268,13 +275,21 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: 48, height: 48,
+                      width: 56, height: 56,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0056D2).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            const Color(0xFF0056D2).withOpacity(0.15),
+                            const Color(0xFF0056D2).withOpacity(0.05),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFF0056D2).withOpacity(0.1)),
                       ),
-                      child: Text(iconPath, style: const TextStyle(fontSize: 22)),
+                      child: Text(iconPath, style: const TextStyle(fontSize: 26)),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -283,20 +298,32 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
                         children: [
                           Text(
                             post['title'] ?? post['title_bn'] ?? post['professional_title'] ?? post['professional_title_bn'] ?? 'Untitled',
-                            style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF1E293B), fontSize: 16),
+                            style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF1E293B), fontSize: 17, height: 1.3),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 10),
                           Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(color: const Color(0xFF0056D2).withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
-                                child: Text(type.toString().toUpperCase(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF0056D2))),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFE0E7FF),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  type.toString().toUpperCase(), 
+                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF4338CA), letterSpacing: 0.5),
+                                ),
                               ),
-                              const SizedBox(width: 8),
-                              const Text('বিস্তারিত দেখুন →', style: TextStyle(color: Color(0xFF64748B), fontSize: 12, fontWeight: FontWeight.w500)),
+                              const Spacer(),
+                              const Row(
+                                children: [
+                                  Text('বিস্তারিত দেখুন', style: TextStyle(color: Color(0xFF64748B), fontSize: 13, fontWeight: FontWeight.w600)),
+                                  SizedBox(width: 4),
+                                  Icon(Icons.arrow_forward_rounded, size: 14, color: Color(0xFF64748B)),
+                                ],
+                              ),
                             ],
                           ),
                         ],
