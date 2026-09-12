@@ -37,7 +37,7 @@ final List<CategoryItem> categoriesList = [
   CategoryItem(nameBn: 'পুলিশ স্টেশন', descriptionBn: 'পুলিশ স্টেশন তথ্য', imagePath: 'assets/images/categories/police.png', route: '/services/police'),
   CategoryItem(nameBn: 'জরুরী নম্বর', descriptionBn: 'জরুরী যোগাযোগ নম্বর', imagePath: 'assets/images/categories/emergency.png', route: '/emergency'),
   CategoryItem(nameBn: 'সংবাদ', descriptionBn: 'সর্বশেষ সংবাদ', imagePath: 'assets/images/categories/news.png', route: '/news'),
-  CategoryItem(nameBn: 'হ্যালো ওমান', descriptionBn: 'আমাদের Facebook পেজ', imagePath: 'assets/images/categories/hellowoman.png', url: 'https://www.facebook.com/helloomanbangla/'),
+  CategoryItem(nameBn: 'হ্যালো ওমান', descriptionBn: 'আমাদের Facebook পেজ', imagePath: 'assets/images/categories/hellowoman.png', url: 'https://www.facebook.com/helloomansheba'),
   CategoryItem(nameBn: 'সালতানাত ওমান', descriptionBn: 'ওমান সালতানাত সম্পর্কে জানুন', imagePath: 'assets/images/categories/sultanate-oman.png', route: '/about-oman'),
 ];
 
