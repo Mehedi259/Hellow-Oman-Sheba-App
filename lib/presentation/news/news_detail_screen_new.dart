@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../data/models/news_article.dart';
 import 'news_image_widget.dart';
+import 'package:share_plus/share_plus.dart';
 
 class NewsDetailScreenNew extends StatelessWidget {
   final NewsArticle article;
@@ -45,10 +46,8 @@ class NewsDetailScreenNew extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.share_rounded),
                 onPressed: () {
-                  // Share functionality
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('শেয়ার করা হচ্ছে...')),
-                  );
+                  final String textToShare = '${article.title}\n\nবিস্তারিত পড়ুন হ্যালো ওমান অ্যাপে।';
+                  Share.share(textToShare);
                 },
               ),
             ],
