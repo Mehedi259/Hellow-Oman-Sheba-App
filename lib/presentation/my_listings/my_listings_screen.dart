@@ -32,7 +32,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -185,7 +185,6 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
             Tab(text: 'আবেদনকারী'),
             Tab(text: 'আমার প্রশ্ন'),
             Tab(text: 'পছন্দের তালিকা'),
-            Tab(text: 'আমার কমেন্ট'),
           ],
         ),
       ),
@@ -196,7 +195,6 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
           const _JobApplicantsTab(),
           _buildMyQuestionsTab(),
           _buildFavoritesTab(),
-          _buildCommentsTab(),
         ],
       ),
     );
