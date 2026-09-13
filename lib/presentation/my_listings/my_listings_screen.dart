@@ -419,23 +419,29 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen>
                                 ),
                               ),
                               const Spacer(),
-                              const Row(
-                                children: [
-                                  Text(
-                                    'বিস্তারিত দেখুন',
-                                    style: TextStyle(
-                                      color: Color(0xFF64748B),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
+                              Flexible(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Flexible(
+                                      child: Text(
+                                        'বিস্তারিত দেখুন',
+                                        style: TextStyle(
+                                          color: Color(0xFF64748B),
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 4),
-                                  Icon(
-                                    Icons.arrow_forward_rounded,
-                                    size: 14,
-                                    color: Color(0xFF64748B),
-                                  ),
-                                ],
+                                    const SizedBox(width: 4),
+                                    const Icon(
+                                      Icons.arrow_forward_rounded,
+                                      size: 14,
+                                      color: Color(0xFF64748B),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),

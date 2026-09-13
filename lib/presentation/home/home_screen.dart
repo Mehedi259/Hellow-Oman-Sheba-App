@@ -260,7 +260,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               error: (error, stack) => Text('Vehicles Error: $error'),
             ),
             const SizedBox(height: 8),
-            const CallToActionWidget(),
+            if (authState.value == null) const CallToActionWidget(),
             const SizedBox(height: 100), // Large padding for floating bottom nav clearance
           ],
         ),
