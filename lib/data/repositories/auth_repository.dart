@@ -27,11 +27,19 @@ class AuthRepository {
     }
   }
 
-  Future<void> updateProfile(Map<String, dynamic> data) async {
+  Future<void> updateProfile(dynamic data) async {
     try {
       await apiClient.dio.patch('/users/profile/', data: data);
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Update failed');
+    }
+  }
+
+  Future<void> deleteAccount() async {
+    try {
+      await apiClient.dio.delete('/users/profile/');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Delete account failed');
     }
   }
 

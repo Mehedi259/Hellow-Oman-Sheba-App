@@ -1,4 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../auth/auth_provider.dart';
 import '../auth/widgets/google_login_button.dart';
@@ -46,6 +49,39 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
       return name.substring(0, name.length >= 2 ? 2 : 1).toUpperCase();
     }
     return email.substring(0, 2).toUpperCase();
+  }
+
+  Future<void> _pickAndUploadImage(BuildContext context, WidgetRef ref) async {
+    try {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
+      if (pickedFile == null) return;
+      
+      // show loading
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ছবি আপলোড হচ্ছে...'), duration: Duration(seconds: 2)),
+      );
+
+      final file = File(pickedFile.path);
+      final fileName = file.path.split('/').last;
+      final formData = FormData.fromMap({
+        'avatar': await MultipartFile.fromFile(file.path, filename: fileName),
+      });
+
+      final authRepo = ref.read(authRepositoryProvider);
+      await authRepo.updateProfile(formData);
+      
+      // Refresh profile
+      ref.invalidate(authStateProvider);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('প্রোফাইল ছবি সফলভাবে আপডেট হয়েছে')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('ছবি আপলোড ব্যর্থ হয়েছে: $e')),
+      );
+    }
   }
 
   @override
@@ -166,8 +202,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // Avatar
-                        Container(
-                          width: 90,
+                        GestureDetector(
+                          onTap: () => _pickAndUploadImage(context, ref),
+                          child: Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              Container(
+                                width: 90,
                           height: 90,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
@@ -195,6 +236,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
                                 : null,
                           ),
                         ),
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF7C3AED),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white, width: 2),
+                                ),
+                                child: const Icon(Icons.edit, size: 14, color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
                         const SizedBox(height: 16),
                         // Name
                         Text(
@@ -216,20 +269,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
                             ],
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        // Location badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(16)),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.location_on_rounded, size: 14, color: Colors.white.withOpacity(0.7)),
-                              const SizedBox(width: 4),
-                              Text('ওমান', style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.7), fontWeight: FontWeight.w500)),
-                            ],
-                          ),
-                        ),
+
                       ],
                     ),
                   ),
@@ -930,11 +970,11 @@ class _SecurityTabState extends ConsumerState<_SecurityTab> {
 }
 
 // ==================== SETTINGS TAB ====================
-class _SettingsTab extends StatelessWidget {
+class _SettingsTab extends ConsumerWidget {
   const _SettingsTab();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(20),
@@ -970,6 +1010,43 @@ class _SettingsTab extends StatelessWidget {
                 title: 'সাধারণ জিজ্ঞাসা',
                 subtitle: 'FAQ',
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FaqScreen())),
+              ),
+              Divider(height: 1, color: Colors.grey.shade100, indent: 70),
+              _buildSettingsItem(
+                icon: Icons.delete_forever_rounded,
+                iconColor: Colors.red,
+                title: 'অ্যাকাউন্ট মুছুন',
+                subtitle: 'Delete Account',
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('সতর্কতা!'),
+                      content: const Text('আপনি কি নিশ্চিত যে আপনি আপনার অ্যাকাউন্ট মুছে ফেলতে চান? এই প্রক্রিয়াটি অপরিবর্তনীয়।'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text('বাতিল'),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            Navigator.pop(ctx);
+                            try {
+                              final authRepo = ref.read(authRepositoryProvider);
+                              await authRepo.deleteAccount();
+                              await ref.read(authStateProvider.notifier).logout();
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('অ্যাকাউন্ট মুছতে সমস্যা হয়েছে: $e')),
+                              );
+                            }
+                          },
+                          child: const Text('হ্যাঁ, মুছুন', style: TextStyle(color: Colors.red)),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ],
           ),
