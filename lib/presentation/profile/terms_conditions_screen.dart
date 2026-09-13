@@ -22,7 +22,7 @@ class TermsConditionsScreen extends StatelessWidget {
             ),
             SizedBox(height: 16),
             Text(
-              '১. সেবার ব্যবহার\nHello Oman Sheba অ্যাপটি ব্যবহার করার মাধ্যমে আপনি আমাদের শর্তাবলীর সাথে সম্মত হচ্ছেন। আপনি সম্মতি না দিলে অনুগ্রহ করে আমাদের অ্যাপটি ব্যবহার করা থেকে বিরত থাকুন।',
+              '১. সেবার ব্যবহার\nHello Probas Sheba অ্যাপটি ব্যবহার করার মাধ্যমে আপনি আমাদের শর্তাবলীর সাথে সম্মত হচ্ছেন। আপনি সম্মতি না দিলে অনুগ্রহ করে আমাদের অ্যাপটি ব্যবহার করা থেকে বিরত থাকুন।',
               style: TextStyle(fontSize: 16, height: 1.5),
             ),
             SizedBox(height: 16),
@@ -32,7 +32,7 @@ class TermsConditionsScreen extends StatelessWidget {
             ),
             SizedBox(height: 16),
             Text(
-              '৩. মেধা সম্পদ (Intellectual Property)\nঅ্যাপের সমস্ত ডিজাইন, টেক্সট, গ্রাফিক্স, এবং কোড Hello Oman Sheba-এর মালিকানাধীন। আমাদের পূর্বানুমতি ছাড়া এগুলোর বাণিজ্যিক ব্যবহার সম্পূর্ণ নিষিদ্ধ।',
+              '৩. মেধা সম্পদ (Intellectual Property)\nঅ্যাপের সমস্ত ডিজাইন, টেক্সট, গ্রাফিক্স, এবং কোড Hello Probas Sheba-এর মালিকানাধীন। আমাদের পূর্বানুমতি ছাড়া এগুলোর বাণিজ্যিক ব্যবহার সম্পূর্ণ নিষিদ্ধ।',
               style: TextStyle(fontSize: 16, height: 1.5),
             ),
             SizedBox(height: 16),

@@ -41,7 +41,7 @@ class AboutScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    'হ্যালো ওমান সেবা',
+                    'হ্যালো প্রবাস সেবা',
                     style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
                   ),
                   const SizedBox(height: 8),
@@ -65,7 +65,7 @@ class AboutScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    '\'হ্যালো ওমান সেবা\' হলো ওমানে বসবাসরত প্রবাসী এবং দর্শনার্থীদের জন্য একটি সম্পূর্ণ কমিউনিটি প্ল্যাটফর্ম। আমাদের মূল লক্ষ্য হলো ওমান প্রবাসীদের দৈনন্দিন জীবনকে আরও সহজ, সুন্দর এবং তথ্যবহুল করে তোলা।',
+                    '\'হ্যালো প্রবাস সেবা\' হলো ওমানে বসবাসরত প্রবাসী এবং দর্শনার্থীদের জন্য একটি সম্পূর্ণ কমিউনিটি প্ল্যাটফর্ম। আমাদের মূল লক্ষ্য হলো ওমান প্রবাসীদের দৈনন্দিন জীবনকে আরও সহজ, সুন্দর এবং তথ্যবহুল করে তোলা।',
                     style: TextStyle(fontSize: 15, color: Colors.grey.shade700, height: 1.6),
                   ),
                   
@@ -121,7 +121,7 @@ class AboutScreen extends StatelessWidget {
                       border: Border.all(color: const Color(0xFF2563EB).withOpacity(0.1)),
                     ),
                     child: Text(
-                      'আমরা বিশ্বাস করি সঠিক তথ্য এবং যোগাযোগের মাধ্যম প্রবাস জীবনে একটি বড় ভূমিকা রাখে। \'হ্যালো ওমান সেবা\' অ্যাপের মাধ্যমে আমরা এমন একটি নির্ভরযোগ্য মাধ্যম তৈরি করতে চাই, যেখানে প্রবাসীরা একে অপরের পাশে দাঁড়াতে পারে এবং প্রয়োজনীয় যেকোনো সেবা এক ক্লিকেই পেতে পারে।',
+                      'আমরা বিশ্বাস করি সঠিক তথ্য এবং যোগাযোগের মাধ্যম প্রবাস জীবনে একটি বড় ভূমিকা রাখে। \'হ্যালো প্রবাস সেবা\' অ্যাপের মাধ্যমে আমরা এমন একটি নির্ভরযোগ্য মাধ্যম তৈরি করতে চাই, যেখানে প্রবাসীরা একে অপরের পাশে দাঁড়াতে পারে এবং প্রয়োজনীয় যেকোনো সেবা এক ক্লিকেই পেতে পারে।',
                       style: TextStyle(fontSize: 15, color: Colors.grey.shade800, height: 1.6),
                     ),
                   ),
@@ -133,7 +133,7 @@ class AboutScreen extends StatelessWidget {
                         const Icon(Icons.favorite_rounded, color: Colors.red, size: 30),
                         const SizedBox(height: 12),
                         const Text(
-                          'হ্যালো ওমান সেবার সাথে যুক্ত থাকার জন্য ধন্যবাদ!',
+                          'হ্যালো প্রবাস সেবার সাথে যুক্ত থাকার জন্য ধন্যবাদ!',
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
                           textAlign: TextAlign.center,
                         ),

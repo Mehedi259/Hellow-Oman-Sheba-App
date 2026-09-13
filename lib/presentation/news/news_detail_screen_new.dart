@@ -46,7 +46,7 @@ class NewsDetailScreenNew extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.share_rounded),
                 onPressed: () {
-                  final String textToShare = '${article.title}\n\nবিস্তারিত পড়ুন হ্যালো ওমান অ্যাপে।';
+                  final String textToShare = '${article.title}\n\nবিস্তারিত পড়ুন হ্যালো প্রবাস অ্যাপে।';
                   Share.share(textToShare);
                 },
               ),
@@ -70,7 +70,7 @@ class NewsDetailScreenNew extends StatelessWidget {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: const Text(
-                          'হ্যালো ওমান',
+                          'হ্যালো প্রবাস',
                           style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1),
                         ),
                       ),
@@ -187,7 +187,7 @@ class NewsDetailScreenNew extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('হ্যালো ওমান', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                            const Text('হ্যালো প্রবাস', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
                             Text('প্রবাসীদের বিশ্বস্ত সংবাদ মাধ্যম',
                                 style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
                           ],

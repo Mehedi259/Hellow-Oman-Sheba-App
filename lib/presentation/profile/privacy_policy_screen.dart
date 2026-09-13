@@ -37,7 +37,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
             SizedBox(height: 16),
             Text(
-              '৪. নীতিমালা পরিবর্তন\nHello Oman Sheba যেকোনো সময় এই নীতিমালার পরিবর্তন বা সংশোধন করার অধিকার সংরক্ষণ করে। যেকোনো পরিবর্তনের পর আপডেট এই পেজে প্রকাশ করা হবে।',
+              '৪. নীতিমালা পরিবর্তন\nHello Probas Sheba যেকোনো সময় এই নীতিমালার পরিবর্তন বা সংশোধন করার অধিকার সংরক্ষণ করে। যেকোনো পরিবর্তনের পর আপডেট এই পেজে প্রকাশ করা হবে।',
               style: TextStyle(fontSize: 16, height: 1.5),
             ),
             SizedBox(height: 16),

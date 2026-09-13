@@ -83,7 +83,7 @@ class _NewsFeedScreenState extends ConsumerState<NewsFeedScreen>
                 ),
                 const SizedBox(width: 10),
                 const Text(
-                  'হ্যালো ওমান সংবাদ',
+                  'হ্যালো প্রবাস সংবাদ',
                   style: TextStyle(color: Colors.black87, fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: 0.3),
                 ),
               ],

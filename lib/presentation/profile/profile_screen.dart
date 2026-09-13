@@ -1069,7 +1069,7 @@ class _SettingsTab extends ConsumerWidget {
                 children: [
                   Icon(Icons.code_rounded, size: 16, color: const Color(0xFF7C3AED).withOpacity(0.6)),
                   const SizedBox(width: 8),
-                  Text('Developed by Hello Oman Tech', style: TextStyle(color: const Color(0xFF7C3AED).withOpacity(0.7), fontWeight: FontWeight.w600, fontSize: 13)),
+                  Text('Developed by Hello Probas Tech', style: TextStyle(color: const Color(0xFF7C3AED).withOpacity(0.7), fontWeight: FontWeight.w600, fontSize: 13)),
                 ],
               ),
             ),

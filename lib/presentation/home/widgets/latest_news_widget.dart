@@ -25,7 +25,7 @@ class LatestNewsWidget extends StatelessWidget {
       children: [
         SectionHeader(
           title: 'সংবাদ',
-          subtitle: 'হ্যালো ওমান সর্বশেষ খবর',
+          subtitle: 'হ্যালো প্রবাস সর্বশেষ খবর',
           icon: Icons.newspaper_outlined,
           color: const Color(0xFFCC0000), // Red color
           onSeeAllPressed: () {

@@ -28,7 +28,7 @@ class CallToActionWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Text(
-            'আজই যুক্ত হোন Hello Oman Sheba-তে',
+            'আজই যুক্ত হোন Hello Probas Sheba-তে',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,

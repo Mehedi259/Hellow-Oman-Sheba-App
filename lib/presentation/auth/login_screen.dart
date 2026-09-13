@@ -56,7 +56,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 32),
               const Text(
-                'হ্যালো ওমান সেবা অ্যাপে স্বাগতম',
+                'হ্যালো প্রবাস সেবা অ্যাপে স্বাগতম',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
