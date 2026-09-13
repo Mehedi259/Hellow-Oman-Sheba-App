@@ -43,5 +43,6 @@ final marketItemsProvider = FutureProvider<List<MarketItem>>((ref) async {
 
 final servicesByCategoryProvider = FutureProvider.family<List<Service>, String>((ref, category) async {
   final repository = ref.read(classifiedsRepositoryProvider);
-  return repository.getServices(category: category);
+  final allServices = await repository.getServices();
+  return allServices.where((s) => s.serviceType.trim().toLowerCase() == category.trim().toLowerCase()).toList();
 });

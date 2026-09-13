@@ -29,7 +29,7 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
   final contactNameController = TextEditingController();
   final contactPhoneController = TextEditingController();
 
-  String selectedCategory = 'AC_REPAIR';
+  String selectedCategory = 'Specialist Doctor';
   String selectedCity = 'Muscat';
 
   List<File> selectedImages = [];
@@ -37,14 +37,23 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
   final picker = ImagePicker();
 
   static const List<Map<String, String>> categories = [
-    {'value': 'AC_REPAIR', 'label': 'এসি মেরামত'},
-    {'value': 'PLUMBING', 'label': 'প্লাম্বিং'},
-    {'value': 'ELECTRICAL', 'label': 'ইলেকট্রিক্যাল'},
-    {'value': 'CLEANING', 'label': 'ক্লিনিং'},
-    {'value': 'CARPENTRY', 'label': 'কাঠের কাজ'},
-    {'value': 'PAINTING', 'label': 'রংয়ের কাজ'},
-    {'value': 'APPLIANCE_REPAIR', 'label': 'অ্যাপ্লায়েন্স মেরামত'},
-    {'value': 'OTHER', 'label': 'অন্যান্য'},
+    {'value': 'Specialist Doctor', 'label': 'স্পেশালিস্ট ডক্টর'},
+    {'value': 'Hospital', 'label': 'হসপিটাল'},
+    {'value': 'Ambulance', 'label': 'অ্যাম্বুলেন্স'},
+    {'value': 'Police Station', 'label': 'পুলিশ স্টেশন'},
+    {'value': 'Embassy', 'label': 'এম্বাসি'},
+    {'value': 'Travel Agency', 'label': 'ট্রাভেল এজেন্সি'},
+    {'value': 'Hotel', 'label': 'হোটেল'},
+    {'value': 'Maktab Sanad', 'label': 'মক্তব সনদ'},
+    {'value': 'Money Exchange', 'label': 'মানি এক্সচেঞ্জ'},
+    {'value': 'Lawyer', 'label': 'লইয়ার'},
+    {'value': 'Tourist Place', 'label': 'ট্যুরিস্ট প্লেস'},
+    {'value': 'Medical Services', 'label': 'মেডিকেল সার্ভিস'},
+    {'value': 'Educational Institutions', 'label': 'শিক্ষা প্রতিষ্ঠান'},
+    {'value': 'Visa Services', 'label': 'ভিসা সার্ভিস'},
+    {'value': 'Cleaning', 'label': 'ক্লিনিং'},
+    {'value': 'Plumbing', 'label': 'প্লাম্বিং'},
+    {'value': 'Other', 'label': 'অন্যান্য'},
   ];
 
   static const List<String> cities = [

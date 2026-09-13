@@ -58,8 +58,14 @@ class ClassifiedsScreen extends StatelessWidget {
             isScrollable: true,
             labelColor: const Color(0xFF2563EB),
             unselectedLabelColor: const Color(0xFF94A3B8),
-            labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+            ),
             indicatorColor: const Color(0xFF2563EB),
             indicatorWeight: 3,
             indicatorSize: TabBarIndicatorSize.label,
@@ -86,7 +92,6 @@ class ClassifiedsScreen extends StatelessWidget {
     );
   }
 }
-
 
 class JobsView extends ConsumerStatefulWidget {
   const JobsView({super.key});
@@ -157,11 +162,17 @@ class _JobsViewState extends ConsumerState<JobsView> {
                       GestureDetector(
                         onTap: () => setState(() => _isFindingWorkers = false),
                         child: Container(
-                          padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
+                          padding: const EdgeInsets.only(
+                            bottom: 8,
+                            left: 8,
+                            right: 8,
+                          ),
                           decoration: BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: !_isFindingWorkers ? Colors.white : Colors.transparent,
+                                color: !_isFindingWorkers
+                                    ? Colors.white
+                                    : Colors.transparent,
                                 width: 4,
                               ),
                             ),
@@ -169,7 +180,9 @@ class _JobsViewState extends ConsumerState<JobsView> {
                           child: Text(
                             'চাকরি খুঁজুন',
                             style: TextStyle(
-                              color: !_isFindingWorkers ? Colors.white : Colors.blue.shade200,
+                              color: !_isFindingWorkers
+                                  ? Colors.white
+                                  : Colors.blue.shade200,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
@@ -180,11 +193,17 @@ class _JobsViewState extends ConsumerState<JobsView> {
                       GestureDetector(
                         onTap: () => setState(() => _isFindingWorkers = true),
                         child: Container(
-                          padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
+                          padding: const EdgeInsets.only(
+                            bottom: 8,
+                            left: 8,
+                            right: 8,
+                          ),
                           decoration: BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: _isFindingWorkers ? Colors.white : Colors.transparent,
+                                color: _isFindingWorkers
+                                    ? Colors.white
+                                    : Colors.transparent,
                                 width: 4,
                               ),
                             ),
@@ -192,7 +211,9 @@ class _JobsViewState extends ConsumerState<JobsView> {
                           child: Text(
                             'কর্মী খুঁজুন',
                             style: TextStyle(
-                              color: _isFindingWorkers ? Colors.white : Colors.blue.shade200,
+                              color: _isFindingWorkers
+                                  ? Colors.white
+                                  : Colors.blue.shade200,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
@@ -213,7 +234,10 @@ class _JobsViewState extends ConsumerState<JobsView> {
                         hintText: 'পেশা বা দক্ষতা দিয়ে খুঁজুন...',
                         hintStyle: TextStyle(color: Colors.grey.shade500),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
                         suffixIcon: Container(
                           margin: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
@@ -222,7 +246,8 @@ class _JobsViewState extends ConsumerState<JobsView> {
                           ),
                           child: IconButton(
                             icon: const Icon(Icons.search, color: Colors.white),
-                            onPressed: () => _onSearchSubmit(_searchController.text),
+                            onPressed: () =>
+                                _onSearchSubmit(_searchController.text),
                           ),
                         ),
                       ),
@@ -232,10 +257,12 @@ class _JobsViewState extends ConsumerState<JobsView> {
                 ],
               ),
             ),
-            
+
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: _isFindingWorkers ? _buildWorkersContent(context) : _buildJobsContent(context),
+              child: _isFindingWorkers
+                  ? _buildWorkersContent(context)
+                  : _buildJobsContent(context),
             ),
           ],
         ),
@@ -259,7 +286,9 @@ class _JobsViewState extends ConsumerState<JobsView> {
           children: [
             // Filter Section in ExpansionTile
             Theme(
-              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+              data: Theme.of(
+                context,
+              ).copyWith(dividerColor: Colors.transparent),
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -267,8 +296,14 @@ class _JobsViewState extends ConsumerState<JobsView> {
                   border: Border.all(color: Colors.grey.shade200),
                 ),
                 child: ExpansionTile(
-                  title: const Text('ফিল্টার করুন', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  leading: const Icon(Icons.filter_alt_outlined, color: Color(0xFF2563EB)),
+                  title: const Text(
+                    'ফিল্টার করুন',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  leading: const Icon(
+                    Icons.filter_alt_outlined,
+                    color: Color(0xFF2563EB),
+                  ),
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -277,16 +312,31 @@ class _JobsViewState extends ConsumerState<JobsView> {
                         children: [
                           const Text(
                             'চাকরির ধরন',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           const SizedBox(height: 12),
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
                             children: [
-                              _buildFilterChip('FULL_TIME', 'ফুল টাইম', filterState),
-                              _buildFilterChip('PART_TIME', 'পার্ট টাইম', filterState),
-                              _buildFilterChip('CONTRACT', 'কন্ট্রাক্ট', filterState),
+                              _buildFilterChip(
+                                'FULL_TIME',
+                                'ফুল টাইম',
+                                filterState,
+                              ),
+                              _buildFilterChip(
+                                'PART_TIME',
+                                'পার্ট টাইম',
+                                filterState,
+                              ),
+                              _buildFilterChip(
+                                'CONTRACT',
+                                'কন্ট্রাক্ট',
+                                filterState,
+                              ),
                             ],
                           ),
                         ],
@@ -325,11 +375,18 @@ class _JobsViewState extends ConsumerState<JobsView> {
                   padding: const EdgeInsets.all(32.0),
                   child: Column(
                     children: [
-                      Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
+                      Icon(
+                        Icons.search_off,
+                        size: 64,
+                        color: Colors.grey.shade400,
+                      ),
                       const SizedBox(height: 16),
                       Text(
                         'কোনো চাকরি পাওয়া যায়নি',
-                        style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                     ],
                   ),
@@ -344,7 +401,7 @@ class _JobsViewState extends ConsumerState<JobsView> {
                   return JobListCardWidget(job: jobs[index]);
                 },
               ),
-            
+
             // Pagination
             if (totalPages > 1)
               Padding(
@@ -356,19 +413,27 @@ class _JobsViewState extends ConsumerState<JobsView> {
                       'পূর্ববর্তী',
                       enabled: currentPage > 1,
                       onPressed: () {
-                        ref.read(findJobsStateProvider.notifier).setPage(currentPage - 1);
+                        ref
+                            .read(findJobsStateProvider.notifier)
+                            .setPage(currentPage - 1);
                       },
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF2563EB),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         '$currentPage',
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -376,7 +441,9 @@ class _JobsViewState extends ConsumerState<JobsView> {
                       'পরবর্তী',
                       enabled: currentPage < totalPages,
                       onPressed: () {
-                        ref.read(findJobsStateProvider.notifier).setPage(currentPage + 1);
+                        ref
+                            .read(findJobsStateProvider.notifier)
+                            .setPage(currentPage + 1);
                       },
                     ),
                   ],
@@ -386,8 +453,18 @@ class _JobsViewState extends ConsumerState<JobsView> {
           ],
         );
       },
-      loading: () => const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator(color: Color(0xFF2563EB)))),
-      error: (e, _) => Center(child: Padding(padding: const EdgeInsets.all(32), child: Text('Error: $e'))),
+      loading: () => const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32),
+          child: CircularProgressIndicator(color: Color(0xFF2563EB)),
+        ),
+      ),
+      error: (e, _) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Text('Error: $e'),
+        ),
+      ),
     );
   }
 
@@ -395,10 +472,20 @@ class _JobsViewState extends ConsumerState<JobsView> {
     final workersState = ref.watch(jobSeekersStateProvider);
 
     if (workersState.isLoading) {
-      return const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator(color: Color(0xFF2563EB))));
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32),
+          child: CircularProgressIndicator(color: Color(0xFF2563EB)),
+        ),
+      );
     }
     if (workersState.error != null) {
-      return Center(child: Padding(padding: const EdgeInsets.all(32), child: Text('Error: ${workersState.error}')));
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Text('Error: ${workersState.error}'),
+        ),
+      );
     }
 
     final workers = workersState.items;
@@ -436,9 +523,14 @@ class _JobsViewState extends ConsumerState<JobsView> {
                   backgroundColor: const Color(0xFF2563EB),
                   foregroundColor: Colors.white,
                   minimumSize: const Size.fromHeight(48),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
                 ),
-                child: const Text('প্রোফাইল তৈরি করুন', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'প্রোফাইল তৈরি করুন',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
@@ -460,9 +552,17 @@ class _JobsViewState extends ConsumerState<JobsView> {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              _buildWorkerSortButton('সর্বশেষ', '-created_at', workersState.sortOrder),
+              _buildWorkerSortButton(
+                'সর্বশেষ',
+                '-created_at',
+                workersState.sortOrder,
+              ),
               const SizedBox(width: 8),
-              _buildWorkerSortButton('বেশি অভিজ্ঞতা', '-years_of_experience', workersState.sortOrder),
+              _buildWorkerSortButton(
+                'বেশি অভিজ্ঞতা',
+                '-years_of_experience',
+                workersState.sortOrder,
+              ),
             ],
           ),
         ),
@@ -499,7 +599,7 @@ class _JobsViewState extends ConsumerState<JobsView> {
               return JobSeekerCardWidget(jobSeeker: workers[index]);
             },
           ),
-        
+
         // Pagination
         if (workersState.totalPages > 1)
           Padding(
@@ -511,19 +611,27 @@ class _JobsViewState extends ConsumerState<JobsView> {
                   'পূর্ববর্তী',
                   enabled: workersState.currentPage > 1,
                   onPressed: () {
-                    ref.read(jobSeekersStateProvider.notifier).setPage(workersState.currentPage - 1);
+                    ref
+                        .read(jobSeekersStateProvider.notifier)
+                        .setPage(workersState.currentPage - 1);
                   },
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF2563EB),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
                     '${workersState.currentPage}',
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -531,7 +639,9 @@ class _JobsViewState extends ConsumerState<JobsView> {
                   'পরবর্তী',
                   enabled: workersState.currentPage < workersState.totalPages,
                   onPressed: () {
-                    ref.read(jobSeekersStateProvider.notifier).setPage(workersState.currentPage + 1);
+                    ref
+                        .read(jobSeekersStateProvider.notifier)
+                        .setPage(workersState.currentPage + 1);
                   },
                 ),
               ],
@@ -548,7 +658,9 @@ class _JobsViewState extends ConsumerState<JobsView> {
       label: Text(label),
       selected: isSelected,
       onSelected: (selected) {
-        ref.read(findJobsStateProvider.notifier).setJobType(selected ? value : null);
+        ref
+            .read(findJobsStateProvider.notifier)
+            .setJobType(selected ? value : null);
       },
       backgroundColor: Colors.white,
       selectedColor: Colors.blue.shade50,
@@ -573,7 +685,9 @@ class _JobsViewState extends ConsumerState<JobsView> {
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF2563EB) : Colors.white,
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: isSelected ? const Color(0xFF2563EB) : Colors.grey.shade300),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF2563EB) : Colors.grey.shade300,
+          ),
         ),
         child: Text(
           label,
@@ -586,7 +700,11 @@ class _JobsViewState extends ConsumerState<JobsView> {
     );
   }
 
-  Widget _buildWorkerSortButton(String label, String value, String currentSort) {
+  Widget _buildWorkerSortButton(
+    String label,
+    String value,
+    String currentSort,
+  ) {
     final isSelected = currentSort == value;
     return InkWell(
       onTap: () {
@@ -597,7 +715,9 @@ class _JobsViewState extends ConsumerState<JobsView> {
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF2563EB) : Colors.white,
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: isSelected ? const Color(0xFF2563EB) : Colors.grey.shade300),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF2563EB) : Colors.grey.shade300,
+          ),
         ),
         child: Text(
           label,
@@ -610,7 +730,11 @@ class _JobsViewState extends ConsumerState<JobsView> {
     );
   }
 
-  Widget _buildPaginationButton(String label, {required bool enabled, required VoidCallback onPressed}) {
+  Widget _buildPaginationButton(
+    String label, {
+    required bool enabled,
+    required VoidCallback onPressed,
+  }) {
     return InkWell(
       onTap: enabled ? onPressed : null,
       child: Container(
@@ -630,135 +754,198 @@ class _JobsViewState extends ConsumerState<JobsView> {
     );
   }
 }
+
 class PropertiesView extends ConsumerWidget {
   const PropertiesView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(propertiesProvider);
-    return state.when(
-      data: (items) {
-        if (items.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+    return RefreshIndicator(
+      onRefresh: () async {
+        return ref.refresh(propertiesProvider.future);
+      },
+      child: state.when(
+        data: (items) {
+          if (items.isEmpty) {
+            return ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                Icon(Icons.home_work_outlined, size: 64, color: Colors.grey.shade300),
-                const SizedBox(height: 16),
-                Text('কোনো প্রপার্টি পাওয়া যায়নি', style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
-              ],
-            ),
-          );
-        }
-        return ListView.builder(
-          padding: const EdgeInsets.all(12),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => PropertyDetailScreen(property: item)),
-                  );
-                },
-                borderRadius: BorderRadius.circular(16),
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: Colors.green.shade50,
-                          borderRadius: BorderRadius.circular(12),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.home_work_outlined,
+                          size: 64,
+                          color: Colors.grey.shade300,
                         ),
-                        child: Center(
-                          child: Icon(Icons.apartment_rounded, color: Colors.green.shade600, size: 36),
+                        const SizedBox(height: 16),
+                        Text(
+                          'কোনো প্রপার্টি পাওয়া যায়নি',
+                          style: TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: 16,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.title,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF1E293B),
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 6),
-                            Row(
-                              children: [
-                                Icon(Icons.location_on_outlined, size: 14, color: Colors.grey.shade500),
-                                const SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    item.location,
-                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.shade50,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    item.type,
-                                    style: TextStyle(fontSize: 11, color: Colors.blue.shade700, fontWeight: FontWeight.w600),
-                                  ),
-                                ),
-                                const Spacer(),
-                                Text(
-                                  'OMR ${item.price}',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w800,
-                                    color: Color(0xFF059669),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
+              ],
             );
-          },
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB))),
-      error: (e, _) => Center(child: Text('Error: $e')),
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            PropertyDetailScreen(property: item),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.apartment_rounded,
+                              color: Colors.green.shade600,
+                              size: 36,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.title,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF1E293B),
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    size: 14,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      item.location,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.shade50,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      item.type,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.blue.shade700,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    'OMR ${item.price}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF059669),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+        loading: () => ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: const Center(
+                child: CircularProgressIndicator(color: Color(0xFF2563EB)),
+              ),
+            ),
+          ],
+        ),
+        error: (e, _) => ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: Center(child: Text('Error: $e')),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -776,9 +963,16 @@ class VehiclesView extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.directions_car_outlined, size: 64, color: Colors.grey.shade300),
+                Icon(
+                  Icons.directions_car_outlined,
+                  size: 64,
+                  color: Colors.grey.shade300,
+                ),
                 const SizedBox(height: 16),
-                Text('কোনো গাড়ি পাওয়া যায়নি', style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
+                Text(
+                  'কোনো গাড়ি পাওয়া যায়নি',
+                  style: TextStyle(color: Colors.grey.shade500, fontSize: 16),
+                ),
               ],
             ),
           );
@@ -813,7 +1007,10 @@ class VehiclesView extends ConsumerWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => VehicleDetailScreen(vehicle: item)),
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            VehicleDetailScreen(vehicle: item),
+                      ),
                     );
                   },
                   borderRadius: BorderRadius.circular(20),
@@ -825,13 +1022,16 @@ class VehiclesView extends ConsumerWidget {
                       // Image Section
                       if (item.imageUrl != null && item.imageUrl!.isNotEmpty)
                         ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
                           child: AspectRatio(
                             aspectRatio: 16 / 9,
                             child: Image.network(
                               item.imageUrl!,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
+                              errorBuilder: (context, error, stackTrace) =>
+                                  _buildPlaceholder(),
                             ),
                           ),
                         )
@@ -863,9 +1063,14 @@ class VehiclesView extends ConsumerWidget {
                                 ),
                                 const SizedBox(width: 12),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF8B5CF6).withOpacity(0.1),
+                                    color: const Color(
+                                      0xFF8B5CF6,
+                                    ).withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
@@ -882,11 +1087,22 @@ class VehiclesView extends ConsumerWidget {
                             const SizedBox(height: 12),
                             Row(
                               children: [
-                                _buildBadge(Icons.calendar_month_rounded, item.year.toString()),
+                                _buildBadge(
+                                  Icons.calendar_month_rounded,
+                                  item.year.toString(),
+                                ),
                                 const SizedBox(width: 8),
-                                _buildBadge(Icons.speed_rounded, '${item.mileage} কিমি'),
+                                _buildBadge(
+                                  Icons.speed_rounded,
+                                  '${item.mileage} কিমি',
+                                ),
                                 const SizedBox(width: 8),
-                                Expanded(child: _buildBadge(Icons.directions_car_rounded, '${item.make} ${item.model}')),
+                                Expanded(
+                                  child: _buildBadge(
+                                    Icons.directions_car_rounded,
+                                    '${item.make} ${item.model}',
+                                  ),
+                                ),
                               ],
                             ),
                           ],
@@ -900,7 +1116,9 @@ class VehiclesView extends ConsumerWidget {
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB))),
+      loading: () => const Center(
+        child: CircularProgressIndicator(color: Color(0xFF2563EB)),
+      ),
       error: (e, _) => Center(child: Text('Error: $e')),
     );
   }
@@ -914,7 +1132,11 @@ class VehiclesView extends ConsumerWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Center(
-        child: Icon(Icons.directions_car_filled_rounded, color: Colors.purple.shade200, size: 64),
+        child: Icon(
+          Icons.directions_car_filled_rounded,
+          color: Colors.purple.shade200,
+          size: 64,
+        ),
       ),
     );
   }
@@ -935,7 +1157,11 @@ class VehiclesView extends ConsumerWidget {
           Flexible(
             child: Text(
               text,
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade700,
+                fontWeight: FontWeight.w500,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -944,7 +1170,6 @@ class VehiclesView extends ConsumerWidget {
     );
   }
 }
-
 
 class ServicesView extends ConsumerWidget {
   const ServicesView({super.key});
@@ -959,9 +1184,16 @@ class ServicesView extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.handyman_outlined, size: 64, color: Colors.grey.shade300),
+                Icon(
+                  Icons.handyman_outlined,
+                  size: 64,
+                  color: Colors.grey.shade300,
+                ),
                 const SizedBox(height: 16),
-                Text('কোনো সার্ভিস পাওয়া যায়নি', style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
+                Text(
+                  'কোনো সার্ভিস পাওয়া যায়নি',
+                  style: TextStyle(color: Colors.grey.shade500, fontSize: 16),
+                ),
               ],
             ),
           );
@@ -987,7 +1219,10 @@ class ServicesView extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   child: Row(
                     children: [
                       Container(
@@ -996,7 +1231,11 @@ class ServicesView extends ConsumerWidget {
                           color: const Color(0xFF2563EB).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Icon(Icons.category, size: 18, color: Color(0xFF2563EB)),
+                        child: const Icon(
+                          Icons.category,
+                          size: 18,
+                          color: Color(0xFF2563EB),
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Text(
@@ -1026,31 +1265,46 @@ class ServicesView extends ConsumerWidget {
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB))),
+      loading: () => const Center(
+        child: CircularProgressIndicator(color: Color(0xFF2563EB)),
+      ),
       error: (e, _) => Center(child: Text('Error: $e')),
     );
   }
 
   String _formatCategoryName(String raw) {
     if (raw.isEmpty) return 'অন্যান্য সার্ভিস';
-    
+
     // Mapping of common categories to Bengali
     final Map<String, String> categoryTranslations = {
+      'SPECIALIST_DOCTOR': 'স্পেশালিস্ট ডক্টর',
+      'HOSPITAL': 'হসপিটাল',
+      'AMBULANCE': 'অ্যাম্বুলেন্স',
+      'POLICE_STATION': 'পুলিশ স্টেশন',
+      'EMBASSY': 'এম্বাসি',
+      'TRAVEL_AGENCY': 'ট্রাভেল এজেন্সি',
+      'HOTEL': 'হোটেল',
+      'MAKTAB_SANAD': 'মক্তব সনদ',
+      'MONEY_EXCHANGE': 'মানি এক্সচেঞ্জ',
+      'LAWYER': 'লইয়ার',
+      'TOURIST_PLACE': 'ট্যুরিস্ট প্লেস',
+      'MEDICAL_SERVICES': 'মেডিকেল সার্ভিস',
+      'EDUCATIONAL_INSTITUTIONS': 'শিক্ষা প্রতিষ্ঠান',
+      'VISA_SERVICES': 'ভিসা সার্ভিস',
+      'CLEANING': 'ক্লিনিং',
+      'PLUMBING': 'প্লাম্বিং',
+      'OTHER': 'অন্যান্য',
+
+      // Fallback old categories just in case
       'APPLIANCE_REPAIR': 'অ্যাপ্লায়েন্স মেরামত',
       'MOBILE_TECHNICIAN': 'মোবাইল টেকনিশিয়ান',
-      'MAKTAB_SANAD': 'মাকতাব সানাদ',
       'AC_REPAIR': 'এসি মেরামত',
-      'PLUMBING': 'প্লাম্বিং',
       'ELECTRICAL': 'ইলেকট্রিক্যাল',
-      'CLEANING': 'ক্লিনিং',
       'CARPENTRY': 'কার্পেন্ট্রি',
       'PAINTING': 'পেইন্টিং',
       'PEST_CONTROL': 'পেস্ট কন্ট্রোল',
-      'AMBULANCE': 'অ্যাম্বুলেন্স',
-      'TRAVEL_AGENCY': 'ট্রাভেল এজেন্সি',
       'TOUR_AND_TRAVEL': 'ট্যুর ও ট্রাভেল',
       'RENT_A_CAR': 'রেন্ট এ কার',
-      'OTHER': 'অন্যান্য',
       'OTHERS': 'অন্যান্য',
     };
 
@@ -1060,23 +1314,43 @@ class ServicesView extends ConsumerWidget {
     }
 
     final parts = raw.split('_');
-    return parts.map((e) {
-      if (e.isEmpty) return '';
-      return e[0].toUpperCase() + e.substring(1).toLowerCase();
-    }).join(' ');
+    return parts
+        .map((e) {
+          if (e.isEmpty) return '';
+          return e[0].toUpperCase() + e.substring(1).toLowerCase();
+        })
+        .join(' ');
   }
-
 
   Widget _getServiceIcon(String category) {
     final cat = category.toUpperCase().replaceAll(' ', '_');
-    if (cat.contains('ELECTRICAL')) return Icon(Icons.electrical_services, size: 32, color: Colors.blue.shade600);
-    if (cat.contains('MAKTAB') || cat.contains('SANAD')) return Icon(Icons.account_balance, size: 32, color: Colors.blue.shade600);
-    if (cat.contains('HOSPITAL') || cat.contains('MEDICAL')) return Icon(Icons.local_hospital, size: 32, color: Colors.blue.shade600);
-    if (cat.contains('TOUR') || cat.contains('TRAVEL')) return Icon(Icons.flight_takeoff, size: 32, color: Colors.blue.shade600);
-    if (cat.contains('CAR') || cat.contains('VEHICLE')) return Icon(Icons.directions_car, size: 32, color: Colors.blue.shade600);
-    if (cat.contains('CLEANING')) return Icon(Icons.cleaning_services, size: 32, color: Colors.blue.shade600);
-    if (cat.contains('AC') || cat.contains('REPAIR')) return Icon(Icons.build, size: 32, color: Colors.blue.shade600);
-    return Icon(Icons.business_center_rounded, size: 32, color: Colors.blue.shade600);
+    if (cat.contains('ELECTRICAL'))
+      return Icon(
+        Icons.electrical_services,
+        size: 32,
+        color: Colors.blue.shade600,
+      );
+    if (cat.contains('MAKTAB') || cat.contains('SANAD'))
+      return Icon(Icons.account_balance, size: 32, color: Colors.blue.shade600);
+    if (cat.contains('HOSPITAL') || cat.contains('MEDICAL'))
+      return Icon(Icons.local_hospital, size: 32, color: Colors.blue.shade600);
+    if (cat.contains('TOUR') || cat.contains('TRAVEL'))
+      return Icon(Icons.flight_takeoff, size: 32, color: Colors.blue.shade600);
+    if (cat.contains('CAR') || cat.contains('VEHICLE'))
+      return Icon(Icons.directions_car, size: 32, color: Colors.blue.shade600);
+    if (cat.contains('CLEANING'))
+      return Icon(
+        Icons.cleaning_services,
+        size: 32,
+        color: Colors.blue.shade600,
+      );
+    if (cat.contains('AC') || cat.contains('REPAIR'))
+      return Icon(Icons.build, size: 32, color: Colors.blue.shade600);
+    return Icon(
+      Icons.business_center_rounded,
+      size: 32,
+      color: Colors.blue.shade600,
+    );
   }
 
   Widget _buildPremiumServiceCard(BuildContext context, Service item) {
@@ -1105,7 +1379,9 @@ class ServicesView extends ConsumerWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ServiceDetailScreen(service: item)),
+              MaterialPageRoute(
+                builder: (context) => ServiceDetailScreen(service: item),
+              ),
             );
           },
           borderRadius: BorderRadius.circular(20),
@@ -1133,20 +1409,23 @@ class ServicesView extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(16),
                     child: (item.images.isNotEmpty || item.imageUrl != null)
                         ? CachedNetworkImage(
-                            imageUrl: item.images.isNotEmpty ? item.images.first : item.imageUrl!,
+                            imageUrl: item.images.isNotEmpty
+                                ? item.images.first
+                                : item.imageUrl!,
                             fit: BoxFit.cover,
                             width: 72,
                             height: 72,
-                            placeholder: (context, url) => Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                            errorWidget: (context, url, error) => Center(child: _getServiceIcon(item.category)),
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                Center(child: _getServiceIcon(item.category)),
                           )
-                        : Center(
-                            child: _getServiceIcon(item.category),
-                          ),
+                        : Center(child: _getServiceIcon(item.category)),
                   ),
                 ),
                 const SizedBox(width: 16),
-                
+
                 // Content Section
                 Expanded(
                   child: Column(
@@ -1164,7 +1443,7 @@ class ServicesView extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Contact Button & Location
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1172,12 +1451,19 @@ class ServicesView extends ConsumerWidget {
                           Expanded(
                             child: Row(
                               children: [
-                                Icon(Icons.location_on_outlined, size: 14, color: Colors.grey.shade400),
+                                Icon(
+                                  Icons.location_on_outlined,
+                                  size: 14,
+                                  color: Colors.grey.shade400,
+                                ),
                                 const SizedBox(width: 4),
                                 Expanded(
                                   child: Text(
                                     'ওমান',
-                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                    ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -1186,7 +1472,10 @@ class ServicesView extends ConsumerWidget {
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
                               color: const Color(0xFF2563EB),
                               borderRadius: BorderRadius.circular(10),
@@ -1197,7 +1486,11 @@ class ServicesView extends ConsumerWidget {
                                 SizedBox(width: 6),
                                 Text(
                                   'যোগাযোগ',
-                                  style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ],
                             ),
@@ -1246,7 +1539,10 @@ class MarketView extends ConsumerWidget {
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Color(0xFF0F9D58), Color(0xFF0F9D58)], // Solid green to match screenshot
+                      colors: [
+                        Color(0xFF0F9D58),
+                        Color(0xFF0F9D58),
+                      ], // Solid green to match screenshot
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
@@ -1271,7 +1567,9 @@ class MarketView extends ConsumerWidget {
                             ),
                             style: TextButton.styleFrom(
                               alignment: Alignment.centerLeft,
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
                             ),
                           ),
                         ),
@@ -1288,7 +1586,10 @@ class MarketView extends ConsumerWidget {
                             onPressed: () {
                               // TODO: Post ad functionality
                             },
-                            icon: const Icon(Icons.add, color: Color(0xFF0F9D58)),
+                            icon: const Icon(
+                              Icons.add,
+                              color: Color(0xFF0F9D58),
+                            ),
                             label: const Text(
                               'বিজ্ঞাপন দিন',
                               style: TextStyle(color: Color(0xFF0F9D58)),
@@ -1302,37 +1603,108 @@ class MarketView extends ConsumerWidget {
 
                 // 2. Categories in ExpansionTile
                 Theme(
-                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                  data: Theme.of(
+                    context,
+                  ).copyWith(dividerColor: Colors.transparent),
                   child: ExpansionTile(
-                    title: const Text('ক্যাটাগরি সমূহ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    leading: const Icon(Icons.category, color: Color(0xFF0F9D58)),
+                    title: const Text(
+                      'ক্যাটাগরি সমূহ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    leading: const Icon(
+                      Icons.category,
+                      color: Color(0xFF0F9D58),
+                    ),
                     initiallyExpanded: false,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 8.0,
+                        ),
                         child: GridView.count(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           crossAxisCount: 2,
-                          childAspectRatio: 2.0, // Flatter buttons to save space
+                          childAspectRatio:
+                              2.0, // Flatter buttons to save space
                           mainAxisSpacing: 12,
                           crossAxisSpacing: 12,
                           children: [
-                            _buildCategoryItem('Electronics', 'ইলেকট্রনিক্স', Icons.phone_android, '2', filterState, ref),
-                            _buildCategoryItem('Computer', 'কম্পিউটার', Icons.laptop, '0', filterState, ref),
-                            _buildCategoryItem('Furniture', 'ফার্নিচার', Icons.home, '1', filterState, ref),
-                            _buildCategoryItem('Clothing', 'পোশাক', Icons.checkroom, '1', filterState, ref),
-                            _buildCategoryItem('Baby', 'শিশু সামগ্রী', Icons.child_care, '0', filterState, ref),
-                            _buildCategoryItem('Machinery', 'যন্ত্রপাতি', Icons.build, '0', filterState, ref),
-                            _buildCategoryItem('Books', 'বই', Icons.menu_book, '0', filterState, ref),
-                            _buildCategoryItem('Others', 'অন্যান্য', Icons.favorite_border, '2', filterState, ref),
+                            _buildCategoryItem(
+                              'Electronics',
+                              'ইলেকট্রনিক্স',
+                              Icons.phone_android,
+                              '2',
+                              filterState,
+                              ref,
+                            ),
+                            _buildCategoryItem(
+                              'Computer',
+                              'কম্পিউটার',
+                              Icons.laptop,
+                              '0',
+                              filterState,
+                              ref,
+                            ),
+                            _buildCategoryItem(
+                              'Furniture',
+                              'ফার্নিচার',
+                              Icons.home,
+                              '1',
+                              filterState,
+                              ref,
+                            ),
+                            _buildCategoryItem(
+                              'Clothing',
+                              'পোশাক',
+                              Icons.checkroom,
+                              '1',
+                              filterState,
+                              ref,
+                            ),
+                            _buildCategoryItem(
+                              'Baby',
+                              'শিশু সামগ্রী',
+                              Icons.child_care,
+                              '0',
+                              filterState,
+                              ref,
+                            ),
+                            _buildCategoryItem(
+                              'Machinery',
+                              'যন্ত্রপাতি',
+                              Icons.build,
+                              '0',
+                              filterState,
+                              ref,
+                            ),
+                            _buildCategoryItem(
+                              'Books',
+                              'বই',
+                              Icons.menu_book,
+                              '0',
+                              filterState,
+                              ref,
+                            ),
+                            _buildCategoryItem(
+                              'Others',
+                              'অন্যান্য',
+                              Icons.favorite_border,
+                              '2',
+                              filterState,
+                              ref,
+                            ),
                           ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                
+
                 const Divider(thickness: 1, color: Color(0xFFEEEEEE)),
 
                 // 3. Latest Ads Section
@@ -1343,23 +1715,45 @@ class MarketView extends ConsumerWidget {
                     children: [
                       const Text(
                         'সর্বশেষ বিজ্ঞাপন',
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'মোট $totalItems টি বিজ্ঞাপন পাওয়া গেছে',
-                        style: const TextStyle(fontSize: 16, color: Colors.black54),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black54,
+                        ),
                       ),
                       const SizedBox(height: 16),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: [
-                            _buildSortButton('সর্বশেষ', 'latest', filterState, ref),
+                            _buildSortButton(
+                              'সর্বশেষ',
+                              'latest',
+                              filterState,
+                              ref,
+                            ),
                             const SizedBox(width: 8),
-                            _buildSortButton('কম দাম', 'low_price', filterState, ref),
+                            _buildSortButton(
+                              'কম দাম',
+                              'low_price',
+                              filterState,
+                              ref,
+                            ),
                             const SizedBox(width: 8),
-                            _buildSortButton('বেশি দাম', 'high_price', filterState, ref),
+                            _buildSortButton(
+                              'বেশি দাম',
+                              'high_price',
+                              filterState,
+                              ref,
+                            ),
                           ],
                         ),
                       ),
@@ -1372,11 +1766,18 @@ class MarketView extends ConsumerWidget {
                             padding: const EdgeInsets.all(32.0),
                             child: Column(
                               children: [
-                                Icon(Icons.store, size: 64, color: Colors.grey.shade400),
+                                Icon(
+                                  Icons.store,
+                                  size: 64,
+                                  color: Colors.grey.shade400,
+                                ),
                                 const SizedBox(height: 16),
                                 Text(
                                   'কোনো আইটেম পাওয়া যায়নি',
-                                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey.shade600,
+                                  ),
                                 ),
                               ],
                             ),
@@ -1386,22 +1787,26 @@ class MarketView extends ConsumerWidget {
                         GridView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            childAspectRatio: 0.75,
-                          ),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                                childAspectRatio: 0.75,
+                              ),
                           itemCount: items.length,
                           itemBuilder: (context, index) {
                             return MarketCardWidget(item: items[index]);
                           },
                         ),
-                      
+
                       // 5. Pagination
                       if (totalPages > 1)
                         Padding(
-                          padding: const EdgeInsets.only(top: 16.0, bottom: 32.0),
+                          padding: const EdgeInsets.only(
+                            top: 16.0,
+                            bottom: 32.0,
+                          ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -1409,19 +1814,27 @@ class MarketView extends ConsumerWidget {
                                 'পূর্ববর্তী',
                                 enabled: currentPage > 1,
                                 onPressed: () {
-                                  ref.read(marketStateProvider.notifier).setPage(currentPage - 1);
+                                  ref
+                                      .read(marketStateProvider.notifier)
+                                      .setPage(currentPage - 1);
                                 },
                               ),
                               const SizedBox(width: 8),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFF2563EB),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
                                   '$currentPage',
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -1429,7 +1842,9 @@ class MarketView extends ConsumerWidget {
                                 'পরবর্তী',
                                 enabled: currentPage < totalPages,
                                 onPressed: () {
-                                  ref.read(marketStateProvider.notifier).setPage(currentPage + 1);
+                                  ref
+                                      .read(marketStateProvider.notifier)
+                                      .setPage(currentPage + 1);
                                 },
                               ),
                             ],
@@ -1443,12 +1858,21 @@ class MarketView extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF0F9D58))),
+      loading: () => const Center(
+        child: CircularProgressIndicator(color: Color(0xFF0F9D58)),
+      ),
       error: (e, _) => Center(child: Text('Error: $e')),
     );
   }
 
-  Widget _buildCategoryItem(String id, String title, IconData icon, String count, MarketState state, WidgetRef ref) {
+  Widget _buildCategoryItem(
+    String id,
+    String title,
+    IconData icon,
+    String count,
+    MarketState state,
+    WidgetRef ref,
+  ) {
     final isSelected = state.category == id;
     return InkWell(
       onTap: () {
@@ -1462,9 +1886,11 @@ class MarketView extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            icon, 
-            size: 32, 
-            color: isSelected ? const Color(0xFF0F9D58) : const Color(0xFF2563EB)
+            icon,
+            size: 32,
+            color: isSelected
+                ? const Color(0xFF0F9D58)
+                : const Color(0xFF2563EB),
           ),
           const SizedBox(height: 8),
           Text(
@@ -1484,7 +1910,12 @@ class MarketView extends ConsumerWidget {
     );
   }
 
-  Widget _buildSortButton(String label, String value, MarketState state, WidgetRef ref) {
+  Widget _buildSortButton(
+    String label,
+    String value,
+    MarketState state,
+    WidgetRef ref,
+  ) {
     final isSelected = state.sortOrder == value;
     return InkWell(
       onTap: () {
@@ -1495,7 +1926,9 @@ class MarketView extends ConsumerWidget {
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF2563EB) : Colors.white,
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: isSelected ? const Color(0xFF2563EB) : Colors.grey.shade300),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF2563EB) : Colors.grey.shade300,
+          ),
         ),
         child: Text(
           label,
@@ -1508,7 +1941,11 @@ class MarketView extends ConsumerWidget {
     );
   }
 
-  Widget _buildPaginationButton(String label, {required bool enabled, required VoidCallback onPressed}) {
+  Widget _buildPaginationButton(
+    String label, {
+    required bool enabled,
+    required VoidCallback onPressed,
+  }) {
     return InkWell(
       onTap: enabled ? onPressed : null,
       child: Container(
@@ -1528,4 +1965,3 @@ class MarketView extends ConsumerWidget {
     );
   }
 }
-

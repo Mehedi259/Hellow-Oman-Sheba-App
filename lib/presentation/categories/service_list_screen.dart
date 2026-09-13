@@ -47,8 +47,13 @@ class ServiceListScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF3F4F6),
-      body: CustomScrollView(
-        slivers: [
+      body: RefreshIndicator(
+        onRefresh: () async {
+          return ref.refresh(servicesByCategoryProvider(backendName).future);
+        },
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
           // ─── SliverAppBar ───
           SliverAppBar(
             expandedHeight: 160,

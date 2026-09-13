@@ -97,7 +97,7 @@ class ClassifiedsRepository {
 
   Future<List<Service>> getServices({String? category}) async {
     try {
-      final query = category != null ? "?category=$category" : "";
+      final query = category != null ? "?service_type=$category" : "";
       return await _fetchAllPages('/classifieds/services/$query', Service.fromJson);
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? 'Failed to load services');
