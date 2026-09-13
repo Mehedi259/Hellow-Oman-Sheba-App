@@ -28,7 +28,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 7, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -78,9 +78,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
               controller: _tabController,
               children: [
                 _ProfileInfoTab(user: user),
-                const _MyPostsTab(),
                 const _JobApplicantsTab(),
-                const _FavoritesTab(),
                 const _ApplicationsTab(),
                 const _SecurityTab(),
                 const _SettingsTab(),
@@ -266,9 +264,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
             tabAlignment: TabAlignment.start,
             tabs: const [
               Tab(icon: Icon(Icons.person_rounded, size: 20), text: 'প্রোফাইল'),
-              Tab(icon: Icon(Icons.article_rounded, size: 20), text: 'আমার পোস্ট'),
               Tab(icon: Icon(Icons.people_rounded, size: 20), text: 'আবেদনকারী'),
-              Tab(icon: Icon(Icons.favorite_rounded, size: 20), text: 'পছন্দ'),
               Tab(icon: Icon(Icons.work_rounded, size: 20), text: 'আবেদন'),
               Tab(icon: Icon(Icons.lock_rounded, size: 20), text: 'পাসওয়ার্ড'),
               Tab(icon: Icon(Icons.settings_rounded, size: 20), text: 'সেটিংস'),

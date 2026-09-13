@@ -26,7 +26,8 @@ class MyListingsScreen extends ConsumerStatefulWidget {
   ConsumerState<MyListingsScreen> createState() => _MyListingsScreenState();
 }
 
-class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with SingleTickerProviderStateMixin {
+class _MyListingsScreenState extends ConsumerState<MyListingsScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -41,27 +42,35 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
     super.dispose();
   }
 
-  Future<void> _navigateToItem(BuildContext context, String type, int id) async {
+  Future<void> _navigateToItem(
+    BuildContext context,
+    String type,
+    int id,
+  ) async {
     final apiClient = ref.read(apiClientProvider);
-    
+
     bool isDialogShowing = true;
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator(color: Color(0xFF0056D2))),
+      builder: (_) => const Center(
+        child: CircularProgressIndicator(color: Color(0xFF0056D2)),
+      ),
     ).then((_) {
       isDialogShowing = false;
     });
 
     try {
       Widget? nextScreen;
-      
+
       if (type == 'job') {
         final res = await apiClient.dio.get('/classifieds/jobs/$id/');
         nextScreen = JobDetailScreen(job: Job.fromJson(res.data));
       } else if (type == 'property') {
         final res = await apiClient.dio.get('/classifieds/properties/$id/');
-        nextScreen = PropertyDetailScreen(property: Property.fromJson(res.data));
+        nextScreen = PropertyDetailScreen(
+          property: Property.fromJson(res.data),
+        );
       } else if (type == 'vehicle') {
         final res = await apiClient.dio.get('/classifieds/vehicles/$id/');
         nextScreen = VehicleDetailScreen(vehicle: Vehicle.fromJson(res.data));
@@ -70,22 +79,28 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
         nextScreen = ServiceDetailScreen(service: Service.fromJson(res.data));
       } else if (type == 'job_seeker') {
         final res = await apiClient.dio.get('/classifieds/job-seekers/$id/');
-        nextScreen = WorkerDetailScreen(jobSeeker: JobSeeker.fromJson(res.data));
-      } else if (type == 'post' || type == 'forum_post' || type == 'community') {
+        nextScreen = WorkerDetailScreen(
+          jobSeeker: JobSeeker.fromJson(res.data),
+        );
+      } else if (type == 'post' ||
+          type == 'forum_post' ||
+          type == 'community') {
         final res = await apiClient.dio.get('/community/forum/posts/$id/');
         nextScreen = CommunityDetailScreen(post: Post.fromJson(res.data));
       } else {
         if (!context.mounted) return;
         if (isDialogShowing) Navigator.of(context, rootNavigator: true).pop();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('অজানা টাইপ: $type')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('অজানা টাইপ: $type')));
         return;
       }
-      
+
       if (!context.mounted) return;
       if (isDialogShowing) {
         Navigator.of(context, rootNavigator: true).pop();
       }
-      
+
       if (nextScreen != null) {
         Navigator.push(context, MaterialPageRoute(builder: (_) => nextScreen!));
       }
@@ -95,7 +110,12 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
       if (isDialogShowing) {
         Navigator.of(context, rootNavigator: true).pop();
       }
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('বিস্তারিত তথ্য পাওয়া যায়নি।'), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('বিস্তারিত তথ্য পাওয়া যায়নি।'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -106,7 +126,10 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
         title: const Text('নিশ্চিত করুন'),
         content: const Text('আপনি কি এই পোস্টটি মুছে ফেলতে চান?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('না')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('না'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
@@ -121,27 +144,40 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator(color: Color(0xFF0056D2))),
+      builder: (_) => const Center(
+        child: CircularProgressIndicator(color: Color(0xFF0056D2)),
+      ),
     );
     try {
       final apiClient = ref.read(apiClientProvider);
       String endpoint = '';
-      if (type == 'job') endpoint = '/classifieds/jobs/$id/';
-      else if (type == 'property') endpoint = '/classifieds/properties/$id/';
-      else if (type == 'vehicle') endpoint = '/classifieds/vehicles/$id/';
-      else if (type == 'service') endpoint = '/classifieds/services/$id/';
-      else if (type == 'job_seeker') endpoint = '/classifieds/job-seekers/$id/';
-      else if (type == 'post' || type == 'forum_post') endpoint = '/community/forum/posts/$id/';
-      
+      if (type == 'job')
+        endpoint = '/classifieds/jobs/$id/';
+      else if (type == 'property')
+        endpoint = '/classifieds/properties/$id/';
+      else if (type == 'vehicle')
+        endpoint = '/classifieds/vehicles/$id/';
+      else if (type == 'service')
+        endpoint = '/classifieds/services/$id/';
+      else if (type == 'job_seeker')
+        endpoint = '/classifieds/job-seekers/$id/';
+      else if (type == 'post' || type == 'forum_post')
+        endpoint = '/community/forum/posts/$id/';
+
       if (endpoint.isNotEmpty) {
         await apiClient.dio.delete(endpoint);
       }
       if (context.mounted) Navigator.of(context, rootNavigator: true).pop();
       ref.invalidate(myPostsProvider);
-    } catch(e) {
+    } catch (e) {
       if (context.mounted) {
         Navigator.of(context, rootNavigator: true).pop();
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('মুছে ফেলা সম্ভব হয়নি।'), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('মুছে ফেলা সম্ভব হয়নি।'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }
@@ -151,8 +187,13 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
       final repo = ref.read(authRepositoryProvider);
       await repo.removeFavorite(id);
       ref.invalidate(myFavoritesProvider);
-    } catch(e) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('রিমুভ করা সম্ভব হয়নি।'), backgroundColor: Colors.red));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('রিমুভ করা সম্ভব হয়নি।'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -166,7 +207,11 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
         elevation: 0,
         title: const Text(
           'লিস্টিং ও কার্যক্রম',
-          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20, color: Color(0xFF1E293B)),
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 20,
+            color: Color(0xFF1E293B),
+          ),
         ),
         centerTitle: true,
         bottom: TabBar(
@@ -174,8 +219,14 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
           isScrollable: true,
           labelColor: const Color(0xFF0056D2),
           unselectedLabelColor: const Color(0xFF94A3B8),
-          labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
           indicatorColor: const Color(0xFF0056D2),
           indicatorWeight: 3,
           indicatorSize: TabBarIndicatorSize.label,
@@ -200,10 +251,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
     );
   }
 
-  Widget _buildCard({
-    required Widget child,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildCard({required Widget child, required VoidCallback onTap}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -231,13 +279,48 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
           onTap: onTap,
           highlightColor: const Color(0xFF0056D2).withOpacity(0.05),
           splashColor: const Color(0xFF0056D2).withOpacity(0.1),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: child,
-          ),
+          child: Padding(padding: const EdgeInsets.all(20.0), child: child),
         ),
       ),
     );
+  }
+
+  String? _extractImageUrl(Map<String, dynamic> post) {
+    if (post['images'] != null &&
+        post['images'] is List &&
+        (post['images'] as List).isNotEmpty) {
+      final first = (post['images'] as List).first;
+      if (first is Map)
+        return first['image']?.toString() ?? first['url']?.toString();
+      return first.toString();
+    }
+    if (post['image_url'] != null && post['image_url'].toString().isNotEmpty)
+      return post['image_url'].toString();
+    if (post['image'] != null && post['image'].toString().isNotEmpty)
+      return post['image'].toString();
+    if (post['photo'] != null && post['photo'].toString().isNotEmpty)
+      return post['photo'].toString();
+    if (post['primary_image'] != null &&
+        post['primary_image'].toString().isNotEmpty)
+      return post['primary_image'].toString();
+    return null;
+  }
+
+  String _getAbsoluteUrl(String? url) {
+    if (url == null || url.isEmpty) return '';
+    if (url.startsWith('http')) return url;
+    return 'http://188.245.212.240$url';
+  }
+
+  Widget _buildFallbackIcon(String type) {
+    IconData iconData = Icons.article_outlined;
+    if (type == 'property') iconData = Icons.home_work_outlined;
+    if (type == 'vehicle') iconData = Icons.directions_car_outlined;
+    if (type == 'service') iconData = Icons.design_services_outlined;
+    if (type == 'job_seeker') iconData = Icons.person_search_outlined;
+    if (type == 'job') iconData = Icons.work_outline;
+
+    return Icon(iconData, size: 28, color: const Color(0xFF94A3B8));
   }
 
   Widget _buildPostsTab() {
@@ -261,34 +344,37 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
               final post = posts[index];
               final type = post['post_type'] ?? 'post';
               final id = post['id'];
-              
-              String iconPath = '💼';
-              if (type == 'property') iconPath = '🏠';
-              if (type == 'vehicle') iconPath = '🚗';
-              if (type == 'service') iconPath = '🛠️';
-              if (type == 'job_seeker') iconPath = '👨‍🔧';
-              
+
+              final rawImageUrl = _extractImageUrl(
+                post as Map<String, dynamic>,
+              );
+              final imageUrl = _getAbsoluteUrl(rawImageUrl);
+
               return _buildCard(
                 onTap: () => _navigateToItem(context, type, id),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: 56, height: 56,
+                      width: 64,
+                      height: 64,
                       alignment: Alignment.center,
+                      clipBehavior: Clip.hardEdge,
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            const Color(0xFF0056D2).withOpacity(0.15),
-                            const Color(0xFF0056D2).withOpacity(0.05),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFF0056D2).withOpacity(0.1)),
+                        color: const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade200),
                       ),
-                      child: Text(iconPath, style: const TextStyle(fontSize: 26)),
+                      child: imageUrl.isNotEmpty
+                          ? Image.network(
+                              imageUrl,
+                              width: 64,
+                              height: 64,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  _buildFallbackIcon(type),
+                            )
+                          : _buildFallbackIcon(type),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -296,8 +382,17 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            post['title'] ?? post['title_bn'] ?? post['professional_title'] ?? post['professional_title_bn'] ?? 'Untitled',
-                            style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF1E293B), fontSize: 17, height: 1.3),
+                            post['title'] ??
+                                post['title_bn'] ??
+                                post['professional_title'] ??
+                                post['professional_title_bn'] ??
+                                'Untitled',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF1E293B),
+                              fontSize: 17,
+                              height: 1.3,
+                            ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -305,22 +400,41 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
                           Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFE0E7FF),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
-                                  type.toString().toUpperCase(), 
-                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF4338CA), letterSpacing: 0.5),
+                                  type.toString().toUpperCase(),
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF4338CA),
+                                    letterSpacing: 0.5,
+                                  ),
                                 ),
                               ),
                               const Spacer(),
                               const Row(
                                 children: [
-                                  Text('বিস্তারিত দেখুন', style: TextStyle(color: Color(0xFF64748B), fontSize: 13, fontWeight: FontWeight.w600)),
+                                  Text(
+                                    'বিস্তারিত দেখুন',
+                                    style: TextStyle(
+                                      color: Color(0xFF64748B),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                                   SizedBox(width: 4),
-                                  Icon(Icons.arrow_forward_rounded, size: 14, color: Color(0xFF64748B)),
+                                  Icon(
+                                    Icons.arrow_forward_rounded,
+                                    size: 14,
+                                    color: Color(0xFF64748B),
+                                  ),
                                 ],
                               ),
                             ],
@@ -329,8 +443,13 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
                       ),
                     ),
                     PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert_rounded, color: Color(0xFF64748B)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      icon: const Icon(
+                        Icons.more_vert_rounded,
+                        color: Color(0xFF64748B),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       onSelected: (value) {
                         if (value == 'edit') {
                           Navigator.push(
@@ -352,7 +471,11 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
                           value: 'edit',
                           child: Row(
                             children: [
-                              Icon(Icons.edit_rounded, color: Color(0xFF0056D2), size: 20),
+                              Icon(
+                                Icons.edit_rounded,
+                                color: Color(0xFF0056D2),
+                                size: 20,
+                              ),
                               SizedBox(width: 8),
                               Text('এডিট করুন'),
                             ],
@@ -362,9 +485,16 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
+                              Icon(
+                                Icons.delete_outline_rounded,
+                                color: Colors.redAccent,
+                                size: 20,
+                              ),
                               SizedBox(width: 8),
-                              Text('মুছে ফেলুন', style: TextStyle(color: Colors.redAccent)),
+                              Text(
+                                'মুছে ফেলুন',
+                                style: TextStyle(color: Colors.redAccent),
+                              ),
                             ],
                           ),
                         ),
@@ -376,8 +506,11 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF0056D2))),
-        error: (e, st) => const Center(child: Text('কোনো ত্রুটি হয়েছে। আবার চেষ্টা করুন।')),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: Color(0xFF0056D2)),
+        ),
+        error: (e, st) =>
+            const Center(child: Text('কোনো ত্রুটি হয়েছে। আবার চেষ্টা করুন।')),
       ),
     );
   }
@@ -407,17 +540,29 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
               final comment = comments[index];
               final postId = comment['post'] ?? 0;
               final content = comment['content'] ?? '';
-              final timeStr = comment['created_at'] != null ? DateFormat('MMM d, yyyy').format(DateTime.parse(comment['created_at'])) : '';
-              
+              final timeStr = comment['created_at'] != null
+                  ? DateFormat(
+                      'MMM d, yyyy',
+                    ).format(DateTime.parse(comment['created_at']))
+                  : '';
+
               return _buildCard(
                 onTap: () => _navigateToItem(context, 'forum_post', postId),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: 44, height: 44,
-                      decoration: BoxDecoration(color: Colors.green.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-                      child: const Icon(Icons.comment_rounded, color: Colors.green, size: 22),
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.comment_rounded,
+                        color: Colors.green,
+                        size: 22,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -428,16 +573,38 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
                             content,
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF1E293B), fontSize: 15, height: 1.4),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF1E293B),
+                              fontSize: 15,
+                              height: 1.4,
+                            ),
                           ),
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              const Icon(Icons.forum_outlined, size: 14, color: Color(0xFF94A3B8)),
+                              const Icon(
+                                Icons.forum_outlined,
+                                size: 14,
+                                color: Color(0xFF94A3B8),
+                              ),
                               const SizedBox(width: 4),
-                              const Text('ফোরাম পোস্ট দেখুন', style: TextStyle(color: Color(0xFF0056D2), fontSize: 12, fontWeight: FontWeight.w600)),
+                              const Text(
+                                'ফোরাম পোস্ট দেখুন',
+                                style: TextStyle(
+                                  color: Color(0xFF0056D2),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                               const Spacer(),
-                              Text(timeStr, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12)),
+                              Text(
+                                timeStr,
+                                style: const TextStyle(
+                                  color: Color(0xFF94A3B8),
+                                  fontSize: 12,
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -449,8 +616,11 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF0056D2))),
-        error: (e, st) => const Center(child: Text('কোনো ত্রুটি হয়েছে। আবার চেষ্টা করুন।')),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: Color(0xFF0056D2)),
+        ),
+        error: (e, st) =>
+            const Center(child: Text('কোনো ত্রুটি হয়েছে। আবার চেষ্টা করুন।')),
       ),
     );
   }
@@ -458,7 +628,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
   void _showEditPostDialog(Post post) {
     final titleController = TextEditingController(text: post.title);
     final contentController = TextEditingController(text: post.content);
-    
+
     showDialog(
       context: context,
       builder: (context) {
@@ -482,7 +652,10 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(), child: const Text('বাতিল')),
+            TextButton(
+              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+              child: const Text('বাতিল'),
+            ),
             TextButton(
               onPressed: () async {
                 final newTitle = titleController.text.trim();
@@ -490,14 +663,29 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
                 if (newTitle.isNotEmpty && newContent.isNotEmpty) {
                   Navigator.of(context, rootNavigator: true).pop();
                   try {
-                    await ref.read(apiClientProvider).dio.patch('/community/forum/posts/${post.id}/', data: {
-                      'title': newTitle,
-                      'content': newContent,
-                    });
+                    await ref
+                        .read(apiClientProvider)
+                        .dio
+                        .patch(
+                          '/community/forum/posts/${post.id}/',
+                          data: {'title': newTitle, 'content': newContent},
+                        );
                     ref.refresh(myForumPostsProvider);
-                    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('সফলভাবে আপডেট হয়েছে'), backgroundColor: Colors.green));
+                    if (mounted)
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('সফলভাবে আপডেট হয়েছে'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
                   } catch (e) {
-                    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+                    if (mounted)
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
                   }
                 }
               },
@@ -505,7 +693,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
             ),
           ],
         );
-      }
+      },
     );
   }
 
@@ -535,22 +723,52 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
                   children: [
                     Container(
                       padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(color: Colors.blue.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-                      child: const Icon(Icons.forum, color: Colors.blue, size: 24),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.forum,
+                        color: Colors.blue,
+                        size: 24,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(post.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B)), maxLines: 2, overflow: TextOverflow.ellipsis),
+                          Text(
+                            post.title,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Color(0xFF1E293B),
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                           const SizedBox(height: 4),
-                          Text(post.content, style: const TextStyle(color: Color(0xFF64748B), fontSize: 13), maxLines: 2, overflow: TextOverflow.ellipsis),
+                          Text(
+                            post.content,
+                            style: const TextStyle(
+                              color: Color(0xFF64748B),
+                              fontSize: 13,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('${post.likes} পছন্দ • ${post.commentsCount} মন্তব্য', style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12)),
+                              Text(
+                                '${post.likes} পছন্দ • ${post.commentsCount} মন্তব্য',
+                                style: const TextStyle(
+                                  color: Color(0xFF94A3B8),
+                                  fontSize: 12,
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -566,27 +784,74 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
                             context: context,
                             builder: (ctx) => AlertDialog(
                               title: const Text('নিশ্চিত করুন'),
-                              content: const Text('আপনি কি এই প্রশ্নটি মুছে ফেলতে চান?'),
+                              content: const Text(
+                                'আপনি কি এই প্রশ্নটি মুছে ফেলতে চান?',
+                              ),
                               actions: [
-                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('না')),
-                                TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('হ্যাঁ', style: TextStyle(color: Colors.red))),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, false),
+                                  child: const Text('না'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: const Text(
+                                    'হ্যাঁ',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
                               ],
                             ),
                           );
                           if (confirm == true) {
                             try {
-                              await ref.read(apiClientProvider).dio.delete('/community/forum/posts/${post.id}/');
+                              await ref
+                                  .read(apiClientProvider)
+                                  .dio
+                                  .delete('/community/forum/posts/${post.id}/');
                               ref.refresh(myForumPostsProvider);
-                              if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('মুছে ফেলা হয়েছে'), backgroundColor: Colors.green));
+                              if (mounted)
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('মুছে ফেলা হয়েছে'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
                             } catch (e) {
-                              if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+                              if (mounted)
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error: $e'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
                             }
                           }
                         }
                       },
                       itemBuilder: (ctx) => [
-                        const PopupMenuItem(value: 'edit', child: Row(children: [Icon(Icons.edit, size: 18), SizedBox(width: 8), Text('এডিট করুন')])),
-                        const PopupMenuItem(value: 'delete', child: Row(children: [Icon(Icons.delete, color: Colors.red, size: 18), SizedBox(width: 8), Text('ডিলিট করুন', style: TextStyle(color: Colors.red))])),
+                        const PopupMenuItem(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit, size: 18),
+                              SizedBox(width: 8),
+                              Text('এডিট করুন'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete, color: Colors.red, size: 18),
+                              SizedBox(width: 8),
+                              Text(
+                                'ডিলিট করুন',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -595,8 +860,11 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> with Single
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF0056D2))),
-        error: (e, st) => const Center(child: Text('কোনো ত্রুটি হয়েছে। আবার চেষ্টা করুন।')),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: Color(0xFF0056D2)),
+        ),
+        error: (e, st) =>
+            const Center(child: Text('কোনো ত্রুটি হয়েছে। আবার চেষ্টা করুন।')),
       ),
     );
   }
@@ -623,13 +891,36 @@ class _EmptyStateView extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(color: const Color(0xFF0056D2).withOpacity(0.05), shape: BoxShape.circle),
-              child: Icon(icon, size: 64, color: const Color(0xFF0056D2).withOpacity(0.5)),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0056D2).withOpacity(0.05),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 64,
+                color: const Color(0xFF0056D2).withOpacity(0.5),
+              ),
             ),
             const SizedBox(height: 24),
-            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)), textAlign: TextAlign.center),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E293B),
+              ),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 8),
-            Text(subtitle, style: const TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.5), textAlign: TextAlign.center),
+            Text(
+              subtitle,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Color(0xFF64748B),
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 80),
           ],
         ),
@@ -647,10 +938,18 @@ class _JobApplicantsTab extends ConsumerWidget {
     return FutureBuilder(
       future: ref.read(authRepositoryProvider).getJobApplicants(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED)));
+        if (snapshot.connectionState == ConnectionState.waiting)
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xFF7C3AED)),
+          );
         final apps = snapshot.data as List? ?? [];
         if (apps.isEmpty) {
-          return const _EmptyStateView(icon: Icons.people_alt_rounded, title: 'কোনো আবেদনকারী নেই', subtitle: 'আপনার পোস্ট করা জবগুলোতে কেউ আবেদন করলে এখানে তাদের তালিকা দেখা যাবে।');
+          return const _EmptyStateView(
+            icon: Icons.people_alt_rounded,
+            title: 'কোনো আবেদনকারী নেই',
+            subtitle:
+                'আপনার পোস্ট করা জবগুলোতে কেউ আবেদন করলে এখানে তাদের তালিকা দেখা যাবে।',
+          );
         }
         return ListView.builder(
           physics: const BouncingScrollPhysics(),
@@ -658,43 +957,84 @@ class _JobApplicantsTab extends ConsumerWidget {
           itemCount: apps.length,
           itemBuilder: (context, index) {
             final app = apps[index];
-            
+
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 3))],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 12,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
                     Container(
-                      width: 48, height: 48,
-                      decoration: BoxDecoration(color: const Color(0xFF10B981).withOpacity(0.1), borderRadius: BorderRadius.circular(14)),
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                       clipBehavior: Clip.antiAlias,
                       child: app['applicant_avatar'] != null
                           ? Image.network(
-                              app['applicant_avatar'].toString().startsWith('http') 
-                                  ? app['applicant_avatar'] 
+                              app['applicant_avatar'].toString().startsWith(
+                                    'http',
+                                  )
+                                  ? app['applicant_avatar']
                                   : '${ApiClient.baseUrl}${app['applicant_avatar']}',
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => const Icon(Icons.person_rounded, color: Color(0xFF10B981), size: 24),
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(
+                                    Icons.person_rounded,
+                                    color: Color(0xFF10B981),
+                                    size: 24,
+                                  ),
                             )
-                          : const Icon(Icons.person_rounded, color: Color(0xFF10B981), size: 24),
+                          : const Icon(
+                              Icons.person_rounded,
+                              color: Color(0xFF10B981),
+                              size: 24,
+                            ),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(app['applicant_name'] ?? 'Applicant', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Color(0xFF1E293B))),
+                          Text(
+                            app['applicant_name'] ?? 'Applicant',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                              color: Color(0xFF1E293B),
+                            ),
+                          ),
                           const SizedBox(height: 2),
-                          Text(app['job_title'] ?? 'Job', style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
+                          Text(
+                            app['job_title'] ?? 'Job',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
                           const SizedBox(height: 4),
-                          if (app['applicant_phone'] != null && app['applicant_phone'].toString().isNotEmpty)
-                            Text(app['applicant_phone'], style: const TextStyle(fontSize: 12, color: Color(0xFF3B82F6))),
+                          if (app['applicant_phone'] != null &&
+                              app['applicant_phone'].toString().isNotEmpty)
+                            Text(
+                              app['applicant_phone'],
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF3B82F6),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -704,17 +1044,22 @@ class _JobApplicantsTab extends ConsumerWidget {
                         color: const Color(0xFF3B82F6).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: app['applicant_id'] != null 
-                        ? ChatInitiatorButton(
-                            targetUserId: app['applicant_id'],
-                            title: app['applicant_name'] ?? 'Candidate',
-                            initialMessage: 'আপনার ${app['job_title'] ?? 'জবে'} আবেদন সম্পর্কে কথা বলতে চাই।',
-                            relatedObjectType: 'job',
-                            relatedObjectId: app['job_id'] ?? 0,
-                            isIconButton: true,
-                            icon: const Icon(Icons.message_rounded, size: 20, color: Color(0xFF3B82F6)),
-                          )
-                        : const SizedBox(),
+                      child: app['applicant_id'] != null
+                          ? ChatInitiatorButton(
+                              targetUserId: app['applicant_id'],
+                              title: app['applicant_name'] ?? 'Candidate',
+                              initialMessage:
+                                  'আপনার ${app['job_title'] ?? 'জবে'} আবেদন সম্পর্কে কথা বলতে চাই।',
+                              relatedObjectType: 'job',
+                              relatedObjectId: app['job_id'] ?? 0,
+                              isIconButton: true,
+                              icon: const Icon(
+                                Icons.message_rounded,
+                                size: 20,
+                                color: Color(0xFF3B82F6),
+                              ),
+                            )
+                          : const SizedBox(),
                     ),
                   ],
                 ),
@@ -737,11 +1082,17 @@ class _FavoritesTab extends ConsumerWidget {
     final favoritesAsync = ref.watch(myFavoritesProvider);
 
     return favoritesAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED))),
+      loading: () => const Center(
+        child: CircularProgressIndicator(color: Color(0xFF7C3AED)),
+      ),
       error: (err, stack) => Center(child: Text('Error: $err')),
       data: (items) {
         if (items.isEmpty) {
-          return const _EmptyStateView(icon: Icons.favorite_rounded, title: 'পছন্দের তালিকায় কোনো আইটেম নেই', subtitle: 'পছন্দে যোগ করলে এখানে দেখাবে');
+          return const _EmptyStateView(
+            icon: Icons.favorite_rounded,
+            title: 'পছন্দের তালিকায় কোনো আইটেম নেই',
+            subtitle: 'পছন্দে যোগ করলে এখানে দেখাবে',
+          );
         }
         return ListView.builder(
           physics: const BouncingScrollPhysics(),
@@ -749,41 +1100,52 @@ class _FavoritesTab extends ConsumerWidget {
           itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
-            final String contentType = item['favorite_type'] ?? item['content_type'] ?? '';
-            final String contentIdStr = (item['favorite_id'] ?? item['content_id'] ?? '').toString();
+            final String contentType =
+                item['favorite_type'] ?? item['content_type'] ?? '';
+            final String contentIdStr =
+                (item['favorite_id'] ?? item['content_id'] ?? '').toString();
             final int favId = item['id'];
 
             Widget contentWidget;
 
             if (contentType == 'job' && jobsAsync.hasValue) {
-              final job = jobsAsync.value!.where((j) => j.id.toString() == contentIdStr).firstOrNull;
+              final job = jobsAsync.value!
+                  .where((j) => j.id.toString() == contentIdStr)
+                  .firstOrNull;
               if (job != null) {
                 contentWidget = JobListCardWidget(job: job);
               } else {
                 contentWidget = FavoriteItemCard(
-                  item: item, 
-                  favId: favId, 
-                  contentType: contentType, 
+                  item: item,
+                  favId: favId,
+                  contentType: contentType,
                   contentIdStr: contentIdStr,
                 );
               }
-            } else if ((contentType == 'market' || contentType == 'marketitem' || contentType == 'property' || contentType == 'vehicle' || contentType == 'service') && marketAsync.hasValue) {
-              final marketItem = marketAsync.value!.where((m) => m.id.toString() == contentIdStr).firstOrNull;
+            } else if ((contentType == 'market' ||
+                    contentType == 'marketitem' ||
+                    contentType == 'property' ||
+                    contentType == 'vehicle' ||
+                    contentType == 'service') &&
+                marketAsync.hasValue) {
+              final marketItem = marketAsync.value!
+                  .where((m) => m.id.toString() == contentIdStr)
+                  .firstOrNull;
               if (marketItem != null) {
                 contentWidget = MarketCardWidget(item: marketItem);
               } else {
                 contentWidget = FavoriteItemCard(
-                  item: item, 
-                  favId: favId, 
-                  contentType: contentType, 
+                  item: item,
+                  favId: favId,
+                  contentType: contentType,
                   contentIdStr: contentIdStr,
                 );
               }
             } else {
               contentWidget = FavoriteItemCard(
-                item: item, 
-                favId: favId, 
-                contentType: contentType, 
+                item: item,
+                favId: favId,
+                contentType: contentType,
                 contentIdStr: contentIdStr,
               );
             }

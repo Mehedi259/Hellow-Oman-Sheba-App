@@ -1,11 +1,13 @@
 class ChatUser {
   final int id;
+  final String? username;
   final String? firstName;
   final String? lastName;
   final String? profilePicture;
 
   ChatUser({
     required this.id,
+    this.username,
     this.firstName,
     this.lastName,
     this.profilePicture,
@@ -14,15 +16,17 @@ class ChatUser {
   factory ChatUser.fromJson(Map<String, dynamic> json) {
     return ChatUser(
       id: json['id'],
-      firstName: json['first_name'],
+      username: json['username'],
+      firstName: json['name'] ?? json['first_name'],
       lastName: json['last_name'],
-      profilePicture: json['profile_picture'] ?? json['avatar_url'],
+      profilePicture: json['avatar'] ?? json['profile_picture'] ?? json['avatar_url'],
     );
   }
 
   String get fullName {
-    if (firstName == null && lastName == null) return 'User $id';
-    return '${firstName ?? ''} ${lastName ?? ''}'.trim();
+    final name = '${firstName ?? ''} ${lastName ?? ''}'.trim();
+    if (name.isEmpty) return username ?? 'User $id';
+    return name;
   }
 }
 
