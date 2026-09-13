@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../auth/auth_provider.dart';
 import '../auth/widgets/google_login_button.dart';
+import '../auth/widgets/login_prompt_widget.dart';
 import '../../data/models/user.dart';
 import '../classifieds/classifieds_provider.dart';
 import '../classifieds/widgets/job_list_card.dart';
@@ -93,7 +94,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
       body: authState.when(
         data: (user) {
           if (user == null) {
-            return _buildLoginPrompt();
+            return const LoginPromptWidget(message: 'প্রোফাইল দেখতে ও সব ফিচার ব্যবহার করতে\nলগইন করুন');
           }
 
           final displayName = user.name != null && user.name!.isNotEmpty
@@ -124,46 +125,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
         },
         loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED))),
         error: (err, st) => Center(child: Text('Error: $err')),
-      ),
-    );
-  }
-
-  Widget _buildLoginPrompt() {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(colors: [Color(0xFFF8FAFC), Color(0xFFEDE9FE)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-      ),
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 120, height: 120,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [Color(0xFF7C3AED), Color(0xFFDB2777)]),
-                  shape: BoxShape.circle,
-                  boxShadow: [BoxShadow(color: const Color(0xFF7C3AED).withOpacity(0.25), blurRadius: 30, offset: const Offset(0, 12))],
-                ),
-                child: const Icon(Icons.person_rounded, size: 60, color: Colors.white),
-              ),
-              const SizedBox(height: 32),
-              const Text(
-                'স্বাগতম!',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: Color(0xFF1E293B)),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'প্রোফাইল দেখতে ও সব ফিচার ব্যবহার করতে\nলগইন করুন',
-                style: TextStyle(fontSize: 15, color: Colors.grey.shade600, height: 1.5),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 36),
-              GoogleLoginButton(onSuccess: () {}),
-            ],
-          ),
-        ),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../chat/providers/chat_providers.dart';
 import '../../data/models/chat_models.dart';
 import '../auth/auth_provider.dart';
+import '../auth/widgets/login_prompt_widget.dart';
 
 class MessagesScreen extends ConsumerWidget {
   const MessagesScreen({super.key});
@@ -11,6 +12,7 @@ class MessagesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final conversationsAsync = ref.watch(conversationsProvider);
+    final authState = ref.watch(authStateProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -36,7 +38,14 @@ class MessagesScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: conversationsAsync.when(
+      body: authState.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, st) => Center(child: Text('Error: $e')),
+        data: (user) {
+          if (user == null) {
+            return const LoginPromptWidget(message: 'মেসেজ দেখতে ও অন্যান্য ফিচার ব্যবহার করতে\nলগইন করুন');
+          }
+          return conversationsAsync.when(
         data: (conversations) {
           if (conversations.isEmpty) {
             return const _EmptyMessagesView();
@@ -59,14 +68,16 @@ class MessagesScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Error loading messages'),
+              const Text('Start message'),
               ElevatedButton(
                 onPressed: () => ref.refresh(conversationsProvider),
-                child: const Text('Retry'),
+                child: const Text('Start'),
               ),
             ],
           ),
         ),
+          );
+        },
       ),
     );
   }
@@ -149,14 +160,19 @@ class _ChatListItem extends ConsumerWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          title,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Color(0xFF1E293B),
+                        Expanded(
+                          child: Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Color(0xFF1E293B),
+                            ),
                           ),
                         ),
+                        const SizedBox(width: 8),
                         Text(
                           timeText,
                           style: TextStyle(
