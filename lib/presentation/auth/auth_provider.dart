@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:http/http.dart' as http;
 import '../../data/models/user.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../../core/api/api_client.dart';
@@ -30,6 +34,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
       if (token != null) {
         final user = await repository.getProfile();
         state = AsyncValue.data(user);
+        // Re-send FCM token on every app start to keep server DB updated
+        _sendFcmTokenAfterLogin();
       } else {
         state = const AsyncValue.data(null);
       }
@@ -47,11 +53,34 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
         await prefs.setString('auth_token', token);
         final user = await repository.getProfile();
         state = AsyncValue.data(user);
+        // Send FCM token immediately after login so server always has it
+        _sendFcmTokenAfterLogin();
       } else {
         state = AsyncValue.error('Token not received', StackTrace.current);
       }
     } catch (e, st) {
       state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> _sendFcmTokenAfterLogin() async {
+    try {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken == null) return;
+      final prefs = await SharedPreferences.getInstance();
+      final authToken = prefs.getString('auth_token');
+      if (authToken == null) return;
+      await http.post(
+        Uri.parse('http://188.245.212.240/api/users/update-fcm-token/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+        body: jsonEncode({'token': fcmToken, 'device_type': 'android/ios'}),
+      );
+      debugPrint('FCM: Token sent after login successfully');
+    } catch (e) {
+      debugPrint('FCM: Failed to send token after login: $e');
     }
   }
 
