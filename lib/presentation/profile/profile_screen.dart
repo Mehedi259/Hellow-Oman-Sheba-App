@@ -72,6 +72,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
       final authRepo = ref.read(authRepositoryProvider);
       await authRepo.updateProfile(formData);
       
+      // Clear image cache for the old URL so the new image loads
+      final oldUser = ref.read(authStateProvider).value;
+      if (oldUser != null && oldUser.profilePicture != null && oldUser.profilePicture!.isNotEmpty) {
+        await NetworkImage(oldUser.profilePicture!).evict();
+      }
+
       // Refresh profile
       ref.invalidate(authStateProvider);
       

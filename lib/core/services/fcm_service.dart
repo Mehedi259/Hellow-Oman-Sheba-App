@@ -27,6 +27,11 @@ class FCMService {
       sound: true,
     );
 
+    // Request Android 13+ Notification Permission explicitly
+    await _localNotifications
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+
     // Initialize local notifications for Android foreground
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInit = DarwinInitializationSettings();

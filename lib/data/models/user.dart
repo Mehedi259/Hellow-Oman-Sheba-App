@@ -33,7 +33,8 @@ class User {
   }
 
   static String? _parseProfilePicture(Map<String, dynamic> json) {
-    final pic = json['avatar_url'] ?? json['avatar'] ?? json['profile_picture'];
+    // Prefer the uploaded 'avatar' or 'profile_picture' before falling back to the Google 'avatar_url'
+    final pic = json['avatar'] ?? json['profile_picture'] ?? json['avatar_url'];
     if (pic == null || pic.toString().isEmpty) return null;
     final picStr = pic.toString();
     if (picStr.startsWith('http')) return picStr;
