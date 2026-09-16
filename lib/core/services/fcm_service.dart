@@ -28,7 +28,7 @@ class FCMService {
     );
 
     // Initialize local notifications for Android foreground
-    const androidInit = AndroidInitializationSettings('@mipmap/launcher_icon');
+    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInit = DarwinInitializationSettings();
     const initSettings = InitializationSettings(android: androidInit, iOS: iosInit);
     await _localNotifications.initialize(
@@ -82,7 +82,7 @@ class FCMService {
               channel.id,
               channel.name,
               channelDescription: channel.description,
-              icon: '@mipmap/launcher_icon',
+              icon: '@mipmap/ic_launcher',
               color: const Color(0xFF1E3A8A), // Premium Dark Blue
               importance: Importance.high,
               priority: Priority.high,
