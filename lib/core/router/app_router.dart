@@ -8,6 +8,8 @@ import '../../presentation/community/community_screen.dart';
 import '../../presentation/news/news_feed_screen.dart';
 import '../../presentation/profile/profile_screen.dart';
 import '../../presentation/emergency/emergency_screen.dart';
+import '../../presentation/country_select/country_select_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../presentation/search/search_screen.dart';
 import '../../presentation/notifications/notifications_screen.dart';
@@ -25,7 +27,28 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
+  redirect: (context, state) async {
+    // Only check redirect if we are not already going to country-select
+    final isGoingToCountrySelect = state.matchedLocation == '/country-select';
+    
+    // We check shared preferences synchronously if possible, but redirect is async.
+    // However, GoRouter's async redirect can cause a flicker.
+    // For a cleaner solution, we use async redirect.
+    final prefs = await SharedPreferences.getInstance();
+    final country = prefs.getString('selected_country');
+    
+    // If no country is selected, force them to the country select screen
+    if (country == null && !isGoingToCountrySelect) {
+      return '/country-select';
+    }
+    
+    return null;
+  },
   routes: [
+    GoRoute(
+      path: '/country-select',
+      builder: (context, state) => const CountrySelectScreen(),
+    ),
     GoRoute(
       path: '/login',
       builder: (context, state) => const LoginScreen(),

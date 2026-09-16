@@ -13,6 +13,10 @@ class ApiClient {
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
         }
+        
+        final country = prefs.getString('selected_country') ?? 'oman';
+        options.headers['X-Country'] = country;
+        
         return handler.next(options);
       },
       onError: (DioException e, handler) async {

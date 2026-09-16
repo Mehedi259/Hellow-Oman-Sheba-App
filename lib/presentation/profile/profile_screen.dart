@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../auth/auth_provider.dart';
 import '../auth/widgets/google_login_button.dart';
 import '../auth/widgets/login_prompt_widget.dart';
@@ -956,7 +957,16 @@ class _SettingsTab extends ConsumerWidget {
           child: Column(
             children: [
               _buildSettingsItem(
+                icon: Icons.language_rounded,
+                iconColor: const Color(0xFF7C3AED),
+                title: 'দেশ পরিবর্তন করুন',
+                subtitle: 'Change Country',
+                onTap: () => context.push('/country-select'),
+              ),
+              Divider(height: 1, color: Colors.grey.shade100, indent: 70),
+              _buildSettingsItem(
                 icon: Icons.privacy_tip_rounded,
+
                 iconColor: const Color(0xFF3B82F6),
                 title: 'গোপনীয়তা নীতি',
                 subtitle: 'Privacy Policy',
