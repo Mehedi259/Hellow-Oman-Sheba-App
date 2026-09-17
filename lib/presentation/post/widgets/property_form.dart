@@ -44,7 +44,7 @@ class _PropertyFormState extends ConsumerState<PropertyForm> {
     {'value': 'HOUSE', 'label': 'বাসা'},
     {'value': 'ROOM', 'label': 'রুম'},
     {'value': 'BED_SPACE', 'label': 'বেড স্পেস'},
-    {'value': 'COMMERCIAL', 'label': 'কমার্শিয়াল'},
+    {'value': 'OFFICE', 'label': 'অফিস (কমার্শিয়াল)'},
   ];
 
   static const List<Map<String, String>> purposes = [
@@ -144,7 +144,7 @@ class _PropertyFormState extends ConsumerState<PropertyForm> {
         'property_type': selectedPropertyType,
         'purpose': selectedPurpose,
         'category': selectedPropertyType,
-        'type': selectedPropertyType == 'COMMERCIAL' ? 'COMMERCIAL' : 'RESIDENTIAL',
+        'type': selectedPropertyType == 'OFFICE' ? 'COMMERCIAL' : 'RESIDENTIAL',
         'city': selectedCity,
         'area': areaController.text,
         'bedrooms': bedroomsController.text.isNotEmpty ? int.tryParse(bedroomsController.text) : null,

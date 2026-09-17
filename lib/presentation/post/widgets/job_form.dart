@@ -188,7 +188,7 @@ class _JobFormState extends ConsumerState<JobForm> {
           const SizedBox(height: 14),
           _buildTextField(companyController, 'কোম্পানির নাম', hint: 'কোম্পানির নাম লিখুন', icon: Icons.business_rounded, isRequired: true),
           const SizedBox(height: 14),
-          _buildDropdown('চাকরির ধরন', ['Full-time', 'Part-time'], typeValue, (val) => setState(() => typeValue = val), icon: Icons.category_rounded, isRequired: true),
+          _buildDropdown('চাকরির ধরন', ['Full-time', 'Part-time', 'Contract', 'Internship'], typeValue, (val) => setState(() => typeValue = val), icon: Icons.category_rounded, isRequired: true),
 
           const SizedBox(height: 28),
           // --- Section: Location ---

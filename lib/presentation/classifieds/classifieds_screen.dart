@@ -1635,7 +1635,7 @@ class MarketView extends ConsumerWidget {
                           crossAxisSpacing: 12,
                           children: [
                             _buildCategoryItem(
-                              'Electronics',
+                              'electronics',
                               'ইলেকট্রনিক্স',
                               Icons.phone_android,
                               '2',
@@ -1643,7 +1643,7 @@ class MarketView extends ConsumerWidget {
                               ref,
                             ),
                             _buildCategoryItem(
-                              'Computer',
+                              'computer',
                               'কম্পিউটার',
                               Icons.laptop,
                               '0',
@@ -1651,7 +1651,7 @@ class MarketView extends ConsumerWidget {
                               ref,
                             ),
                             _buildCategoryItem(
-                              'Furniture',
+                              'furniture',
                               'ফার্নিচার',
                               Icons.home,
                               '1',
@@ -1659,7 +1659,7 @@ class MarketView extends ConsumerWidget {
                               ref,
                             ),
                             _buildCategoryItem(
-                              'Clothing',
+                              'clothing',
                               'পোশাক',
                               Icons.checkroom,
                               '1',
@@ -1667,7 +1667,7 @@ class MarketView extends ConsumerWidget {
                               ref,
                             ),
                             _buildCategoryItem(
-                              'Baby',
+                              'baby-products',
                               'শিশু সামগ্রী',
                               Icons.child_care,
                               '0',
@@ -1675,7 +1675,7 @@ class MarketView extends ConsumerWidget {
                               ref,
                             ),
                             _buildCategoryItem(
-                              'Machinery',
+                              'tools-machinery',
                               'যন্ত্রপাতি',
                               Icons.build,
                               '0',
@@ -1683,7 +1683,7 @@ class MarketView extends ConsumerWidget {
                               ref,
                             ),
                             _buildCategoryItem(
-                              'Books',
+                              'books',
                               'বই',
                               Icons.menu_book,
                               '0',
@@ -1691,7 +1691,7 @@ class MarketView extends ConsumerWidget {
                               ref,
                             ),
                             _buildCategoryItem(
-                              'Others',
+                              'others',
                               'অন্যান্য',
                               Icons.favorite_border,
                               '2',

@@ -46,7 +46,7 @@ class _VehicleFormState extends ConsumerState<VehicleForm> {
 
   static const List<Map<String, String>> vehicleTypes = [
     {'value': 'CAR', 'label': 'গাড়ি'},
-    {'value': 'SUV', 'label': 'এসইউভি'},
+    {'value': 'OTHER', 'label': 'এসইউভি'},
     {'value': 'TRUCK', 'label': 'ট্রাক'},
     {'value': 'VAN', 'label': 'ভ্যান'},
     {'value': 'MOTORCYCLE', 'label': 'মোটরসাইকেল'},
@@ -60,10 +60,10 @@ class _VehicleFormState extends ConsumerState<VehicleForm> {
 
   static const List<Map<String, String>> conditions = [
     {'value': 'NEW', 'label': 'নতুন'},
-    {'value': 'USED', 'label': 'ব্যবহৃত'},
-    {'value': 'EXCELLENT', 'label': 'চমৎকার'},
-    {'value': 'GOOD', 'label': 'ভাল'},
-    {'value': 'FAIR', 'label': 'মোটামুটি'},
+    {'value': 'USED_LIKE_NEW', 'label': 'ব্যবহৃত - নতুনের মত'},
+    {'value': 'USED_GOOD', 'label': 'ব্যবহৃত - ভাল'},
+    {'value': 'USED_FAIR', 'label': 'ব্যবহৃত - মোটামুটি'},
+    {'value': 'NEEDS_REPAIR', 'label': 'মেরামত প্রয়োজন'},
   ];
 
   static const List<Map<String, String>> fuelTypes = [
@@ -71,6 +71,7 @@ class _VehicleFormState extends ConsumerState<VehicleForm> {
     {'value': 'DIESEL', 'label': 'ডিজেল'},
     {'value': 'ELECTRIC', 'label': 'বৈদ্যুতিক'},
     {'value': 'HYBRID', 'label': 'হাইব্রিড'},
+    {'value': 'CNG', 'label': 'সিএনজি'},
   ];
 
   static const List<Map<String, String>> transmissions = [
