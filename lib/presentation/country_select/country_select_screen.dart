@@ -2,14 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CountrySelectScreen extends StatelessWidget {
+class CountrySelectScreen extends StatefulWidget {
   const CountrySelectScreen({super.key});
 
-  Future<void> _selectCountry(BuildContext context, String countryCode) async {
+  @override
+  State<CountrySelectScreen> createState() => _CountrySelectScreenState();
+}
+
+class _CountrySelectScreenState extends State<CountrySelectScreen> {
+  String selectedCountry = 'oman';
+
+  final List<Map<String, String>> countries = [
+    {'code': 'oman', 'name': 'ওমান (Oman)', 'flag': '🇴🇲'},
+  ];
+
+  Future<void> _selectCountry() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('selected_country', countryCode);
+    await prefs.setString('selected_country', selectedCountry);
     
-    if (context.mounted) {
+    if (mounted) {
       context.go('/');
     }
   }
@@ -25,8 +36,8 @@ class CountrySelectScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Icon(Icons.language_rounded, size: 80, color: Color(0xFF7C3AED)),
-              const SizedBox(height: 24),
+              Image.asset('assets/images/main-logo.png', height: 80),
+              const SizedBox(height: 32),
               const Text(
                 'আপনার অবস্থান নির্বাচন করুন',
                 style: TextStyle(
@@ -46,83 +57,87 @@ class CountrySelectScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
-              _buildCountryCard(
-                context,
-                title: 'ওমান',
-                subtitle: 'Oman',
-                icon: Icons.location_on_rounded,
-                countryCode: 'oman',
+              
+              // Country Dropdown
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: selectedCountry,
+                    isExpanded: true,
+                    icon: const Icon(Icons.arrow_drop_down_rounded, color: Color(0xFF64748B), size: 32),
+                    items: countries.map((country) {
+                      return DropdownMenuItem<String>(
+                        value: country['code'],
+                        child: Row(
+                          children: [
+                            Text(
+                              country['flag']!,
+                              style: const TextStyle(fontSize: 28),
+                            ),
+                            const SizedBox(width: 16),
+                            Text(
+                              country['name']!,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF1E293B),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          selectedCountry = value;
+                        });
+                      }
+                    },
+                  ),
+                ),
               ),
-              const SizedBox(height: 16),
-              _buildCountryCard(
-                context,
-                title: 'সৌদি আরব',
-                subtitle: 'Saudi Arabia',
-                icon: Icons.location_on_rounded,
-                countryCode: 'saudi',
+              
+              const SizedBox(height: 32),
+              
+              // Continue Button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: _selectCountry,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2563EB), // Main blue color from logo
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'এগিয়ে যান',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCountryCard(BuildContext context, {required String title, required String subtitle, required IconData icon, required String countryCode}) {
-    return InkWell(
-      onTap: () => _selectCountry(context, countryCode),
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF7C3AED).withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: const Color(0xFF7C3AED), size: 28),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF64748B),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFFCBD5E1), size: 20),
-          ],
         ),
       ),
     );
