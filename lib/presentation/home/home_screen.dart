@@ -127,14 +127,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       },
                     ),
                     const Divider(),
-                    ListTile(
-                      leading: const Icon(Icons.search),
-                      title: const Text('সার্চ'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        context.push('/search');
-                      },
-                    ),
+
                     ListTile(
                       leading: const Icon(Icons.favorite_border),
                       title: const Text('পছন্দের তালিকা'),

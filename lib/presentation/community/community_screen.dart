@@ -223,7 +223,7 @@ class _CreateCommunityPostScreenState extends ConsumerState<CreateCommunityPostS
         setState(() {
           _categories = cats;
           if (_categories.isNotEmpty) {
-            _selectedCategory = _categories.first['id'].toString();
+            _selectedCategory = _categories.first['slug'].toString();
           }
           _isLoadingCategories = false;
         });
@@ -288,7 +288,14 @@ class _CreateCommunityPostScreenState extends ConsumerState<CreateCommunityPostS
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('ত্রুটি: $e'), backgroundColor: Colors.red));
+        String errMsg = e.toString().replaceAll('Exception: ', '');
+        if (errMsg == 'অনুগ্রহ করে লগইন করুন') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errMsg), behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errMsg), backgroundColor: Colors.red));
+        }
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -342,7 +349,7 @@ class _CreateCommunityPostScreenState extends ConsumerState<CreateCommunityPostS
       body: _isLoadingCategories 
           ? const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6)))
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 100),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -365,7 +372,7 @@ class _CreateCommunityPostScreenState extends ConsumerState<CreateCommunityPostS
                     child: DropdownButtonFormField<String>(
                       value: _selectedCategory,
                       items: _categories.map((c) => DropdownMenuItem(
-                        value: c['id'].toString(), 
+                        value: c['slug'].toString(), 
                         child: Text(c['name'] ?? 'Unknown', style: const TextStyle(fontSize: 15)),
                       )).toList(),
                       onChanged: (val) => setState(() => _selectedCategory = val),

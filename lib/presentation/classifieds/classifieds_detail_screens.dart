@@ -662,7 +662,18 @@ class JobDetailScreen extends ConsumerWidget {
                           }
                         } catch (e) {
                           if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('ত্রুটি: $e'), backgroundColor: Colors.red));
+                            String errMsg = e.toString().replaceAll('Exception: ', '');
+                            if (errMsg == 'অনুগ্রহ করে লগইন করুন') {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(errMsg),
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('ত্রুটি: $errMsg'), backgroundColor: Colors.red));
+                            }
                           }
                         }
                       },

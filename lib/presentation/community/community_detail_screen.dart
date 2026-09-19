@@ -44,7 +44,14 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        String errMsg = e.toString().replaceAll('Exception: ', '');
+        if (errMsg == 'অনুগ্রহ করে লগইন করুন') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errMsg), behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errMsg), backgroundColor: Colors.red));
+        }
       }
     } finally {
       if (mounted) {
@@ -73,7 +80,14 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        String errMsg = e.toString().replaceAll('Exception: ', '');
+        if (errMsg == 'অনুগ্রহ করে লগইন করুন') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errMsg), behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errMsg), backgroundColor: Colors.red));
+        }
       }
     }
   }
@@ -145,7 +159,14 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+        String errMsg = e.toString().replaceAll('Exception: ', '');
+        if (errMsg == 'অনুগ্রহ করে লগইন করুন') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errMsg), behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errMsg), backgroundColor: Colors.red));
+        }
       }
     } finally {
       if (mounted) {
@@ -189,7 +210,14 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+        String errMsg = e.toString().replaceAll('Exception: ', '');
+        if (errMsg == 'অনুগ্রহ করে লগইন করুন') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errMsg), behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errMsg), backgroundColor: Colors.red));
+        }
       }
     }
   }

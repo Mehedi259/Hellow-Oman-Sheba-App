@@ -28,7 +28,7 @@ class ApiClient {
         
         if (e.response?.data != null && e.response?.data is Map) {
           if (e.response?.data['detail'] == 'Authentication credentials were not provided.') {
-            e.response?.data['detail'] = 'দয়া করে লগইন করুন';
+            e.response?.data['detail'] = 'অনুগ্রহ করে লগইন করুন';
           }
         }
         
