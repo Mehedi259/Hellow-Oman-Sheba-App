@@ -8,6 +8,7 @@ class Post {
   final String categoryName;
   final int likes;
   final int commentsCount;
+  final int views;
   final DateTime createdAt;
 
   Post({
@@ -20,6 +21,7 @@ class Post {
     required this.categoryName,
     required this.likes,
     required this.commentsCount,
+    this.views = 0,
     required this.createdAt,
   });
 
@@ -39,6 +41,7 @@ class Post {
       categoryName: json['category'] != null ? (json['category']['nameBn'] ?? json['category']['name'] ?? 'সাধারণ আলোচনা') : 'সাধারণ আলোচনা',
       likes: json['likes'] ?? 0,
       commentsCount: json['comments_count'] ?? 0,
+      views: json['views'] ?? 0,
       createdAt: DateTime.parse(json['created_at']),
     );
   }

@@ -338,7 +338,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen>
           }
           return ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
             itemCount: posts.length,
             itemBuilder: (context, index) {
               final post = posts[index];
@@ -540,7 +540,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen>
           }
           return ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
             itemCount: comments.length,
             itemBuilder: (context, index) {
               final comment = comments[index];
@@ -718,7 +718,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen>
           }
           return ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
             itemCount: posts.length,
             itemBuilder: (context, index) {
               final post = posts[index];

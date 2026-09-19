@@ -25,6 +25,13 @@ class ApiClient {
           await prefs.remove('auth_token');
           // We could optionally use a global navigator key to push to login screen here
         }
+        
+        if (e.response?.data != null && e.response?.data is Map) {
+          if (e.response?.data['detail'] == 'Authentication credentials were not provided.') {
+            e.response?.data['detail'] = 'দয়া করে লগইন করুন';
+          }
+        }
+        
         return handler.next(e);
       }
     ));
