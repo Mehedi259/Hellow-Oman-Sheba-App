@@ -21,20 +21,21 @@ class CategoryItem {
 // First 7 pinned / most important categories
 final List<CategoryItem> pinnedCategories = [
   CategoryItem(nameBn: 'চাকরি', descriptionBn: 'চাকরি খুঁজুন এবং আবেদন করুন', imagePath: 'assets/images/categories/jobs.png', route: '/classifieds?tab=jobs'),
-  CategoryItem(nameBn: 'বাসা ভাড়া', descriptionBn: 'ফ্ল্যাট, রুম এবং বেড স্পেস', imagePath: 'assets/images/categories/properties.png', route: '/classifieds?tab=properties'),
-  CategoryItem(nameBn: 'গাড়ি', descriptionBn: 'গাড়ি কিনুন বা ভাড়া নিন', imagePath: 'assets/images/categories/vehicles.png', route: '/classifieds?tab=vehicles'),
   CategoryItem(nameBn: 'মার্কেট', descriptionBn: 'কিনুন এবং বিক্রি করুন', imagePath: 'assets/images/categories/classifieds.png', route: '/classifieds?tab=market'),
-  CategoryItem(nameBn: 'প্রশ্ন ও উত্তর', descriptionBn: 'আলোচনা এবং সহযোগিতা', imagePath: 'assets/images/categories/community.png', route: '/community'),
-  CategoryItem(nameBn: 'দূতাবাস', descriptionBn: 'দূতাবাস সেবা এবং সহায়তা', imagePath: 'assets/images/categories/embassy.png', route: '/embassy'),
-  CategoryItem(nameBn: 'সংবাদ', descriptionBn: 'সর্বশেষ সংবাদ', imagePath: 'assets/images/categories/news.png', route: '/news'),
+  CategoryItem(nameBn: 'প্রশ্নোত্তর', descriptionBn: 'আলোচনা এবং সহযোগিতা', imagePath: 'assets/images/categories/community.png', route: '/community'),
+  CategoryItem(nameBn: 'গাড়ি', descriptionBn: 'গাড়ি কিনুন বা ভাড়া নিন', imagePath: 'assets/images/categories/vehicles.png', route: '/classifieds?tab=vehicles'),
+  CategoryItem(nameBn: 'সেবা', descriptionBn: 'সব সেবাসমূহ', imagePath: 'assets/images/categories/hellowoman.png', route: '/categories'),
+  CategoryItem(nameBn: 'বিশেষজ্ঞ ডক্টর', descriptionBn: 'বিশেষজ্ঞ চিকিৎসক এবং পরামর্শ', imagePath: 'assets/images/categories/doctors.png', route: '/services/doctors'),
+  CategoryItem(nameBn: 'আইন', descriptionBn: 'আইনি পরামর্শ এবং সহায়তা', imagePath: 'assets/images/categories/lawyers.png', route: '/services/lawyers'),
 ];
 
 // The rest (shown when "সব ক্যাটাগরি" is expanded)
 final List<CategoryItem> extraCategories = [
-  CategoryItem(nameBn: 'বিশেষজ্ঞ ডাক্তার', descriptionBn: 'বিশেষজ্ঞ চিকিৎসক এবং পরামর্শ', imagePath: 'assets/images/categories/doctors.png', route: '/services/doctors'),
+  CategoryItem(nameBn: 'বাসা ভাড়া', descriptionBn: 'ফ্ল্যাট, রুম এবং বেড স্পেস', imagePath: 'assets/images/categories/properties.png', route: '/classifieds?tab=properties'),
+  CategoryItem(nameBn: 'দূতাবাস', descriptionBn: 'দূতাবাস সেবা এবং সহায়তা', imagePath: 'assets/images/categories/embassy.png', route: '/embassy'),
+  CategoryItem(nameBn: 'সংবাদ', descriptionBn: 'সর্বশেষ সংবাদ', imagePath: 'assets/images/categories/news.png', route: '/news'),
   CategoryItem(nameBn: 'হাসপাতাল', descriptionBn: 'হাসপাতাল এবং ক্লিনিক', imagePath: 'assets/images/categories/hospitals.png', route: '/services/hospitals'),
   CategoryItem(nameBn: 'অ্যাম্বুলেন্স', descriptionBn: 'জরুরী অ্যাম্বুলেন্স সেবা', imagePath: 'assets/images/categories/ambulance.png', route: '/services/ambulance'),
-  CategoryItem(nameBn: 'আইনজীবী', descriptionBn: 'আইনি পরামর্শ এবং সহায়তা', imagePath: 'assets/images/categories/lawyers.png', route: '/services/lawyers'),
   CategoryItem(nameBn: 'ট্রাভেল এজেন্সি', descriptionBn: 'ফ্লাইট এবং ট্যুর বুকিং', imagePath: 'assets/images/categories/travel.png', route: '/services/travel-agency'),
   CategoryItem(nameBn: 'হোটেল', descriptionBn: 'হোটেল এবং আবাসন', imagePath: 'assets/images/categories/hotels.png', route: '/services/hotels'),
   CategoryItem(nameBn: 'মানি এক্সচেঞ্জ', descriptionBn: 'মানি ট্রান্সফার এবং এক্সচেঞ্জ', imagePath: 'assets/images/categories/money.png', route: '/services/money-exchange'),
