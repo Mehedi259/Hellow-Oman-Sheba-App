@@ -798,7 +798,7 @@ class PropertiesView extends ConsumerWidget {
             );
           }
           return ListView.builder(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 120),
             itemCount: items.length,
             itemBuilder: (context, index) {
               final item = items[index];
@@ -978,7 +978,7 @@ class VehiclesView extends ConsumerWidget {
           );
         }
         return ListView.builder(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 120),
           itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
@@ -1853,6 +1853,7 @@ class MarketView extends ConsumerWidget {
                     ],
                   ),
                 ),
+                const SizedBox(height: 120),
               ],
             ),
           ),
