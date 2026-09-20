@@ -6,12 +6,10 @@ import '../classifieds/classifieds_provider.dart';
 import 'system_provider.dart';
 import 'widgets/hero_slider.dart';
 import 'widgets/category_grid.dart';
-import 'widgets/community_widget.dart';
 import 'widgets/call_to_action_widget.dart';
-import 'widgets/latest_news_widget.dart';
 import 'widgets/country_selector_widget.dart';
-
 import 'widgets/home_tab_section_widget.dart';
+import '../../data/repositories/auth_repository.dart';
 import '../community/community_provider.dart';
 import '../../data/repositories/news_repository.dart';
 
@@ -39,39 +37,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset('assets/images/main-logo.png', height: 40),
+        title: Image.asset('assets/images/main-logo.png', height: 36),
         centerTitle: false,
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black87),
         actions: [
-          // Country selector
+          // Country selector — compact
           const CountrySelectorWidget(),
-          const SizedBox(width: 4),
-          // Notification bell with badge
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications_none_rounded, color: Colors.black87),
-                onPressed: () => context.push('/notifications'),
-              ),
-              Positioned(
-                top: 12, right: 12,
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEF4444),
-                    borderRadius: BorderRadius.circular(10),
+          // Notification bell with real unread count badge
+          FutureBuilder<List<dynamic>>(
+            future: ref.read(authRepositoryProvider).getNotifications(),
+            builder: (context, snapshot) {
+              final unreadCount = snapshot.hasData
+                  ? snapshot.data!.where((n) => n['read'] != true).length
+                  : 0;
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications_none_rounded, color: Colors.black87, size: 26),
+                    onPressed: () => context.push('/notifications'),
                   ),
-                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                  child: const Text('3',
-                    style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ],
+                  if (unreadCount > 0)
+                    Positioned(
+                      top: 6,
+                      right: 6,
+                      child: IgnorePointer(
+                        child: Container(
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEF4444),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 1.5),
+                          ),
+                          child: Center(
+                            child: Text(
+                              unreadCount > 9 ? '9+' : '$unreadCount',
+                              style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
           Builder(
             builder: (context) => IconButton(

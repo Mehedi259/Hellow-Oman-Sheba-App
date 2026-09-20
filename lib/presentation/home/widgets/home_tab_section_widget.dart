@@ -117,45 +117,43 @@ class _HomeTabSectionWidgetState extends ConsumerState<HomeTabSectionWidget> wit
               final color = _tabs[index]['color'] as Color;
               final count = counts[index];
               return Padding(
-                padding: const EdgeInsets.only(right: 8.0),
+                padding: const EdgeInsets.only(right: 6.0),
                 child: GestureDetector(
                   onTap: () => _tabController.animateTo(index),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: isSelected ? color : Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: isSelected ? color : Colors.grey.shade200, width: 1.5),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: isSelected ? color : Colors.grey.shade300, width: 1.2),
                       boxShadow: isSelected
-                          ? [BoxShadow(color: color.withOpacity(0.25), blurRadius: 8, offset: const Offset(0, 4))]
+                          ? [BoxShadow(color: color.withOpacity(0.2), blurRadius: 6, offset: const Offset(0, 2))]
                           : [],
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(_tabs[index]['icon'] as IconData, size: 16, color: isSelected ? Colors.white : color),
-                        const SizedBox(width: 6),
                         Text(
                           _tabs[index]['label'] as String,
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                            color: isSelected ? Colors.white : const Color(0xFF334155),
+                            fontSize: 12,
+                            color: isSelected ? Colors.white : const Color(0xFF475569),
                           ),
                         ),
                         if (count > 0) ...[
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 5),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                             decoration: BoxDecoration(
-                              color: isSelected ? Colors.white.withOpacity(0.25) : color.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(10),
+                              color: isSelected ? Colors.white.withOpacity(0.28) : color.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               _toBengaliNumber(count),
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: 10,
                                 fontWeight: FontWeight.bold,
                                 color: isSelected ? Colors.white : color,
                               ),

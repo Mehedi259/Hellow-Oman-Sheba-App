@@ -59,31 +59,34 @@ class _CountrySelectorWidgetState extends State<CountrySelectorWidget> {
         await context.push('/country-select');
         _loadCountry();
       },
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: Image.network(
-              _flagUrl,
-              width: 28,
-              height: 20,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) =>
-                  const Icon(Icons.flag, size: 20, color: Colors.black54),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(3),
+              child: Image.network(
+                _flagUrl,
+                width: 22,
+                height: 15,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.flag, size: 16, color: Colors.black54),
+              ),
             ),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            _countryName,
-            style: const TextStyle(
-              color: Color(0xFF1E293B),
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
+            const SizedBox(width: 5),
+            Text(
+              _countryName,
+              style: const TextStyle(
+                color: Color(0xFF1E293B),
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          const Icon(Icons.keyboard_arrow_down, color: Color(0xFF64748B), size: 18),
-        ],
+            const Icon(Icons.keyboard_arrow_down, color: Color(0xFF64748B), size: 15),
+          ],
+        ),
       ),
     );
   }
