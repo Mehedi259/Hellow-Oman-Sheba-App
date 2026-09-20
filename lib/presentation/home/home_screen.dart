@@ -6,14 +6,12 @@ import '../classifieds/classifieds_provider.dart';
 import 'system_provider.dart';
 import 'widgets/hero_slider.dart';
 import 'widgets/category_grid.dart';
-import 'widgets/latest_jobs.dart';
-import 'widgets/latest_workers.dart';
-import 'widgets/market_widget.dart';
 import 'widgets/community_widget.dart';
-import 'widgets/properties_widget.dart';
-import 'widgets/vehicles_widget.dart';
 import 'widgets/call_to_action_widget.dart';
 import 'widgets/latest_news_widget.dart';
+import 'widgets/country_selector_widget.dart';
+
+import 'widgets/home_tab_section_widget.dart';
 import '../community/community_provider.dart';
 import '../../data/repositories/news_repository.dart';
 
@@ -37,7 +35,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
-    final jobsState = ref.watch(jobsProvider);
     final slidersState = ref.watch(slidersProvider);
 
     return Scaffold(
@@ -46,13 +43,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         centerTitle: false,
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black87), // For the hamburger icon
+        iconTheme: const IconThemeData(color: Colors.black87),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none_rounded, color: Colors.black87),
-            onPressed: () {
-              context.push('/notifications');
-            },
+          // Country selector
+          const CountrySelectorWidget(),
+          const SizedBox(width: 4),
+          // Notification bell with badge
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications_none_rounded, color: Colors.black87),
+                onPressed: () => context.push('/notifications'),
+              ),
+              Positioned(
+                top: 12, right: 12,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEF4444),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                  child: const Text('3',
+                    style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
           ),
           Builder(
             builder: (context) => IconButton(
@@ -60,7 +79,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onPressed: () => Scaffold.of(context).openEndDrawer(),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
         ],
       ),
       endDrawer: Drawer(
@@ -193,6 +212,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
+          ref.invalidate(slidersProvider);
           ref.invalidate(jobsProvider);
           ref.invalidate(homeJobSeekersProvider);
           ref.invalidate(propertiesProvider);
@@ -210,47 +230,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               error: (e, _) => Center(child: Text('Slider Error: $e')),
             ),
             const CategoryGridWidget(),
-            const SizedBox(height: 8),
-            jobsState.when(
-              data: (jobs) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: LatestJobsWidget(jobs: jobs)),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Text('Jobs Error: $error'),
-            ),
-            const SizedBox(height: 4),
-            ref.watch(homeJobSeekersProvider).when(
-              data: (workers) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: LatestWorkersWidget(workers: workers)),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Text('Workers Error: $error'),
-            ),
-            const SizedBox(height: 4),
-            ref.watch(marketItemsProvider).when(
-              data: (items) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: MarketWidget(items: items)),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Text('Market Error: $error'),
-            ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 16),
+            // All listing sections as tabs (চাকরি, কর্মী, বাসা, গাড়ি, মার্কেট)
+            const HomeTabSectionWidget(),
+            const SizedBox(height: 16),
             ref.watch(allNewsProvider).when(
               data: (news) => LatestNewsWidget(articles: news),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Text('News Error: $error'),
+              error: (error, stack) => const SizedBox.shrink(),
             ),
             const SizedBox(height: 4),
             ref.watch(postsProvider).when(
               data: (posts) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: CommunityWidget(posts: posts)),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Text('Community Error: $error'),
-            ),
-            const SizedBox(height: 4),
-            ref.watch(propertiesProvider).when(
-              data: (properties) => PropertiesWidget(properties: properties),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Text('Properties Error: $error'),
-            ),
-            const SizedBox(height: 4),
-            ref.watch(vehiclesProvider).when(
-              data: (vehicles) => VehiclesWidget(vehicles: vehicles),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Text('Vehicles Error: $error'),
+              error: (error, stack) => const SizedBox.shrink(),
             ),
             const SizedBox(height: 8),
             if (authState.value == null) const CallToActionWidget(),
