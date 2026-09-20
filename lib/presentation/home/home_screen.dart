@@ -231,20 +231,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             const CategoryGridWidget(),
             const SizedBox(height: 16),
-            // All listing sections as tabs (চাকরি, কর্মী, বাসা, গাড়ি, মার্কেট)
+            // All listing sections as tabs (চাকরি, কর্মী, বাসা, মার্কেট, সংবাদ, প্রশ্নোত্তর, গাড়ি)
             const HomeTabSectionWidget(),
-            const SizedBox(height: 16),
-            ref.watch(allNewsProvider).when(
-              data: (news) => LatestNewsWidget(articles: news),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => const SizedBox.shrink(),
-            ),
-            const SizedBox(height: 4),
-            ref.watch(postsProvider).when(
-              data: (posts) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: CommunityWidget(posts: posts)),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => const SizedBox.shrink(),
-            ),
             const SizedBox(height: 8),
             if (authState.value == null) const CallToActionWidget(),
             const SizedBox(height: 100), // Large padding for floating bottom nav clearance

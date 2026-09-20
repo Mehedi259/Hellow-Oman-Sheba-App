@@ -3,15 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../classifieds/classifieds_provider.dart';
 import '../../classifieds/widgets/job_card.dart';
+import '../../community/community_provider.dart';
+import '../../../data/repositories/news_repository.dart';
 import 'home_job_seeker_card.dart';
 import '../../../data/models/job.dart';
 import '../../../data/models/job_seeker.dart';
 import '../../../data/models/classifieds_models.dart';
+import '../../../data/models/post.dart';
 import 'section_header.dart';
 import 'animated_see_more_button.dart';
 import 'properties_widget.dart';
 import 'vehicles_widget.dart';
 import 'market_widget.dart';
+import 'community_widget.dart';
+import 'latest_news_widget.dart';
 
 class HomeTabSectionWidget extends ConsumerStatefulWidget {
   const HomeTabSectionWidget({super.key});
@@ -27,14 +32,16 @@ class _HomeTabSectionWidgetState extends ConsumerState<HomeTabSectionWidget> wit
     {'label': 'চাকরি খুঁজুন', 'icon': Icons.work_outline_rounded, 'color': const Color(0xFF0056D2)},
     {'label': 'কর্মী খুঁজুন', 'icon': Icons.person_search_outlined, 'color': const Color(0xFF10B981)},
     {'label': 'বাসা ভাড়া', 'icon': Icons.home_outlined, 'color': const Color(0xFF8B5CF6)},
-    {'label': 'গাড়ি', 'icon': Icons.directions_car_outlined, 'color': const Color(0xFFF59E0B)},
     {'label': 'মার্কেট', 'icon': Icons.storefront_outlined, 'color': const Color(0xFFEF4444)},
+    {'label': 'সংবাদ', 'icon': Icons.newspaper_outlined, 'color': const Color(0xFF06B6D4)},
+    {'label': 'প্রশ্নোত্তর', 'icon': Icons.forum_outlined, 'color': const Color(0xFFF59E0B)},
+    {'label': 'গাড়ি', 'icon': Icons.directions_car_outlined, 'color': const Color(0xFF64748B)},
   ];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _tabs.length, vsync: this);
+    _tabController = TabController(length: 7, vsync: this);
     _tabController.addListener(() { if (mounted) setState(() {}); });
   }
 
@@ -59,19 +66,47 @@ class _HomeTabSectionWidgetState extends ConsumerState<HomeTabSectionWidget> wit
     final propertiesAsync = ref.watch(propertiesProvider);
     final vehiclesAsync = ref.watch(vehiclesProvider);
     final marketAsync = ref.watch(marketItemsProvider);
+    final newsAsync = ref.watch(allNewsProvider);
+    final postsAsync = ref.watch(postsProvider);
 
     // Build counts
     final counts = [
       jobsAsync.valueOrNull?.length ?? 0,
       workersAsync.valueOrNull?.length ?? 0,
       propertiesAsync.valueOrNull?.length ?? 0,
-      vehiclesAsync.valueOrNull?.length ?? 0,
       marketAsync.valueOrNull?.length ?? 0,
+      newsAsync.valueOrNull?.length ?? 0,
+      postsAsync.valueOrNull?.length ?? 0,
+      vehiclesAsync.valueOrNull?.length ?? 0,
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Section header
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Text('🔥', style: TextStyle(fontSize: 20)),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'আজকের জনপ্রিয়',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1E293B),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
         // Horizontal scrollable tabs with count badges
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -159,18 +194,39 @@ class _HomeTabSectionWidgetState extends ConsumerState<HomeTabSectionWidget> wit
           )
         else if (_tabController.index == 3)
           _TabContent(
-            asyncValue: vehiclesAsync,
-            onSeeAll: () => context.push('/classifieds?tab=vehicles'),
-            buildContent: (vehicles) => VehiclesWidget(vehicles: vehicles as List<Vehicle>),
-          )
-        else
-          _TabContent(
             asyncValue: marketAsync,
             onSeeAll: () => context.push('/classifieds?tab=market'),
             buildContent: (items) => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: MarketWidget(items: items as List<MarketItem>),
             ),
+          )
+        else if (_tabController.index == 4)
+          newsAsync.when(
+            data: (news) => LatestNewsWidget(articles: news),
+            loading: () => const Padding(
+              padding: EdgeInsets.symmetric(vertical: 32),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (_, __) => const SizedBox.shrink(),
+          )
+        else if (_tabController.index == 5)
+          postsAsync.when(
+            data: (posts) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: CommunityWidget(posts: posts as List<Post>),
+            ),
+            loading: () => const Padding(
+              padding: EdgeInsets.symmetric(vertical: 32),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (_, __) => const SizedBox.shrink(),
+          )
+        else
+          _TabContent(
+            asyncValue: vehiclesAsync,
+            onSeeAll: () => context.push('/classifieds?tab=vehicles'),
+            buildContent: (vehicles) => VehiclesWidget(vehicles: vehicles as List<Vehicle>),
           ),
       ],
     );
