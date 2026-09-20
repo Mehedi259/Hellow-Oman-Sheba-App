@@ -21,6 +21,7 @@ import '../../presentation/info/embassy_screen.dart';
 import '../../presentation/categories/service_list_screen.dart';
 import '../../presentation/categories/categories_screen.dart';
 import '../../presentation/post/create_post_screen.dart';
+import '../../presentation/special_services/special_services_screen.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -98,6 +99,10 @@ final appRouter = GoRouter(
         GoRoute(
           path: '/categories',
           builder: (context, state) => const CategoriesScreen(),
+        ),
+        GoRoute(
+          path: '/special-services',
+          builder: (context, state) => const SpecialServicesScreen(),
         ),
         GoRoute(
           path: '/classifieds',

@@ -24,7 +24,7 @@ final List<CategoryItem> pinnedCategories = [
   CategoryItem(nameBn: 'মার্কেট', descriptionBn: 'কিনুন এবং বিক্রি করুন', imagePath: 'assets/images/categories/classifieds.png', route: '/classifieds?tab=market'),
   CategoryItem(nameBn: 'প্রশ্নোত্তর', descriptionBn: 'আলোচনা এবং সহযোগিতা', imagePath: 'assets/images/categories/community.png', route: '/community'),
   CategoryItem(nameBn: 'গাড়ি', descriptionBn: 'গাড়ি কিনুন বা ভাড়া নিন', imagePath: 'assets/images/categories/vehicles.png', route: '/classifieds?tab=vehicles'),
-  CategoryItem(nameBn: 'বিশেষ সেবা', descriptionBn: 'সব সেবাসমূহ', imagePath: 'assets/images/categories/hellowoman.png', route: '/categories'),
+  CategoryItem(nameBn: 'বিশেষ সেবা', descriptionBn: 'সব সেবাসমূহ', imagePath: 'assets/images/categories/hellowoman.png', route: '/special-services'),
   CategoryItem(nameBn: 'বিশেষজ্ঞ ডক্টর', descriptionBn: 'বিশেষজ্ঞ চিকিৎসক এবং পরামর্শ', imagePath: 'assets/images/categories/doctors.png', route: '/services/doctors'),
   CategoryItem(nameBn: 'আইন', descriptionBn: 'আইনি পরামর্শ এবং সহায়তা', imagePath: 'assets/images/categories/lawyers.png', route: '/services/lawyers'),
 ];
