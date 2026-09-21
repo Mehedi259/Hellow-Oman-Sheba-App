@@ -116,36 +116,27 @@ class _SpecialServicesScreenState extends ConsumerState<SpecialServicesScreen>
         headerSliverBuilder: (ctx, _) => [_appBar(filter)],
         body: _body(filter, async),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: const SizedBox.shrink(), // let Shell handle the real nav
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 80), // above bottom nav
+        padding: const EdgeInsets.only(bottom: 72),
         child: ScaleTransition(
           scale: _fabScale,
           child: GestureDetector(
             onTap: () => _showCategorySheet(),
             child: Container(
-              height: 56,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [Color(0xFF1E40AF), Color(0xFF3B82F6)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(30),
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
-                  BoxShadow(color: const Color(0xFF1E40AF).withOpacity(0.45), blurRadius: 18, offset: const Offset(0, 8)),
+                  BoxShadow(color: const Color(0xFF1E40AF).withOpacity(0.4), blurRadius: 8, offset: const Offset(0, 4)),
                 ],
               ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.add_circle_rounded, color: Colors.white, size: 22),
-                  SizedBox(width: 8),
-                  Text('সেবা দিন', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 15, letterSpacing: 0.3)),
-                ],
-              ),
+              child: const Text('সেবা দিন', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12)),
             ),
           ),
         ),
@@ -156,7 +147,7 @@ class _SpecialServicesScreenState extends ConsumerState<SpecialServicesScreen>
   // ── APP BAR ──────────────────────────────────────────────
   SliverAppBar _appBar(_FilterState filter) {
     return SliverAppBar(
-      expandedHeight: 210,
+      expandedHeight: 180,
       pinned: true,
       floating: false,
       backgroundColor: const Color(0xFF1E40AF),
@@ -196,76 +187,15 @@ class _SpecialServicesScreenState extends ConsumerState<SpecialServicesScreen>
             child: Padding(
               padding: const EdgeInsets.fromLTRB(22, 14, 22, 16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.18),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white.withOpacity(0.25)),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.handyman_rounded, size: 13, color: Colors.white),
-                        SizedBox(width: 6),
-                        Text('বিশেষ সেবা', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 16),
                   const Text(
                     'বিশেষ সেবাসমূহ',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 28, fontWeight: FontWeight.w900,
                       color: Colors.white, letterSpacing: -0.8, height: 1.1,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'প্লাম্বার, ইলেকট্রিশিয়ান, ক্লিনার ও আরো অনেক',
-                    style: TextStyle(fontSize: 13.5, color: Colors.white.withOpacity(0.85), height: 1.4),
-                  ),
-                  const SizedBox(height: 16),
-                  // Search bar
-                  Container(
-                    height: 46,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 12, offset: const Offset(0, 4))],
-                    ),
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 14),
-                        const Icon(Icons.search_rounded, color: Color(0xFF94A3B8), size: 21),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: TextField(
-                            controller: _searchCtrl,
-                            onChanged: (v) => ref.read(_filterProvider.notifier).setQuery(v),
-                            decoration: const InputDecoration(
-                              hintText: 'সেবা বা পেশা খুঁজুন...',
-                              hintStyle: TextStyle(color: Color(0xFFCBD5E1), fontSize: 14),
-                              border: InputBorder.none,
-                              isDense: true,
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.all(6),
-                          width: 34,
-                          height: 34,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)]),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(Icons.mic_rounded, color: Colors.white, size: 18),
-                        ),
-                      ],
                     ),
                   ),
                 ],
