@@ -148,6 +148,7 @@ class _SpecialServicesScreenState extends ConsumerState<SpecialServicesScreen>
   SliverAppBar _appBar(_FilterState filter) {
     return SliverAppBar(
       expandedHeight: 180,
+      toolbarHeight: 0,
       pinned: true,
       floating: false,
       backgroundColor: const Color(0xFF1E40AF),
