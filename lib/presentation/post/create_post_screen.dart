@@ -8,6 +8,8 @@ import 'widgets/job_seeker_form.dart';
 import 'widgets/insurance_form.dart';
 import 'widgets/business_form.dart';
 import '../community/community_screen.dart' show CreateCommunityPostScreen;
+import '../home/widgets/category_grid.dart' show categoriesList, CategoryItem;
+import '../categories/service_list_screen.dart' show serviceCategoriesData;
 
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key});
@@ -18,19 +20,20 @@ class CreatePostScreen extends StatefulWidget {
 
 class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerProviderStateMixin {
   String? _selectedCategory;
+  String? _selectedServiceBackendName;
+  CategoryItem? _selectedCategoryItem;
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
 
-  final List<Map<String, dynamic>> _categories = [
-    {'id': 'job', 'name': 'চাকরি', 'subtitle': 'চাকরি দিন বা খুঁজুন', 'icon': Icons.work_rounded, 'gradient': [const Color(0xFF3B82F6), const Color(0xFF1D4ED8)]},
-    {'id': 'property', 'name': 'প্রপার্টি', 'subtitle': 'বাসা/ফ্ল্যাট ভাড়া', 'icon': Icons.apartment_rounded, 'gradient': [const Color(0xFF10B981), const Color(0xFF059669)]},
-    {'id': 'vehicle', 'name': 'গাড়ি', 'subtitle': 'গাড়ি কিনুন/বিক্রি', 'icon': Icons.directions_car_rounded, 'gradient': [const Color(0xFF8B5CF6), const Color(0xFF6D28D9)]},
-    {'id': 'classified', 'name': 'মার্কেট', 'subtitle': 'পণ্য কিনুন/বিক্রি', 'icon': Icons.storefront_rounded, 'gradient': [const Color(0xFFF59E0B), const Color(0xFFD97706)]},
-    {'id': 'service', 'name': 'সেবা', 'subtitle': 'সেবা প্রদানকারী', 'icon': Icons.handyman_rounded, 'gradient': [const Color(0xFF14B8A6), const Color(0xFF0D9488)]},
-    {'id': 'insurance', 'name': 'ইন্স্যুরেন্স', 'subtitle': 'বিমা সেবা', 'icon': Icons.shield_rounded, 'gradient': [const Color(0xFF1D4ED8), const Color(0xFF1E40AF)]},
-    {'id': 'business', 'name': 'বিজনেস', 'subtitle': 'ব্যবসার বিজ্ঞাপন', 'icon': Icons.business_center_rounded, 'gradient': [const Color(0xFF7C3AED), const Color(0xFF6D28D9)]},
-    {'id': 'discussion', 'name': 'আলোচনা', 'subtitle': 'কমিউনিটি পোস্ট', 'icon': Icons.forum_rounded, 'gradient': [const Color(0xFFEC4899), const Color(0xFFDB2777)]},
-  ];
+  List<CategoryItem> get _filteredCategories {
+    return categoriesList.where((cat) {
+      if (cat.route == '/news') return false;
+      if (cat.route == '/emergency') return false;
+      if (cat.route == '/about-oman') return false;
+      if (cat.url != null) return false;
+      return true;
+    }).toList();
+  }
 
   @override
   void initState() {
@@ -55,6 +58,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
   }
 
   Widget _buildCategorySelection() {
+    final cats = _filteredCategories;
     return CustomScrollView(
       slivers: [
         // Premium gradient header
@@ -77,11 +81,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
               ),
               child: Stack(
                 children: [
-                  // Decorative circles
                   Positioned(top: -30, right: -30, child: Container(width: 120, height: 120, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.08)))),
                   Positioned(bottom: -20, left: -20, child: Container(width: 80, height: 80, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.06)))),
                   Positioned(top: 40, right: 60, child: Container(width: 40, height: 40, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.05)))),
-                  // Content
                   Padding(
                     padding: const EdgeInsets.fromLTRB(24, 80, 24, 24),
                     child: Column(
@@ -118,26 +120,24 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
             ),
           ),
         ),
-        // Category Grid
+        // Category Grid (4 items per row)
         SliverPadding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16),
           sliver: SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 14,
-              mainAxisSpacing: 14,
-              childAspectRatio: 1.05,
+              crossAxisCount: 4,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 0.85,
             ),
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                final category = _categories[index];
-                final gradientColors = category['gradient'] as List<Color>;
                 return FadeTransition(
                   opacity: _fadeAnim,
-                  child: _buildCategoryCard(category, gradientColors, index),
+                  child: _buildCategoryCard(cats[index]),
                 );
               },
-              childCount: _categories.length,
+              childCount: cats.length,
             ),
           ),
         ),
@@ -146,46 +146,110 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
     );
   }
 
-  Widget _buildCategoryCard(Map<String, dynamic> category, List<Color> gradientColors, int index) {
+  Widget _buildCategoryCard(CategoryItem category) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          if (category['id'] == 'discussion') {
+          if (category.route == null) return;
+          
+          if (category.route == '/community') {
             Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateCommunityPostScreen()));
-          } else if (category['id'] == 'job') {
+            return;
+          }
+          if (category.route == '/classifieds?tab=jobs') {
+            _selectedCategoryItem = category;
             _showJobTypeDialog();
-          } else {
-            setState(() => _selectedCategory = category['id']);
+            return;
+          }
+          if (category.route == '/classifieds?tab=market') {
+            setState(() {
+              _selectedCategoryItem = category;
+              _selectedCategory = 'classified';
+            });
+            return;
+          }
+          if (category.route == '/classifieds?tab=vehicles') {
+            setState(() {
+              _selectedCategoryItem = category;
+              _selectedCategory = 'vehicle';
+            });
+            return;
+          }
+          if (category.route == '/classifieds?tab=properties') {
+            setState(() {
+              _selectedCategoryItem = category;
+              _selectedCategory = 'property';
+            });
+            return;
+          }
+          if (category.route == '/services/insurance') {
+            setState(() {
+              _selectedCategoryItem = category;
+              _selectedCategory = 'insurance';
+            });
+            return;
+          }
+          if (category.route == '/services/business') {
+            setState(() {
+              _selectedCategoryItem = category;
+              _selectedCategory = 'business';
+            });
+            return;
+          }
+          if (category.route!.startsWith('/services/')) {
+            String slug = category.route!.split('/').last;
+            String? backendName = serviceCategoriesData[slug]?['backendName'];
+            setState(() {
+              _selectedCategoryItem = category;
+              _selectedCategory = 'service';
+              _selectedServiceBackendName = backendName ?? category.nameBn;
+            });
           }
         },
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
             boxShadow: [
-              BoxShadow(color: gradientColors[0].withOpacity(0.12), blurRadius: 20, offset: const Offset(0, 8)),
-              BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6, offset: const Offset(0, 2)),
+              BoxShadow(
+                color: Colors.grey.shade100,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
             ],
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: gradientColors, begin: Alignment.topLeft, end: Alignment.bottomRight),
-                  borderRadius: BorderRadius.circular(18),
-                  boxShadow: [BoxShadow(color: gradientColors[0].withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 6))],
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset(
+                    category.imagePath,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.error_outline, color: Colors.grey),
+                  ),
                 ),
-                child: Icon(category['icon'], color: Colors.white, size: 28),
               ),
-              const SizedBox(height: 14),
-              Text(category['name'], style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: Color(0xFF1E293B))),
-              const SizedBox(height: 4),
-              Text(category['subtitle'], style: TextStyle(fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
+              Padding(
+                padding: const EdgeInsets.only(left: 2.0, right: 2.0, bottom: 8.0),
+                child: Text(
+                  category.nameBn,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                    height: 1.1,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -290,22 +354,15 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
   }
 
   Widget _buildFormShell() {
-    final Map<String, dynamic> category;
-    String formTitle;
-    List<Color> formGradient;
-
+    String formTitle = _selectedCategoryItem?.nameBn ?? '';
+    List<Color> formGradient = [const Color(0xFF7C3AED), const Color(0xFFDB2777)]; // Default gradient
+    
     if (_selectedCategory == 'job_post') {
-      category = _categories.firstWhere((c) => c['id'] == 'job');
       formTitle = 'চাকরির বিজ্ঞাপন';
       formGradient = [const Color(0xFF3B82F6), const Color(0xFF1D4ED8)];
     } else if (_selectedCategory == 'job_seeker') {
-      category = _categories.firstWhere((c) => c['id'] == 'job');
       formTitle = 'চাকরিপ্রার্থী প্রোফাইল';
       formGradient = [const Color(0xFF8B5CF6), const Color(0xFF6D28D9)];
-    } else {
-      category = _categories.firstWhere((c) => c['id'] == _selectedCategory);
-      formTitle = category['name'];
-      formGradient = category['gradient'] as List<Color>;
     }
 
     Widget formContent;
@@ -326,7 +383,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
         formContent = MarketForm(onSuccess: () => setState(() => _selectedCategory = null));
         break;
       case 'service':
-        formContent = ServiceForm(onSuccess: () => setState(() => _selectedCategory = null));
+        formContent = ServiceForm(
+          onSuccess: () => setState(() => _selectedCategory = null),
+          initialData: _selectedServiceBackendName != null ? {'category': _selectedServiceBackendName} : null,
+        );
         break;
       case 'insurance':
         formContent = InsuranceForm(onSuccess: () => setState(() => _selectedCategory = null));
@@ -335,7 +395,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
         formContent = BusinessForm(onSuccess: () => setState(() => _selectedCategory = null));
         break;
       default:
-        formContent = Center(child: Text('Form for ${_selectedCategory} not implemented yet'));
+        formContent = Center(child: Text('Form for $_selectedCategory not implemented yet'));
     }
 
     return Column(
@@ -357,7 +417,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
                     decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
                     child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
                   ),
-                  onPressed: () => setState(() => _selectedCategory = null),
+                  onPressed: () => setState(() {
+                    _selectedCategory = null;
+                    _selectedServiceBackendName = null;
+                  }),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -370,11 +433,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(14)),
-                  child: Icon(category['icon'], color: Colors.white, size: 24),
-                ),
+                if (_selectedCategoryItem != null)
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(14)),
+                    child: Image.asset(_selectedCategoryItem!.imagePath, width: 24, height: 24),
+                  ),
               ],
             ),
           ),
