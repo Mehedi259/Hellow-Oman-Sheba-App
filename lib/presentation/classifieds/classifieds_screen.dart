@@ -19,84 +19,167 @@ class ClassifiedsScreen extends StatelessWidget {
   final String? initialTab;
   const ClassifiedsScreen({super.key, this.initialTab});
 
-  int _getInitialIndex() {
+  @override
+  Widget build(BuildContext context) {
     switch (initialTab) {
-      case 'market':
-        return 0;
       case 'jobs':
-        return 1;
+        return const JobsScreen();
       case 'properties':
-        return 2;
+        return const PropertiesScreen();
       case 'vehicles':
-        return 3;
+        return const VehiclesScreen();
       case 'services':
-        return 4;
+        return const ServicesScreen();
+      case 'market':
       default:
-        return 0;
+        return const MarketScreen();
     }
   }
+}
+
+class MarketScreen extends StatelessWidget {
+  const MarketScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: const Color(0xFFF8FAFC),
+    appBar: AppBar(
+      backgroundColor: Colors.white, foregroundColor: const Color(0xFF1E293B), elevation: 0,
+      leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded), onPressed: () => context.pop()),
+      title: const Text('মার্কেট', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20, color: Color(0xFF1E293B))),
+      centerTitle: true,
+    ),
+    body: const MarketView(),
+  );
+}
+
+class PropertiesScreen extends StatelessWidget {
+  const PropertiesScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: const Color(0xFFF8FAFC),
+    appBar: AppBar(
+      backgroundColor: Colors.white, foregroundColor: const Color(0xFF1E293B), elevation: 0,
+      leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded), onPressed: () => context.pop()),
+      title: const Text('বাসা ভাড়া', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20, color: Color(0xFF1E293B))),
+      centerTitle: true,
+    ),
+    body: const PropertiesView(),
+  );
+}
+
+class VehiclesScreen extends StatelessWidget {
+  const VehiclesScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: const Color(0xFFF8FAFC),
+    appBar: AppBar(
+      backgroundColor: Colors.white, foregroundColor: const Color(0xFF1E293B), elevation: 0,
+      leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded), onPressed: () => context.pop()),
+      title: const Text('গাড়ি', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20, color: Color(0xFF1E293B))),
+      centerTitle: true,
+    ),
+    body: const VehiclesView(),
+  );
+}
+
+class ServicesScreen extends StatelessWidget {
+  const ServicesScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: const Color(0xFFF8FAFC),
+    appBar: AppBar(
+      backgroundColor: Colors.white, foregroundColor: const Color(0xFF1E293B), elevation: 0,
+      leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded), onPressed: () => context.pop()),
+      title: const Text('সেবা', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20, color: Color(0xFF1E293B))),
+      centerTitle: true,
+    ),
+    body: const ServicesView(),
+  );
+}
+
+class JobsScreen extends ConsumerStatefulWidget {
+  const JobsScreen({super.key});
+  @override
+  ConsumerState<JobsScreen> createState() => _JobsScreenState();
+}
+
+class _JobsScreenState extends ConsumerState<JobsScreen> {
+  bool _isFindingWorkers = false;
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      initialIndex: _getInitialIndex(),
-      length: 5,
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          foregroundColor: const Color(0xFF1E293B),
-          elevation: 0,
-          title: const Text(
-            'ক্লাসিফায়েড',
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
-              color: Color(0xFF1E293B),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
+      body: Column(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF2563EB), Color(0xFF7C3AED)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                            onPressed: () => context.pop(),
+                          ),
+                        ),
+                        const Text('চাকরি', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800)),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      _buildTabBtn('চাকরি খুঁজুন', !_isFindingWorkers, () => setState(() => _isFindingWorkers = false)),
+                      _buildTabBtn('কর্মী খুঁজুন', _isFindingWorkers, () => setState(() => _isFindingWorkers = true)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
             ),
           ),
-          centerTitle: true,
-          bottom: TabBar(
-            isScrollable: true,
-            labelColor: const Color(0xFF2563EB),
-            unselectedLabelColor: const Color(0xFF94A3B8),
-            labelStyle: const TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-            ),
-            unselectedLabelStyle: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-            ),
-            indicatorColor: const Color(0xFF2563EB),
-            indicatorWeight: 3,
-            indicatorSize: TabBarIndicatorSize.label,
-            tabAlignment: TabAlignment.start,
-            tabs: const [
-              Tab(text: 'মার্কেট'),
-              Tab(text: 'চাকরি'),
-              Tab(text: 'প্রপার্টি'),
-              Tab(text: 'গাড়ি'),
-              Tab(text: 'সেবা'),
-            ],
+          Expanded(
+            child: JobsView(externalTabState: _isFindingWorkers),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabBtn(String label, bool active, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: active ? Colors.white : Colors.transparent, width: 3)),
         ),
-        body: const TabBarView(
-          children: [
-            MarketView(),
-            JobsView(),
-            PropertiesView(),
-            VehiclesView(),
-            ServicesView(),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Text(label, style: TextStyle(color: active ? Colors.white : Colors.white60, fontSize: 15, fontWeight: active ? FontWeight.w700 : FontWeight.w500)),
         ),
       ),
     );
   }
 }
 
+
 class JobsView extends ConsumerStatefulWidget {
-  const JobsView({super.key});
+  final bool? externalTabState;
+  const JobsView({super.key, this.externalTabState});
 
   @override
   ConsumerState<JobsView> createState() => _JobsViewState();
@@ -132,9 +215,10 @@ class _JobsViewState extends ConsumerState<JobsView> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isFindingWorkers = widget.externalTabState ?? _isFindingWorkers;
     return RefreshIndicator(
       onRefresh: () async {
-        if (_isFindingWorkers) {
+        if (isFindingWorkers) {
           ref.read(jobSeekersStateProvider.notifier).fetchJobSeekers();
         } else {
           ref.invalidate(jobsProvider);
@@ -142,131 +226,11 @@ class _JobsViewState extends ConsumerState<JobsView> {
       },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 1. Minimized Search Banner
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF2563EB), Color(0xFF9333EA)],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => setState(() => _isFindingWorkers = false),
-                        child: Container(
-                          padding: const EdgeInsets.only(
-                            bottom: 8,
-                            left: 8,
-                            right: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: !_isFindingWorkers
-                                    ? Colors.white
-                                    : Colors.transparent,
-                                width: 4,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            'চাকরি খুঁজুন',
-                            style: TextStyle(
-                              color: !_isFindingWorkers
-                                  ? Colors.white
-                                  : Colors.blue.shade200,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      GestureDetector(
-                        onTap: () => setState(() => _isFindingWorkers = true),
-                        child: Container(
-                          padding: const EdgeInsets.only(
-                            bottom: 8,
-                            left: 8,
-                            right: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: _isFindingWorkers
-                                    ? Colors.white
-                                    : Colors.transparent,
-                                width: 4,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            'কর্মী খুঁজুন',
-                            style: TextStyle(
-                              color: _isFindingWorkers
-                                  ? Colors.white
-                                  : Colors.blue.shade200,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: 'পেশা বা দক্ষতা দিয়ে খুঁজুন...',
-                        hintStyle: TextStyle(color: Colors.grey.shade500),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        suffixIcon: Container(
-                          margin: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF2563EB),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: IconButton(
-                            icon: const Icon(Icons.search, color: Colors.white),
-                            onPressed: () =>
-                                _onSearchSubmit(_searchController.text),
-                          ),
-                        ),
-                      ),
-                      onSubmitted: _onSearchSubmit,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: _isFindingWorkers
-                  ? _buildWorkersContent(context)
-                  : _buildJobsContent(context),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: isFindingWorkers
+              ? _buildWorkersContent(context)
+              : _buildJobsContent(context),
         ),
       ),
     );
@@ -286,89 +250,58 @@ class _JobsViewState extends ConsumerState<JobsView> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Filter Section in ExpansionTile
-            Theme(
-              data: Theme.of(
-                context,
-              ).copyWith(dividerColor: Colors.transparent),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: ExpansionTile(
-                  title: const Text(
-                    'ফিল্টার করুন',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  leading: const Icon(
-                    Icons.filter_alt_outlined,
-                    color: Color(0xFF2563EB),
-                  ),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+            // Compact filter + sort row
+            Row(
+              children: [
+                Theme(
+                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                  child: Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: ExpansionTile(
+                        tilePadding: const EdgeInsets.symmetric(horizontal: 10),
+                        minTileHeight: 40,
+                        title: const Text('ফিল্টার', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                        leading: const Icon(Icons.filter_alt_outlined, color: Color(0xFF2563EB), size: 18),
                         children: [
-                          const Text(
-                            'চাকরির ধরন',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                            child: Wrap(
+                              spacing: 8, runSpacing: 6,
+                              children: [
+                                _buildFilterChip('FULL_TIME', 'ফুল টাইম', filterState),
+                                _buildFilterChip('PART_TIME', 'পার্ট টাইম', filterState),
+                                _buildFilterChip('CONTRACT', 'কন্ট্রাক্ট', filterState),
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              _buildFilterChip(
-                                'FULL_TIME',
-                                'ফুল টাইম',
-                                filterState,
-                              ),
-                              _buildFilterChip(
-                                'PART_TIME',
-                                'পার্ট টাইম',
-                                filterState,
-                              ),
-                              _buildFilterChip(
-                                'CONTRACT',
-                                'কন্ট্রাক্ট',
-                                filterState,
-                              ),
-                            ],
                           ),
                         ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-            const SizedBox(height: 24),
-
-            // Results Header & Sorting
-            Text(
-              '${totalItems}টি চাকরি পাওয়া গেছে',
-              style: const TextStyle(fontSize: 16, color: Colors.black54),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Text('$totalItems টি চাকরি', style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                const Spacer(),
+                ...[
+                  ('সর্বশেষ', 'latest'),
+                  ('উচ্চ বেতন', 'high_salary'),
+                  ('নিম্ন বেতন', 'low_salary'),
+                ].map((e) => Padding(
+                  padding: const EdgeInsets.only(left: 6),
+                  child: _buildSortButton(e.$1, e.$2, filterState),
+                )),
+              ],
             ),
-            const SizedBox(height: 12),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildSortButton('সর্বশেষ', 'latest', filterState),
-                  const SizedBox(width: 8),
-                  _buildSortButton('উচ্চ বেতন', 'high_salary', filterState),
-                  const SizedBox(width: 8),
-                  _buildSortButton('নিম্ন বেতন', 'low_salary', filterState),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
 
             // Job List
             if (jobs.isEmpty)
@@ -495,49 +428,33 @@ class _JobsViewState extends ConsumerState<JobsView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Banner
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.blue.shade50,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.blue.shade100),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'আপনি কি চাকরি খুঁজছেন?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'আপনার সিভি এবং দক্ষতা দিয়ে প্রোফাইল তৈরি করুন, এমপ্লয়াররা আপনাকে খুঁজে নেবে।',
-                style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  context.push('/post/create?category=job_seeker');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2563EB),
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(48),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
+        // Compact profile prompt row
+        InkWell(
+          onTap: () => context.push('/post/create?category=job_seeker'),
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.blue.shade100),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.person_add_alt_1_rounded, color: Color(0xFF2563EB), size: 22),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    'আপনি কি চাকরি খুঁজছেন? প্রোফাইল তৈরি করুন',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF1E293B)),
                   ),
                 ),
-                child: const Text(
-                  'প্রোফাইল তৈরি করুন',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
+                const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Color(0xFF2563EB)),
+              ],
+            ),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 12),
 
         // Results Header & Sorting
         Row(
@@ -678,15 +595,15 @@ class _JobsViewState extends ConsumerState<JobsView> {
 
   Widget _buildSortButton(String label, String value, FindJobsState state) {
     final isSelected = state.sortOrder == value;
-    return InkWell(
+    return GestureDetector(
       onTap: () {
         ref.read(findJobsStateProvider.notifier).setSortOrder(value);
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF2563EB) : Colors.white,
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected ? const Color(0xFF2563EB) : Colors.grey.shade300,
           ),
@@ -694,8 +611,9 @@ class _JobsViewState extends ConsumerState<JobsView> {
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black87,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            fontSize: 11,
+            color: isSelected ? Colors.white : Colors.black54,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
           ),
         ),
       ),
@@ -1586,7 +1504,7 @@ class MarketView extends ConsumerWidget {
                           ),
                           child: TextButton.icon(
                             onPressed: () {
-                              // TODO: Post ad functionality
+                              context.push('/post/create?category=market');
                             },
                             icon: const Icon(
                               Icons.add,

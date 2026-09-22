@@ -14,7 +14,7 @@ class CommunityScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Community'),
+        title: const Text('প্রশ্নোত্তর'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
