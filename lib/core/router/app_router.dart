@@ -90,7 +90,10 @@ final appRouter = GoRouter(
       routes: [
         GoRoute(
           path: '/post/create',
-          builder: (context, state) => const CreatePostScreen(),
+          builder: (context, state) {
+            final category = state.uri.queryParameters['category'];
+            return CreatePostScreen(initialCategory: category);
+          },
         ),
         GoRoute(
           path: '/',

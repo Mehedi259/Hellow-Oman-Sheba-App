@@ -12,7 +12,8 @@ import '../home/widgets/category_grid.dart' show categoriesList, CategoryItem;
 import '../categories/service_list_screen.dart' show serviceCategoriesData;
 
 class CreatePostScreen extends StatefulWidget {
-  const CreatePostScreen({super.key});
+  final String? initialCategory;
+  const CreatePostScreen({super.key, this.initialCategory});
 
   @override
   State<CreatePostScreen> createState() => _CreatePostScreenState();
@@ -38,6 +39,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
   @override
   void initState() {
     super.initState();
+    _selectedCategory = widget.initialCategory;
+    if (_selectedCategory == 'job_seeker') {
+      _selectedCategoryItem = CategoryItem(
+        nameBn: 'চাকরি',
+        imagePath: 'assets/images/categories/jobs.png',
+        descriptionBn: '',
+      );
+    }
     _animController = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
     _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic);
     _animController.forward();

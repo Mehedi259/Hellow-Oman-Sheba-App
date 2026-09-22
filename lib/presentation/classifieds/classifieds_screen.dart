@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'classifieds_provider.dart';
 import 'job_seekers_provider.dart';
 import 'widgets/job_seeker_card.dart';
@@ -183,7 +185,7 @@ class _JobsViewState extends ConsumerState<JobsView> {
                               color: !_isFindingWorkers
                                   ? Colors.white
                                   : Colors.blue.shade200,
-                              fontSize: 24,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -214,7 +216,7 @@ class _JobsViewState extends ConsumerState<JobsView> {
                               color: _isFindingWorkers
                                   ? Colors.white
                                   : Colors.blue.shade200,
-                              fontSize: 24,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -517,7 +519,7 @@ class _JobsViewState extends ConsumerState<JobsView> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  // TODO: Go to create profile screen
+                  context.push('/post/create?category=job_seeker');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2563EB),
@@ -1883,7 +1885,7 @@ class MarketView extends ConsumerWidget {
           ref.read(marketStateProvider.notifier).setCategory(id);
         }
       },
-      child: Column(
+      child: FittedBox(fit: BoxFit.scaleDown, child: Column(mainAxisSize: MainAxisSize.min, 
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
@@ -1907,7 +1909,7 @@ class MarketView extends ConsumerWidget {
             style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
           ),
         ],
-      ),
+      ),)
     );
   }
 
