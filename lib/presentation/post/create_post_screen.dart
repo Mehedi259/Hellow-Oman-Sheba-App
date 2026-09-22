@@ -5,6 +5,8 @@ import 'widgets/vehicle_form.dart';
 import 'widgets/market_form.dart';
 import 'widgets/service_form.dart';
 import 'widgets/job_seeker_form.dart';
+import 'widgets/insurance_form.dart';
+import 'widgets/business_form.dart';
 import '../community/community_screen.dart' show CreateCommunityPostScreen;
 
 class CreatePostScreen extends StatefulWidget {
@@ -25,6 +27,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
     {'id': 'vehicle', 'name': 'গাড়ি', 'subtitle': 'গাড়ি কিনুন/বিক্রি', 'icon': Icons.directions_car_rounded, 'gradient': [const Color(0xFF8B5CF6), const Color(0xFF6D28D9)]},
     {'id': 'classified', 'name': 'মার্কেট', 'subtitle': 'পণ্য কিনুন/বিক্রি', 'icon': Icons.storefront_rounded, 'gradient': [const Color(0xFFF59E0B), const Color(0xFFD97706)]},
     {'id': 'service', 'name': 'সেবা', 'subtitle': 'সেবা প্রদানকারী', 'icon': Icons.handyman_rounded, 'gradient': [const Color(0xFF14B8A6), const Color(0xFF0D9488)]},
+    {'id': 'insurance', 'name': 'ইন্স্যুরেন্স', 'subtitle': 'বিমা সেবা', 'icon': Icons.shield_rounded, 'gradient': [const Color(0xFF1D4ED8), const Color(0xFF1E40AF)]},
+    {'id': 'business', 'name': 'বিজনেস', 'subtitle': 'ব্যবসার বিজ্ঞাপন', 'icon': Icons.business_center_rounded, 'gradient': [const Color(0xFF7C3AED), const Color(0xFF6D28D9)]},
     {'id': 'discussion', 'name': 'আলোচনা', 'subtitle': 'কমিউনিটি পোস্ট', 'icon': Icons.forum_rounded, 'gradient': [const Color(0xFFEC4899), const Color(0xFFDB2777)]},
   ];
 
@@ -323,6 +327,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
         break;
       case 'service':
         formContent = ServiceForm(onSuccess: () => setState(() => _selectedCategory = null));
+        break;
+      case 'insurance':
+        formContent = InsuranceForm(onSuccess: () => setState(() => _selectedCategory = null));
+        break;
+      case 'business':
+        formContent = BusinessForm(onSuccess: () => setState(() => _selectedCategory = null));
         break;
       default:
         formContent = Center(child: Text('Form for ${_selectedCategory} not implemented yet'));

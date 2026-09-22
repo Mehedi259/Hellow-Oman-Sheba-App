@@ -6,64 +6,47 @@ import '../../../data/repositories/classifieds_repository.dart';
 import '../../auth/auth_provider.dart';
 import '../../classifieds/classifieds_provider.dart';
 import '../../my_listings/providers/my_listings_provider.dart';
+import 'service_form.dart' show CustomTextField;
 
-class ServiceForm extends ConsumerStatefulWidget {
+class InsuranceForm extends ConsumerStatefulWidget {
   final VoidCallback onSuccess;
   final Map<String, dynamic>? initialData;
   final int? editId;
-  const ServiceForm({
+  const InsuranceForm({
     super.key,
     required this.onSuccess,
     this.initialData,
     this.editId,
   });
   @override
-  ConsumerState<ServiceForm> createState() => _ServiceFormState();
+  ConsumerState<InsuranceForm> createState() => _InsuranceFormState();
 }
 
-class _ServiceFormState extends ConsumerState<ServiceForm> {
+class _InsuranceFormState extends ConsumerState<InsuranceForm> {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final priceController = TextEditingController();
   final areaController = TextEditingController();
   final contactNameController = TextEditingController();
   final contactPhoneController = TextEditingController();
+  final coverageController = TextEditingController();
+  final companyNameController = TextEditingController();
 
-  String selectedCategory = 'Specialist Doctor';
+  String selectedInsuranceType = 'Life Insurance';
   String selectedCity = 'Muscat';
 
   List<File> selectedImages = [];
   bool isLoading = false;
   final picker = ImagePicker();
 
-  static const List<Map<String, String>> categories = [
-    {'value': 'Specialist Doctor', 'label': 'স্পেশালিস্ট ডক্টর'},
-    {'value': 'Hospital', 'label': 'হসপিটাল'},
-    {'value': 'Ambulance', 'label': 'অ্যাম্বুলেন্স'},
-    {'value': 'Police Station', 'label': 'পুলিশ স্টেশন'},
-    {'value': 'Embassy', 'label': 'এম্বাসি'},
-    {'value': 'Travel Agency', 'label': 'ট্রাভেল এজেন্সি'},
-    {'value': 'Hotel', 'label': 'হোটেল'},
-    {'value': 'Maktab Sanad', 'label': 'মক্তব সনদ'},
-    {'value': 'Money Exchange', 'label': 'মানি এক্সচেঞ্জ'},
-    {'value': 'Lawyer', 'label': 'লইয়ার'},
-    {'value': 'Tourist Place', 'label': 'ট্যুরিস্ট প্লেস'},
-    {'value': 'Medical Services', 'label': 'মেডিকেল সার্ভিস'},
-    {'value': 'Educational Institutions', 'label': 'শিক্ষা প্রতিষ্ঠান'},
-    {'value': 'Visa Services', 'label': 'ভিসা সার্ভিস'},
-    {'value': 'Cleaning', 'label': 'ক্লিনিং'},
-    {'value': 'Plumbing', 'label': 'প্লাম্বিং'},
-    {'value': 'Electrical', 'label': 'ইলেকট্রিশিয়ান'},
-    {'value': 'AC Repair', 'label': 'এসি সার্ভিস'},
-    {'value': 'Carpentry', 'label': 'কার্পেন্টার'},
-    {'value': 'Painting', 'label': 'রং মিস্ত্রি'},
-    {'value': 'Appliance Repair', 'label': 'ফ্রিজ সার্ভিস'},
-    {'value': 'Mason', 'label': 'রাজমিস্ত্রি'},
-    {'value': 'Mobile Technician', 'label': 'মোবাইল মিস্ত্রি'},
-
-    {'value': 'Insurance', 'label': 'ইন্স্যুরেন্স'},
-    {'value': 'Business', 'label': 'বিজনেস'},
-    {'value': 'Other', 'label': 'অন্যান্য'},
+  static const List<Map<String, String>> insuranceTypes = [
+    {'value': 'Life Insurance', 'label': 'জীবন বিমা'},
+    {'value': 'Health Insurance', 'label': 'স্বাস্থ্য বিমা'},
+    {'value': 'Vehicle Insurance', 'label': 'গাড়ি বিমা'},
+    {'value': 'Travel Insurance', 'label': 'ভ্রমণ বিমা'},
+    {'value': 'Property Insurance', 'label': 'সম্পত্তি বিমা'},
+    {'value': 'Business Insurance', 'label': 'ব্যবসা বিমা'},
+    {'value': 'Other Insurance', 'label': 'অন্যান্য বিমা'},
   ];
 
   static const List<String> cities = [
@@ -75,16 +58,12 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
     super.initState();
     if (widget.initialData != null) {
       final data = widget.initialData!;
-      titleController.text = data['title'] ?? data['title_bn'] ?? '';
-      descriptionController.text = data['description'] ?? data['description_bn'] ?? '';
+      titleController.text = data['title'] ?? '';
+      descriptionController.text = data['description'] ?? '';
       priceController.text = data['price']?.toString() ?? '';
       areaController.text = data['area'] ?? '';
       contactNameController.text = data['contact_name'] ?? '';
       contactPhoneController.text = data['contact_phone'] ?? '';
-      
-      if (data['category'] != null && categories.any((e) => e['value'] == data['category'])) {
-        selectedCategory = data['category'];
-      }
       if (data['city'] != null && cities.contains(data['city'])) {
         selectedCity = data['city'];
       }
@@ -99,6 +78,8 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
     areaController.dispose();
     contactNameController.dispose();
     contactPhoneController.dispose();
+    coverageController.dispose();
+    companyNameController.dispose();
     super.dispose();
   }
 
@@ -120,14 +101,13 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
   }
 
   Future<void> submit() async {
-    if (titleController.text.isEmpty || descriptionController.text.isEmpty || 
-        priceController.text.isEmpty || contactNameController.text.isEmpty || 
-        contactPhoneController.text.isEmpty) {
+    if (titleController.text.isEmpty || descriptionController.text.isEmpty ||
+        contactNameController.text.isEmpty || contactPhoneController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Row(children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.white), 
-            SizedBox(width: 8), 
+            Icon(Icons.warning_amber_rounded, color: Colors.white),
+            SizedBox(width: 8),
             Expanded(child: Text('অনুগ্রহ করে প্রয়োজনীয় তথ্য দিন')),
           ]),
           backgroundColor: const Color(0xFFEF4444),
@@ -137,16 +117,17 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
       );
       return;
     }
-    
+
     setState(() => isLoading = true);
     try {
       final repo = ClassifiedsRepository(ref.read(apiClientProvider));
       final payload = {
         'title': titleController.text,
         'title_bn': titleController.text,
-        'description': descriptionController.text,
+        'description': '${companyNameController.text.isNotEmpty ? "কোম্পানি: ${companyNameController.text}\n" : ""}${coverageController.text.isNotEmpty ? "কভারেজ: ${coverageController.text}\n" : ""}${descriptionController.text}',
         'description_bn': descriptionController.text,
-        'service_type': selectedCategory,
+        'category': 'Insurance',
+        'service_type': selectedInsuranceType,
         'price': double.tryParse(priceController.text) ?? 0,
         'currency': 'OMR',
         'city': selectedCity,
@@ -161,16 +142,16 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
       } else {
         await repo.createService(payload, images: selectedImages);
       }
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(children: [
-              const Icon(Icons.check_circle_outline_rounded, color: Colors.white), 
-              const SizedBox(width: 8), 
-              Text(widget.editId != null ? 'সার্ভিস আপডেট হয়েছে!' : 'সার্ভিস পোস্ট হয়েছে!'),
+              const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+              const SizedBox(width: 8),
+              Text(widget.editId != null ? 'ইন্স্যুরেন্স আপডেট হয়েছে!' : 'ইন্স্যুরেন্স পোস্ট হয়েছে!'),
             ]),
-            backgroundColor: const Color(0xFF0D9488),
+            backgroundColor: const Color(0xFF1D4ED8),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
@@ -182,20 +163,16 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
     } catch (e) {
       if (mounted) {
         String errMsg = e.toString().replaceAll('Exception: ', '');
-        if (errMsg == 'অনুগ্রহ করে লগইন করুন') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errMsg), behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errMsg), backgroundColor: Colors.red));
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errMsg), backgroundColor: Colors.red),
+        );
       }
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
   }
 
-  Widget _buildDropdownField({
+  Widget _buildDropdown({
     required String label,
     required String value,
     required List<DropdownMenuItem<String>> items,
@@ -211,7 +188,6 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey.shade200),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2))],
           ),
           child: DropdownButtonFormField<String>(
             value: value,
@@ -236,44 +212,36 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CustomTextField(controller: titleController, label: 'সার্ভিসের নাম *', hint: 'যেমন: বাসা শিফটিং সার্ভিস'),
-          const SizedBox(height: 20),
-          
-          Row(
-            children: [
-              Expanded(
-                child: _buildDropdownField(
-                  label: 'ক্যাটাগরি',
-                  value: selectedCategory,
-                  items: categories.map((c) => DropdownMenuItem(value: c['value'], child: Text(c['label']!))).toList(),
-                  onChanged: (val) => setState(() => selectedCategory = val!),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: CustomTextField(
-                  controller: priceController,
-                  label: 'ফি/মূল্য (OMR) *',
-                  hint: '0.00',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                ),
-              ),
-            ],
+          CustomTextField(controller: titleController, label: 'ইন্স্যুরেন্স পরিকল্পনার নাম *', hint: 'যেমন: ফ্যামিলি হেলথ ইন্স্যুরেন্স'),
+          const SizedBox(height: 16),
+          CustomTextField(controller: companyNameController, label: 'কোম্পানির নাম', hint: 'যেমন: Oman Insurance Company'),
+          const SizedBox(height: 16),
+          _buildDropdown(
+            label: 'ইন্স্যুরেন্সের ধরন',
+            value: selectedInsuranceType,
+            items: insuranceTypes.map((t) => DropdownMenuItem(value: t['value'], child: Text(t['label']!))).toList(),
+            onChanged: (val) => setState(() => selectedInsuranceType = val!),
           ),
+          const SizedBox(height: 16),
+          CustomTextField(controller: coverageController, label: 'কভারেজ বিবরণ', hint: 'যেমন: চিকিৎসা ব্যয়, দুর্ঘটনা কভার...', maxLines: 2),
+          const SizedBox(height: 16),
+          CustomTextField(
+            controller: priceController,
+            label: 'প্রিমিয়াম (OMR/বছর)',
+            hint: '0.00',
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          ),
+          const SizedBox(height: 16),
+          CustomTextField(controller: descriptionController, label: 'বিস্তারিত বর্ণনা *', hint: 'ইন্স্যুরেন্স সম্পর্কে বিস্তারিত লিখুন...', maxLines: 5),
           const SizedBox(height: 20),
-          
-          CustomTextField(controller: descriptionController, label: 'বিস্তারিত বর্ণনা *', hint: 'আপনার সার্ভিস সম্পর্কে বিস্তারিত লিখুন...', maxLines: 5),
-          const SizedBox(height: 24),
-          
           const Divider(),
           const SizedBox(height: 16),
           const Text('লোকেশন এবং যোগাযোগ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
           const SizedBox(height: 16),
-          
           Row(
             children: [
               Expanded(
-                child: _buildDropdownField(
+                child: _buildDropdown(
                   label: 'শহর',
                   value: selectedCity,
                   items: cities.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
@@ -284,8 +252,7 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
               Expanded(child: CustomTextField(controller: areaController, label: 'এলাকা', hint: 'যেমন: Ghubra')),
             ],
           ),
-          const SizedBox(height: 20),
-          
+          const SizedBox(height: 16),
           Row(
             children: [
               Expanded(child: CustomTextField(controller: contactNameController, label: 'যোগাযোগের নাম *', hint: 'আপনার নাম')),
@@ -294,8 +261,6 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
             ],
           ),
           const SizedBox(height: 24),
-          
-          // Image Picker
           if (widget.editId == null) ...[
             const Divider(),
             const SizedBox(height: 16),
@@ -305,9 +270,9 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
                 const Text('ছবি', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
                 TextButton.icon(
                   onPressed: pickImages,
-                  icon: const Icon(Icons.add_photo_alternate_rounded, color: Color(0xFF0D9488)),
-                  label: const Text('ছবি যোগ করুন', style: TextStyle(color: Color(0xFF0D9488))),
-                  style: TextButton.styleFrom(backgroundColor: const Color(0xFF0D9488).withOpacity(0.1)),
+                  icon: const Icon(Icons.add_photo_alternate_rounded, color: Color(0xFF1D4ED8)),
+                  label: const Text('ছবি যোগ করুন', style: TextStyle(color: Color(0xFF1D4ED8))),
+                  style: TextButton.styleFrom(backgroundColor: const Color(0xFF1D4ED8).withOpacity(0.1)),
                 ),
               ],
             ),
@@ -316,11 +281,7 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                ),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 8, mainAxisSpacing: 8),
                 itemCount: selectedImages.length,
                 itemBuilder: (context, index) {
                   return Stack(
@@ -348,10 +309,9 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
               ),
             const SizedBox(height: 24),
           ],
-          
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0D9488),
+              backgroundColor: const Color(0xFF1D4ED8),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -360,58 +320,11 @@ class _ServiceFormState extends ConsumerState<ServiceForm> {
             onPressed: isLoading ? null : submit,
             child: isLoading
                 ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : Text(widget.editId != null ? 'তথ্য আপডেট করুন' : 'বিজ্ঞাপন পোস্ট করুন', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                : Text(widget.editId != null ? 'তথ্য আপডেট করুন' : 'ইন্স্যুরেন্স পোস্ট করুন', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(height: 120),
         ],
       ),
-    );
-  }
-}
-
-class CustomTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final String label;
-  final String hint;
-  final int maxLines;
-  final TextInputType? keyboardType;
-
-  const CustomTextField({
-    super.key,
-    required this.controller,
-    required this.label,
-    required this.hint,
-    this.maxLines = 1,
-    this.keyboardType,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2))],
-          ),
-          child: TextFormField(
-            controller: controller,
-            maxLines: maxLines,
-            keyboardType: keyboardType,
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

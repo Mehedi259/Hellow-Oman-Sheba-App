@@ -19,18 +19,20 @@ class CategoryItem {
 }
 
 // First 7 pinned / most important categories
+// First 7 pinned / most important categories
 final List<CategoryItem> pinnedCategories = [
   CategoryItem(nameBn: 'চাকরি', descriptionBn: 'চাকরি খুঁজুন এবং আবেদন করুন', imagePath: 'assets/images/categories/jobs.png', route: '/classifieds?tab=jobs'),
   CategoryItem(nameBn: 'মার্কেট', descriptionBn: 'কিনুন এবং বিক্রি করুন', imagePath: 'assets/images/categories/classifieds.png', route: '/classifieds?tab=market'),
   CategoryItem(nameBn: 'প্রশ্নোত্তর', descriptionBn: 'আলোচনা এবং সহযোগিতা', imagePath: 'assets/images/categories/community.png', route: '/community'),
-  CategoryItem(nameBn: 'গাড়ি', descriptionBn: 'গাড়ি কিনুন বা ভাড়া নিন', imagePath: 'assets/images/categories/vehicles.png', route: '/classifieds?tab=vehicles'),
-  CategoryItem(nameBn: 'বিশেষ সেবা', descriptionBn: 'সব সেবাসমূহ', imagePath: 'assets/images/categories/hellowoman.png', route: '/special-services'),
-  CategoryItem(nameBn: 'বিশেষজ্ঞ ডক্টর', descriptionBn: 'বিশেষজ্ঞ চিকিৎসক এবং পরামর্শ', imagePath: 'assets/images/categories/doctors.png', route: '/services/doctors'),
-  CategoryItem(nameBn: 'আইন', descriptionBn: 'আইনি পরামর্শ এবং সহায়তা', imagePath: 'assets/images/categories/lawyers.png', route: '/services/lawyers'),
+  CategoryItem(nameBn: 'গাড়ি', descriptionBn: 'গাড়ি কিনুন বা ভাড়া নিন', imagePath: 'assets/images/categories/vehicles.png', route: '/classifieds?tab=vehicles'),
+  CategoryItem(nameBn: 'ইন্স্যুরেন্স', descriptionBn: 'বিমা সেবা', imagePath: 'assets/images/categories/insurance.png', route: '/services/insurance'),
+  CategoryItem(nameBn: 'বিজনেস', descriptionBn: 'ব্যবসার বিজ্ঞাপন', imagePath: 'assets/images/categories/business.png', route: '/services/business'),
+  CategoryItem(nameBn: 'বিশেষজ্ঞ ডক্তর', descriptionBn: 'বিশেষজ্ঞ চিকিৎসক এবং পরামর্শ', imagePath: 'assets/images/categories/doctors.png', route: '/services/doctors'),
 ];
 
 // The rest (shown when "সব ক্যাটাগরি" is expanded)
 final List<CategoryItem> extraCategories = [
+  CategoryItem(nameBn: 'আইন', descriptionBn: 'আইনি পরামর্শ এবং সহায়তা', imagePath: 'assets/images/categories/lawyers.png', route: '/services/lawyers'),
   CategoryItem(nameBn: 'বাসা ভাড়া', descriptionBn: 'ফ্ল্যাট, রুম এবং বেড স্পেস', imagePath: 'assets/images/categories/properties.png', route: '/classifieds?tab=properties'),
   CategoryItem(nameBn: 'দূতাবাস', descriptionBn: 'দূতাবাস সেবা এবং সহায়তা', imagePath: 'assets/images/categories/embassy.png', route: '/embassy'),
   CategoryItem(nameBn: 'সংবাদ', descriptionBn: 'সর্বশেষ সংবাদ', imagePath: 'assets/images/categories/news.png', route: '/news'),
@@ -43,7 +45,17 @@ final List<CategoryItem> extraCategories = [
   CategoryItem(nameBn: 'দর্শনীয় স্থান', descriptionBn: 'ওমানের পর্যটন স্থান', imagePath: 'assets/images/categories/tourist.png', route: '/services/tourist-places'),
   CategoryItem(nameBn: 'পুলিশ স্টেশন', descriptionBn: 'পুলিশ স্টেশন তথ্য', imagePath: 'assets/images/categories/police.png', route: '/services/police'),
   CategoryItem(nameBn: 'জরুরী নম্বর', descriptionBn: 'জরুরী যোগাযোগ নম্বর', imagePath: 'assets/images/categories/emergency.png', route: '/emergency'),
-  CategoryItem(nameBn: 'হ্যালো প্রবাস', descriptionBn: 'আমাদের Facebook পেজ', imagePath: 'assets/images/categories/hellowoman.png', url: 'https://www.facebook.com/helloomansheba'),
+  CategoryItem(nameBn: 'প্লাম্বার', descriptionBn: 'পানির লাইন ও পাইপ মেরামত', imagePath: 'assets/images/categories/plumber.png', route: '/services/plumbing'),
+  CategoryItem(nameBn: 'ইলেকট্রিশিয়ান', descriptionBn: 'বৈদ্যুতিক কাজ ও মেরামত', imagePath: 'assets/images/categories/electrician.png', route: '/services/electrical'),
+  CategoryItem(nameBn: 'ক্লিনিং', descriptionBn: 'বাসা ও অফিস পরিষ্কার', imagePath: 'assets/images/categories/cleaning.png', route: '/services/cleaning'),
+  CategoryItem(nameBn: 'এসি সার্ভিস', descriptionBn: 'এসি ইন্সটলেশন ও মেরামত', imagePath: 'assets/images/categories/air conditioning.png', route: '/services/ac-repair'),
+  CategoryItem(nameBn: 'কার্পেন্টার', descriptionBn: 'কাঠের কাজ ও ফার্নিচার', imagePath: 'assets/images/categories/carpenter.png', route: '/services/carpentry'),
+  CategoryItem(nameBn: 'রং মিস্ত্রি', descriptionBn: 'বাসা ও অফিসের রং কাজ', imagePath: 'assets/images/categories/painter.png', route: '/services/painting'),
+  CategoryItem(nameBn: 'রাজমিস্ত্রি', descriptionBn: 'নির্মাণ ও টাইলসের কাজ', imagePath: 'assets/images/categories/rajmistri.png', route: '/services/mason'),
+  CategoryItem(nameBn: 'ফ্রিজ সার্ভিস', descriptionBn: 'ফ্রিজ ও ওয়াশিং মেশিন', imagePath: 'assets/images/categories/refrigerator.png', route: '/services/appliance-repair'),
+  CategoryItem(nameBn: 'মোবাইল মিস্ত্রি', descriptionBn: 'মোবাইল মেরামত', imagePath: 'assets/images/categories/mobile service.png', route: '/services/mobile-technician'),
+
+  CategoryItem(nameBn: 'হ্যালো প্রবাস', descriptionBn: 'আমাদের Facebook পেজ', imagePath: 'assets/images/categories/hello probash.png', url: 'https://www.facebook.com/helloomansheba'),
   CategoryItem(nameBn: 'সালতানাত ওমান', descriptionBn: 'ওমান সালতানাত সম্পর্কে জানুন', imagePath: 'assets/images/categories/sultanate-oman.png', route: '/about-oman'),
 ];
 
