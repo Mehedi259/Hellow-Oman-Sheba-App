@@ -42,8 +42,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
     _selectedCategory = widget.initialCategory;
     if (_selectedCategory == 'job_seeker') {
       _selectedCategoryItem = CategoryItem(
-        nameBn: 'চাকরি',
+        nameBn: 'চাকরিপ্রার্থী প্রোফাইল',
         imagePath: 'assets/images/categories/jobs.png',
+        descriptionBn: '',
+      );
+    } else if (_selectedCategory == 'classified') {
+      _selectedCategoryItem = CategoryItem(
+        nameBn: 'মার্কেট',
+        imagePath: 'assets/images/categories/classifieds.png',
         descriptionBn: '',
       );
     }

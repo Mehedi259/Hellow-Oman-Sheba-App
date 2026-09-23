@@ -1504,7 +1504,7 @@ class MarketView extends ConsumerWidget {
                           ),
                           child: TextButton.icon(
                             onPressed: () {
-                              context.push('/post/create?category=market');
+                              context.push('/post/create?category=classified');
                             },
                             icon: const Icon(
                               Icons.add,
