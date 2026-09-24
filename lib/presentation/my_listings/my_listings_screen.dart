@@ -15,6 +15,7 @@ import '../auth/auth_provider.dart';
 import '../post/edit_post_screen.dart';
 import '../chat/widgets/chat_initiator_button.dart';
 import 'widgets/favorite_item_card.dart';
+import '../../core/utils/router_utils.dart';
 
 class MyListingsScreen extends ConsumerStatefulWidget {
   final int initialIndex;
@@ -140,17 +141,23 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen>
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('নিশ্চিত করুন'),
-        content: const Text('আপনি কি এই পোস্টটি মুছে ফেলতে চান?'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('নিশ্চিত করুন', style: TextStyle(fontWeight: FontWeight.bold)),
+        content: const Text('আপনি কি সত্যিই এই পোস্টটি মুছে ফেলতে চান? এটি পুনরুদ্ধার করা যাবে না।'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('না'),
+            child: const Text('না, বাতিল', style: TextStyle(color: Color(0xFF64748B))),
           ),
-          TextButton(
+          ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('হ্যাঁ'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: const Text('হ্যাঁ, মুছুন'),
           ),
         ],
       ),
@@ -168,24 +175,35 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen>
     try {
       final apiClient = ref.read(apiClientProvider);
       String endpoint = '';
-      if (type == 'job')
+      if (type == 'job') {
         endpoint = '/classifieds/jobs/$id/';
-      else if (type == 'property')
+      } else if (type == 'property') {
         endpoint = '/classifieds/properties/$id/';
-      else if (type == 'vehicle')
+      } else if (type == 'vehicle') {
         endpoint = '/classifieds/vehicles/$id/';
-      else if (type == 'service')
+      } else if (type == 'service') {
         endpoint = '/classifieds/services/$id/';
-      else if (type == 'job_seeker')
+      } else if (type == 'job_seeker') {
         endpoint = '/classifieds/job-seekers/$id/';
-      else if (type == 'post' || type == 'forum_post')
+      } else if (type == 'market' || type == 'marketitem' || type == 'classified') {
+        endpoint = '/community/classifieds/$id/';
+      } else if (type == 'post' || type == 'forum_post') {
         endpoint = '/community/forum/posts/$id/';
+      }
 
       if (endpoint.isNotEmpty) {
         await apiClient.dio.delete(endpoint);
       }
       if (context.mounted) Navigator.of(context, rootNavigator: true).pop();
       ref.invalidate(myPostsProvider);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('পোস্টটি সফলভাবে মুছে ফেলা হয়েছে'),
+            backgroundColor: Color(0xFF10B981),
+          ),
+        );
+      }
     } catch (e) {
       if (context.mounted) {
         Navigator.of(context, rootNavigator: true).pop();
@@ -214,8 +232,39 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen>
     }
   }
 
+  Widget _buildTabLabel(String text, int? count) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(text),
+        if (count != null && count > 0) ...[
+          const SizedBox(width: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0056D2).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              '$count',
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF0056D2),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final postsCount = ref.watch(myPostsProvider).value?.length;
+    final questionsCount = ref.watch(myForumPostsProvider).value?.length;
+    final favsCount = ref.watch(myFavoritesProvider).value?.length;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -248,11 +297,11 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen>
           indicatorWeight: 3,
           indicatorSize: TabBarIndicatorSize.label,
           tabAlignment: TabAlignment.center,
-          tabs: const [
-            Tab(text: 'আমার পোস্ট'),
-            Tab(text: 'আবেদনকারী'),
-            Tab(text: 'আমার প্রশ্ন'),
-            Tab(text: 'পছন্দের তালিকা'),
+          tabs: [
+            Tab(child: _buildTabLabel('আমার পোস্ট', postsCount)),
+            const Tab(child: Text('আবেদনকারী')),
+            Tab(child: _buildTabLabel('আমার প্রশ্ন', questionsCount)),
+            Tab(child: _buildTabLabel('পছন্দের তালিকা', favsCount)),
           ],
         ),
       ),
@@ -307,19 +356,24 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen>
         post['images'] is List &&
         (post['images'] as List).isNotEmpty) {
       final first = (post['images'] as List).first;
-      if (first is Map)
+      if (first is Map) {
         return first['image']?.toString() ?? first['url']?.toString();
+      }
       return first.toString();
     }
-    if (post['image_url'] != null && post['image_url'].toString().isNotEmpty)
+    if (post['image_url'] != null && post['image_url'].toString().isNotEmpty) {
       return post['image_url'].toString();
-    if (post['image'] != null && post['image'].toString().isNotEmpty)
+    }
+    if (post['image'] != null && post['image'].toString().isNotEmpty) {
       return post['image'].toString();
-    if (post['photo'] != null && post['photo'].toString().isNotEmpty)
+    }
+    if (post['photo'] != null && post['photo'].toString().isNotEmpty) {
       return post['photo'].toString();
+    }
     if (post['primary_image'] != null &&
-        post['primary_image'].toString().isNotEmpty)
+        post['primary_image'].toString().isNotEmpty) {
       return post['primary_image'].toString();
+    }
     return null;
   }
 
@@ -329,152 +383,419 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen>
     return 'http://188.245.212.240$url';
   }
 
-  Widget _buildFallbackIcon(String type) {
-    IconData iconData = Icons.article_outlined;
-    if (type == 'property') iconData = Icons.home_work_outlined;
-    if (type == 'vehicle') iconData = Icons.directions_car_outlined;
-    if (type == 'service') iconData = Icons.design_services_outlined;
-    if (type == 'job_seeker') iconData = Icons.person_search_outlined;
-    if (type == 'job') iconData = Icons.work_outline;
-
-    return Icon(iconData, size: 28, color: const Color(0xFF94A3B8));
+  String _timeAgo(dynamic dateVal) {
+    if (dateVal == null) return '';
+    try {
+      final dt = DateTime.parse(dateVal.toString());
+      final diff = DateTime.now().difference(dt);
+      if (diff.inDays > 30) {
+        return DateFormat('d MMM yyyy').format(dt);
+      } else if (diff.inDays > 0) {
+        return '${diff.inDays} দিন আগে';
+      } else if (diff.inHours > 0) {
+        return '${diff.inHours} ঘণ্টা আগে';
+      } else if (diff.inMinutes > 0) {
+        return '${diff.inMinutes} মিনিট আগে';
+      } else {
+        return 'কিছুক্ষণ আগে';
+      }
+    } catch (_) {
+      return '';
+    }
   }
 
-  Widget _buildPostsTab() {
-    final myPostsAsync = ref.watch(myPostsProvider);
-    return RefreshIndicator(
-      onRefresh: () async => ref.refresh(myPostsProvider),
-      child: myPostsAsync.when(
-        data: (posts) {
-          if (posts.isEmpty) {
-            return const _EmptyStateView(
-              icon: Icons.post_add_rounded,
-              title: 'আপনার কোনো পোস্ট নেই',
-              subtitle: 'নতুন পোস্ট তৈরি করতে নিচের + বাটনে ক্লিক করুন',
-            );
-          }
-          return ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
-            itemCount: posts.length,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              final type = post['post_type'] ?? 'post';
-              final id = post['id'];
+  String _getCategoryDisplayName(String type) {
+    switch (type.toLowerCase()) {
+      case 'job':
+        return 'চাকরি';
+      case 'property':
+        return 'বাসা/রুম';
+      case 'vehicle':
+        return 'গাড়ি/বাইক';
+      case 'service':
+        return 'সার্ভিস';
+      case 'job_seeker':
+        return 'কাজের লোক';
+      case 'market':
+      case 'marketitem':
+      case 'classified':
+        return 'মার্কেট/কেনাবেচা';
+      case 'post':
+      case 'forum_post':
+      case 'community':
+        return 'কমিউনিটি';
+      default:
+        return type.toUpperCase();
+    }
+  }
 
-              final rawImageUrl = _extractImageUrl(
-                post as Map<String, dynamic>,
-              );
-              final imageUrl = _getAbsoluteUrl(rawImageUrl);
+  Color _getCategoryColor(String type) {
+    switch (type.toLowerCase()) {
+      case 'job':
+        return const Color(0xFF2563EB);
+      case 'property':
+        return const Color(0xFFD97706);
+      case 'vehicle':
+        return const Color(0xFF4F46E5);
+      case 'service':
+        return const Color(0xFF0D9488);
+      case 'job_seeker':
+        return const Color(0xFF9333EA);
+      case 'market':
+      case 'marketitem':
+      case 'classified':
+        return const Color(0xFF059669);
+      default:
+        return const Color(0xFF64748B);
+    }
+  }
 
-              return _buildCard(
-                onTap: () => _navigateToItem(context, type, id),
-                child: Row(
+  Color _getCategoryBgColor(String type) {
+    switch (type.toLowerCase()) {
+      case 'job':
+        return const Color(0xFFEFF6FF);
+      case 'property':
+        return const Color(0xFFFFFBEB);
+      case 'vehicle':
+        return const Color(0xFFEEF2FF);
+      case 'service':
+        return const Color(0xFFF0FDFA);
+      case 'job_seeker':
+        return const Color(0xFFFAF5FF);
+      case 'market':
+      case 'marketitem':
+      case 'classified':
+        return const Color(0xFFECFDF5);
+      default:
+        return const Color(0xFFF1F5F9);
+    }
+  }
+
+  int _getViewCount(Map<String, dynamic> post) {
+    final v = post['views'] ?? post['view_count'] ?? post['total_views'] ?? post['views_count'];
+    if (v is int) return v;
+    if (v is String) return int.tryParse(v) ?? 0;
+    return 0;
+  }
+
+  String? _getPostPrice(Map<String, dynamic> post) {
+    final price = post['price'] ?? post['salary'] ?? post['rent'] ?? post['expected_salary'];
+    if (price != null && price.toString().trim().isNotEmpty) {
+      final currency = post['currency'] ?? 'OMR';
+      return '$currency $price';
+    }
+    return null;
+  }
+
+  Widget _buildFallbackIconWidget(String type, Color color) {
+    IconData iconData = Icons.article_outlined;
+    final lower = type.toLowerCase();
+    if (lower == 'property') {
+      iconData = Icons.home_work_outlined;
+    } else if (lower == 'vehicle') {
+      iconData = Icons.directions_car_outlined;
+    } else if (lower == 'service') {
+      iconData = Icons.design_services_outlined;
+    } else if (lower == 'job_seeker') {
+      iconData = Icons.person_search_outlined;
+    } else if (lower == 'job') {
+      iconData = Icons.work_outline;
+    } else if (lower == 'market' || lower == 'marketitem' || lower == 'classified') {
+      iconData = Icons.storefront_outlined;
+    }
+
+    return Center(
+      child: Icon(iconData, size: 28, color: color),
+    );
+  }
+
+  Widget _buildThumbnail(String imageUrl, String type) {
+    final color = _getCategoryColor(type);
+    final bgColor = _getCategoryBgColor(type);
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: 74,
+        height: 74,
+        color: bgColor,
+        child: imageUrl.isNotEmpty
+            ? Image.network(
+                imageUrl,
+                width: 74,
+                height: 74,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    _buildFallbackIconWidget(type, color),
+              )
+            : _buildFallbackIconWidget(type, color),
+      ),
+    );
+  }
+
+  Widget _buildPostsHeader(int count) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0056D2).withOpacity(0.08),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.inventory_2_outlined,
+              color: Color(0xFF0056D2),
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'মোট $countটি পোস্ট',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1E293B),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                const Text(
+                  'আপনার লিস্টিং ম্যানেজ করুন',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF64748B),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              context.safePushRoute('/post/create').then((_) => ref.refresh(myPostsProvider));
+            },
+            icon: const Icon(Icons.add_rounded, size: 16, color: Colors.white),
+            label: const Text(
+              'নতুন পোস্ট',
+              style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0056D2),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPostCard(BuildContext context, Map<String, dynamic> post) {
+    final type = (post['post_type'] ?? 'post').toString();
+    final id = post['id'];
+    final rawImageUrl = _extractImageUrl(post);
+    final imageUrl = _getAbsoluteUrl(rawImageUrl);
+
+    final title = post['title'] ??
+        post['title_bn'] ??
+        post['professional_title'] ??
+        post['professional_title_bn'] ??
+        post['name'] ??
+        'শিরোনামহীন পোস্ট';
+
+    final categoryName = _getCategoryDisplayName(type);
+    final categoryColor = _getCategoryColor(type);
+    final categoryBg = _getCategoryBgColor(type);
+    final views = _getViewCount(post);
+    final timeAgo = _timeAgo(post['created_at']);
+    final priceStr = _getPostPrice(post);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => _navigateToItem(context, type, id),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              children: [
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: 64,
-                      height: 64,
-                      alignment: Alignment.center,
-                      clipBehavior: Clip.hardEdge,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF1F5F9),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: imageUrl.isNotEmpty
-                          ? Image.network(
-                              imageUrl,
-                              width: 64,
-                              height: 64,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) =>
-                                  _buildFallbackIcon(type),
-                            )
-                          : _buildFallbackIcon(type),
-                    ),
-                    const SizedBox(width: 16),
+                    // 74x74 rounded thumbnail
+                    _buildThumbnail(imageUrl, type),
+                    const SizedBox(width: 12),
+                    // Post Info
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // Badges Row
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFECFDF5),
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(
+                                    color: const Color(0xFFA7F3D0),
+                                  ),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.circle,
+                                      size: 6,
+                                      color: Color(0xFF059669),
+                                    ),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      'সক্রিয়',
+                                      style: TextStyle(
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF059669),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: categoryBg,
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(
+                                    color: categoryColor.withOpacity(0.2),
+                                  ),
+                                ),
+                                child: Text(
+                                  categoryName,
+                                  style: TextStyle(
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: categoryColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          // Post Title
                           Text(
-                            post['title'] ??
-                                post['title_bn'] ??
-                                post['professional_title'] ??
-                                post['professional_title_bn'] ??
-                                'Untitled',
+                            title,
                             style: const TextStyle(
-                              fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w700,
                               color: Color(0xFF1E293B),
-                              fontSize: 17,
+                              fontSize: 15,
                               height: 1.3,
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFE0E7FF),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  type.toString().toUpperCase(),
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF4338CA),
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
+                          if (priceStr != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              priceStr,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF0056D2),
                               ),
-                              const Spacer(),
-                              Flexible(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Flexible(
-                                      child: Text(
-                                        'বিস্তারিত দেখুন',
-                                        style: TextStyle(
-                                          color: Color(0xFF64748B),
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    const Icon(
-                                      Icons.arrow_forward_rounded,
-                                      size: 14,
-                                      color: Color(0xFF64748B),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
-                    PopupMenuButton<String>(
-                      icon: const Icon(
-                        Icons.more_vert_rounded,
+                  ],
+                ),
+                const SizedBox(height: 10),
+                const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                const SizedBox(height: 8),
+                // Bottom Row: Stats & Action Buttons
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.visibility_outlined,
+                      size: 14,
+                      color: Color(0xFF94A3B8),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '$views ভিউ',
+                      style: const TextStyle(
+                        fontSize: 11.5,
                         color: Color(0xFF64748B),
+                        fontWeight: FontWeight.w500,
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                    ),
+                    if (timeAgo.isNotEmpty) ...[
+                      const SizedBox(width: 8),
+                      const Text(
+                        '•',
+                        style: TextStyle(
+                          color: Color(0xFFCBD5E1),
+                          fontSize: 12,
+                        ),
                       ),
-                      onSelected: (value) {
-                        if (value == 'edit') {
+                      const SizedBox(width: 8),
+                      Text(
+                        timeAgo,
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          color: Color(0xFF94A3B8),
+                        ),
+                      ),
+                    ],
+                    const Spacer(),
+                    // Edit Button
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -485,46 +806,131 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen>
                               ),
                             ),
                           ).then((_) => ref.refresh(myPostsProvider));
-                        } else if (value == 'delete') {
-                          _deletePost(type, id);
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: 'edit',
-                          child: Row(
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEFF6FF),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFFBFDBFE)),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.edit_rounded,
+                                Icons.edit_outlined,
+                                size: 13,
                                 color: Color(0xFF0056D2),
-                                size: 20,
                               ),
-                              SizedBox(width: 8),
-                              Text('এডিট করুন'),
+                              SizedBox(width: 4),
+                              Text(
+                                'এডিট',
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF0056D2),
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        const PopupMenuItem(
-                          value: 'delete',
-                          child: Row(
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    // Delete Button
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => _deletePost(type, id),
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFEF2F2),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFFFECACA)),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
                                 Icons.delete_outline_rounded,
-                                color: Colors.redAccent,
-                                size: 20,
+                                size: 13,
+                                color: Color(0xFFEF4444),
                               ),
-                              SizedBox(width: 8),
+                              SizedBox(width: 4),
                               Text(
-                                'মুছে ফেলুন',
-                                style: TextStyle(color: Colors.redAccent),
+                                'মুছুন',
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFFEF4444),
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPostsTab() {
+    final myPostsAsync = ref.watch(myPostsProvider);
+    return RefreshIndicator(
+      onRefresh: () async => ref.refresh(myPostsProvider),
+      child: myPostsAsync.when(
+        data: (posts) {
+          if (posts.isEmpty) {
+            return _EmptyStateView(
+              icon: Icons.post_add_rounded,
+              title: 'আপনার কোনো পোস্ট নেই',
+              subtitle: 'চাকরি, বাসা-ভাড়া, কেনাবেচা বা সার্ভিসের জন্য নতুন পোস্ট তৈরি করুন',
+              actionButton: ElevatedButton.icon(
+                onPressed: () {
+                  context.safePushRoute('/post/create').then((_) => ref.refresh(myPostsProvider));
+                },
+                icon: const Icon(Icons.add_circle_outline_rounded, size: 18, color: Colors.white),
+                label: const Text(
+                  'নতুন পোস্ট তৈরি করুন',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0056D2),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            );
+          }
+          return ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+            itemCount: posts.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return _buildPostsHeader(posts.length);
+              }
+              final post = posts[index - 1];
+              return _buildPostCard(
+                context,
+                post is Map<String, dynamic> ? post : Map<String, dynamic>.from(post as Map),
               );
             },
           );
@@ -897,11 +1303,13 @@ class _EmptyStateView extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
+  final Widget? actionButton;
 
   const _EmptyStateView({
     required this.icon,
     required this.title,
     required this.subtitle,
+    this.actionButton,
   });
 
   @override
@@ -944,6 +1352,10 @@ class _EmptyStateView extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
+            if (actionButton != null) ...[
+              const SizedBox(height: 20),
+              actionButton!,
+            ],
             const SizedBox(height: 80),
           ],
         ),
