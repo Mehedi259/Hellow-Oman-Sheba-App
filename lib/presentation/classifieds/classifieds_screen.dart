@@ -1430,6 +1430,75 @@ class ServicesView extends ConsumerWidget {
   }
 }
 
+class _MarketSearchBar extends ConsumerStatefulWidget {
+  const _MarketSearchBar();
+
+  @override
+  ConsumerState<_MarketSearchBar> createState() => _MarketSearchBarState();
+}
+
+class _MarketSearchBarState extends ConsumerState<_MarketSearchBar> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    final initialQuery = ref.read(marketStateProvider).searchQuery;
+    _controller = TextEditingController(text: initialQuery);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.listen<MarketState>(marketStateProvider, (previous, next) {
+      if (next.searchQuery != _controller.text) {
+        _controller.text = next.searchQuery;
+      }
+    });
+
+    return Container(
+      height: 48,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: TextField(
+        controller: _controller,
+        textInputAction: TextInputAction.search,
+        onChanged: (val) {
+          ref.read(marketStateProvider.notifier).updateSearch(val);
+          setState(() {});
+        },
+        onSubmitted: (val) {
+          ref.read(marketStateProvider.notifier).updateSearch(val);
+        },
+        decoration: InputDecoration(
+          hintText: 'পণ্য খুঁজুন...',
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+          prefixIcon: const Icon(Icons.search, color: Colors.grey, size: 20),
+          suffixIcon: _controller.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.close_rounded, size: 18, color: Colors.grey),
+                  onPressed: () {
+                    _controller.clear();
+                    ref.read(marketStateProvider.notifier).updateSearch('');
+                    setState(() {});
+                  },
+                )
+              : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        ),
+      ),
+    );
+  }
+}
+
 class MarketView extends ConsumerWidget {
   const MarketView({super.key});
 
@@ -1444,6 +1513,22 @@ class MarketView extends ConsumerWidget {
         final int totalItems = data['totalItems'] ?? 0;
         final int totalPages = data['totalPages'] ?? 0;
         final int currentPage = data['currentPage'] ?? 1;
+
+        final allMarketItems = ref.watch(marketItemsProvider).value ?? [];
+        String getCategoryCount(String slug) {
+          final s = slug.toLowerCase();
+          final count = allMarketItems.where((i) {
+            final catSlug = i.categorySlug.toLowerCase().trim();
+            final catName = i.categoryName.toLowerCase().trim();
+            return catSlug == s ||
+                catName == s ||
+                catSlug.replaceAll('-', ' ') == s.replaceAll('-', ' ') ||
+                catName.replaceAll('-', ' ') == s.replaceAll('-', ' ') ||
+                catName.replaceAll('&', 'and').replaceAll(' ', '') ==
+                    s.replaceAll('&', 'and').replaceAll('-', '').replaceAll(' ', '');
+          }).length;
+          return count.toString();
+        }
 
         return RefreshIndicator(
           onRefresh: () async {
@@ -1471,29 +1556,7 @@ class MarketView extends ConsumerWidget {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Container(
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: TextButton.icon(
-                            onPressed: () {
-                              // TODO: Search functionality
-                            },
-                            icon: const Icon(Icons.search, color: Colors.grey),
-                            label: const Text(
-                              'পণ্য খুঁজুন...',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            style: TextButton.styleFrom(
-                              alignment: Alignment.centerLeft,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                            ),
-                          ),
-                        ),
+                        child: const _MarketSearchBar(),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -1559,7 +1622,7 @@ class MarketView extends ConsumerWidget {
                               'electronics',
                               'ইলেকট্রনিক্স',
                               Icons.phone_android,
-                              '2',
+                              getCategoryCount('electronics'),
                               filterState,
                               ref,
                             ),
@@ -1567,7 +1630,7 @@ class MarketView extends ConsumerWidget {
                               'computer',
                               'কম্পিউটার',
                               Icons.laptop,
-                              '0',
+                              getCategoryCount('computer'),
                               filterState,
                               ref,
                             ),
@@ -1575,7 +1638,7 @@ class MarketView extends ConsumerWidget {
                               'furniture',
                               'ফার্নিচার',
                               Icons.home,
-                              '1',
+                              getCategoryCount('furniture'),
                               filterState,
                               ref,
                             ),
@@ -1583,7 +1646,7 @@ class MarketView extends ConsumerWidget {
                               'clothing',
                               'পোশাক',
                               Icons.checkroom,
-                              '1',
+                              getCategoryCount('clothing'),
                               filterState,
                               ref,
                             ),
@@ -1591,7 +1654,7 @@ class MarketView extends ConsumerWidget {
                               'baby-products',
                               'শিশু সামগ্রী',
                               Icons.child_care,
-                              '0',
+                              getCategoryCount('baby-products'),
                               filterState,
                               ref,
                             ),
@@ -1599,7 +1662,7 @@ class MarketView extends ConsumerWidget {
                               'tools-machinery',
                               'যন্ত্রপাতি',
                               Icons.build,
-                              '0',
+                              getCategoryCount('tools-machinery'),
                               filterState,
                               ref,
                             ),
@@ -1607,15 +1670,23 @@ class MarketView extends ConsumerWidget {
                               'books',
                               'বই',
                               Icons.menu_book,
-                              '0',
+                              getCategoryCount('books'),
+                              filterState,
+                              ref,
+                            ),
+                            _buildCategoryItem(
+                              'sports',
+                              'খেলাধুলা',
+                              Icons.sports_soccer_rounded,
+                              getCategoryCount('sports'),
                               filterState,
                               ref,
                             ),
                             _buildCategoryItem(
                               'others',
                               'অন্যান্য',
-                              Icons.favorite_border,
-                              '2',
+                              Icons.category_outlined,
+                              getCategoryCount('others'),
                               filterState,
                               ref,
                             ),
@@ -1643,12 +1714,68 @@ class MarketView extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        'মোট $totalItems টি বিজ্ঞাপন পাওয়া গেছে',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black54,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            'মোট $totalItems টি বিজ্ঞাপন পাওয়া গেছে',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          if (filterState.category != null) ...[
+                            const SizedBox(width: 8),
+                            InkWell(
+                              onTap: () => ref.read(marketStateProvider.notifier).setCategory(null),
+                              borderRadius: BorderRadius.circular(16),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF0F9D58).withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: const Color(0xFF0F9D58).withValues(alpha: 0.3)),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'ক্যাটাগরি বাতিল',
+                                      style: const TextStyle(fontSize: 11, color: Color(0xFF0F9D58), fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(width: 2),
+                                    const Icon(Icons.close_rounded, size: 14, color: Color(0xFF0F9D58)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                          if (filterState.searchQuery.isNotEmpty) ...[
+                            const SizedBox(width: 8),
+                            InkWell(
+                              onTap: () => ref.read(marketStateProvider.notifier).updateSearch(''),
+                              borderRadius: BorderRadius.circular(16),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      '"${filterState.searchQuery}" বাতিল',
+                                      style: const TextStyle(fontSize: 11, color: Colors.blue, fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(width: 2),
+                                    const Icon(Icons.close_rounded, size: 14, color: Colors.blue),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                       const SizedBox(height: 16),
                       SingleChildScrollView(
@@ -1694,11 +1821,14 @@ class MarketView extends ConsumerWidget {
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  'কোনো আইটেম পাওয়া যায়নি',
+                                  filterState.searchQuery.isNotEmpty
+                                      ? '"${filterState.searchQuery}" এর জন্য কোনো পণ্য পাওয়া যায়নি'
+                                      : 'কোনো আইটেম পাওয়া যায়নি',
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.grey.shade600,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
                               ],
                             ),

@@ -46,6 +46,9 @@ Future<void> navigateToFavoriteItem(BuildContext context, WidgetRef ref, String 
     } else if (type == 'post' || type == 'forum_post' || type == 'community') {
       final res = await apiClient.dio.get('/community/forum/posts/$id/');
       nextScreen = CommunityDetailScreen(post: Post.fromJson(res.data));
+    } else if (type == 'market' || type == 'marketitem' || type == 'classified') {
+      final res = await apiClient.dio.get('/community/classifieds/$id/');
+      nextScreen = MarketItemDetailScreen(item: MarketItem.fromJson(res.data));
     } else {
       if (!context.mounted) return;
       if (isDialogShowing) Navigator.of(context, rootNavigator: true).pop();
@@ -58,9 +61,7 @@ Future<void> navigateToFavoriteItem(BuildContext context, WidgetRef ref, String 
       Navigator.of(context, rootNavigator: true).pop();
     }
     
-    if (nextScreen != null) {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => nextScreen!));
-    }
+    Navigator.push(context, MaterialPageRoute(builder: (_) => nextScreen!));
   } catch (e) {
     debugPrint('Navigation error: $e');
     if (!context.mounted) return;

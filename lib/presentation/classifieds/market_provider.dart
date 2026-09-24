@@ -4,12 +4,14 @@ import 'classifieds_provider.dart';
 
 class MarketState {
   final String? category;
+  final String searchQuery;
   final String sortOrder; // 'latest', 'low_price', 'high_price'
   final int currentPage;
   final int itemsPerPage;
 
   MarketState({
     this.category,
+    this.searchQuery = '',
     this.sortOrder = 'latest',
     this.currentPage = 1,
     this.itemsPerPage = 10,
@@ -17,23 +19,26 @@ class MarketState {
 
   MarketState copyWith({
     String? category,
+    String? searchQuery,
     String? sortOrder,
     int? currentPage,
   }) {
     return MarketState(
       category: category ?? this.category,
+      searchQuery: searchQuery ?? this.searchQuery,
       sortOrder: sortOrder ?? this.sortOrder,
       currentPage: currentPage ?? this.currentPage,
-      itemsPerPage: this.itemsPerPage,
+      itemsPerPage: itemsPerPage,
     );
   }
 
   MarketState clearCategory() {
     return MarketState(
       category: null,
-      sortOrder: this.sortOrder,
-      currentPage: this.currentPage,
-      itemsPerPage: this.itemsPerPage,
+      searchQuery: searchQuery,
+      sortOrder: sortOrder,
+      currentPage: currentPage,
+      itemsPerPage: itemsPerPage,
     );
   }
 }
@@ -47,6 +52,10 @@ class MarketNotifier extends StateNotifier<MarketState> {
     } else {
       state = state.copyWith(category: category, currentPage: 1);
     }
+  }
+
+  void updateSearch(String query) {
+    state = state.copyWith(searchQuery: query, currentPage: 1);
   }
 
   void setSortOrder(String order) {
@@ -69,10 +78,37 @@ final filteredMarketItemsProvider = Provider<AsyncValue<Map<String, dynamic>>>((
   return itemsAsync.whenData((items) {
     List<MarketItem> filtered = List.from(items);
 
+    // Apply Search Filter
+    if (filterState.searchQuery.trim().isNotEmpty) {
+      final q = filterState.searchQuery.toLowerCase().trim();
+      filtered = filtered.where((item) {
+        final title = item.title.toLowerCase();
+        final desc = item.description.toLowerCase();
+        final loc = item.location.toLowerCase();
+        final cat = item.categoryName.toLowerCase();
+        final slug = item.categorySlug.toLowerCase();
+        return title.contains(q) ||
+            desc.contains(q) ||
+            loc.contains(q) ||
+            cat.contains(q) ||
+            slug.contains(q);
+      }).toList();
+    }
+
     // Apply Category Filter
     if (filterState.category != null && filterState.category!.isNotEmpty) {
+      final selectedCat = filterState.category!.toLowerCase().trim();
       filtered = filtered.where((item) {
-        return item.categoryName.toLowerCase() == filterState.category!.toLowerCase();
+        final slug = item.categorySlug.toLowerCase().trim();
+        final name = item.categoryName.toLowerCase().trim();
+        if (slug == selectedCat || name == selectedCat) return true;
+        if (slug.replaceAll('-', ' ') == selectedCat.replaceAll('-', ' ')) return true;
+        if (name.replaceAll('-', ' ') == selectedCat.replaceAll('-', ' ')) return true;
+        if (name.replaceAll('&', 'and').replaceAll(' ', '') ==
+            selectedCat.replaceAll('&', 'and').replaceAll('-', '').replaceAll(' ', '')) {
+          return true;
+        }
+        return false;
       }).toList();
     }
 

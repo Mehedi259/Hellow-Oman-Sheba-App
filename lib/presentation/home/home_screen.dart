@@ -9,7 +9,6 @@ import 'widgets/category_grid.dart';
 import 'widgets/call_to_action_widget.dart';
 import 'widgets/country_selector_widget.dart';
 import 'widgets/home_tab_section_widget.dart';
-import '../../data/repositories/auth_repository.dart';
 import '../community/community_provider.dart';
 import '../../data/repositories/news_repository.dart';
 
@@ -146,7 +145,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       },
                     ),
                     ListTile(
-                      title: const Text('কমিউনিটি'),
+                      title: const Text('প্রশ্নোত্তর'),
                       onTap: () {
                         Navigator.pop(context);
                         context.safePushRoute('/community');
@@ -166,7 +165,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       title: const Text('পছন্দের তালিকা'),
                       onTap: () {
                         Navigator.pop(context);
-                        context.go('/my-listings'); // Favorites is inside listings
+                        context.safePushRoute('/favorites');
                       },
                     ),
                     ListTile(

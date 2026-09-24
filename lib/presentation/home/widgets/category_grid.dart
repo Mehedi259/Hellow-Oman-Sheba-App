@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
@@ -56,7 +55,6 @@ final List<CategoryItem> extraCategories = [
   CategoryItem(nameBn: 'ফ্রিজ সার্ভিস', descriptionBn: 'ফ্রিজ ও ওয়াশিং মেশিন', imagePath: 'assets/images/categories/refrigerator.png', route: '/services/appliance-repair'),
   CategoryItem(nameBn: 'মোবাইল মিস্ত্রি', descriptionBn: 'মোবাইল মেরামত', imagePath: 'assets/images/categories/mobile service.png', route: '/services/mobile-technician'),
 
-  CategoryItem(nameBn: 'হ্যালো প্রবাস', descriptionBn: 'আমাদের Facebook পেজ', imagePath: 'assets/images/categories/hello probash.png', url: 'https://www.facebook.com/helloomansheba'),
   CategoryItem(nameBn: 'সালতানাত ওমান', descriptionBn: 'ওমান সালতানাত সম্পর্কে জানুন', imagePath: 'assets/images/categories/sultanate-oman.png', route: '/about-oman'),
 ];
 

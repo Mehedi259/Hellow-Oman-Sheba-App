@@ -31,6 +31,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
       if (cat.route == '/news') return false;
       if (cat.route == '/emergency') return false;
       if (cat.route == '/about-oman') return false;
+      if (cat.route == '/embassy' || cat.nameBn == 'দূতাবাস') return false;
       if (cat.url != null) return false;
       return true;
     }).toList();

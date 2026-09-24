@@ -28,9 +28,12 @@ class _MarketFormState extends ConsumerState<MarketForm> {
   final areaController = TextEditingController();
   final contactNameController = TextEditingController();
   final contactPhoneController = TextEditingController();
+  final contactWhatsappController = TextEditingController();
 
   String selectedCategory = 'electronics';
+  String selectedCondition = 'GOOD';
   String selectedCity = 'Muscat';
+  bool isPriceNegotiable = false;
 
   List<File> selectedImages = [];
   bool isLoading = false;
@@ -48,6 +51,14 @@ class _MarketFormState extends ConsumerState<MarketForm> {
     {'value': 'others', 'label': 'অন্যান্য'},
   ];
 
+  static const List<Map<String, String>> conditions = [
+    {'value': 'NEW', 'label': 'নতুন (Brand New)'},
+    {'value': 'LIKE_NEW', 'label': 'নতুনের মতো (Like New)'},
+    {'value': 'GOOD', 'label': 'ভালো (Good)'},
+    {'value': 'FAIR', 'label': 'চলনসই / মোটামুটি (Fair)'},
+    {'value': 'POOR', 'label': 'পুরনো (Used/Poor)'},
+  ];
+
   static const List<String> cities = [
     'Muscat', 'Salalah', 'Sohar', 'Nizwa', 'Sur', 'Ibri', 'Barka', 'Rustaq',
   ];
@@ -63,9 +74,18 @@ class _MarketFormState extends ConsumerState<MarketForm> {
       areaController.text = data['area'] ?? '';
       contactNameController.text = data['contact_name'] ?? '';
       contactPhoneController.text = data['contact_phone'] ?? '';
+      contactWhatsappController.text = data['contact_whatsapp'] ?? '';
       
-      if (data['category'] != null && categories.any((e) => e['value'] == data['category'])) {
-        selectedCategory = data['category'];
+      final cat = data['category']?.toString().toLowerCase();
+      if (cat != null && categories.any((e) => e['value'] == cat)) {
+        selectedCategory = cat;
+      }
+      final cond = data['condition']?.toString().toUpperCase();
+      if (cond != null && conditions.any((e) => e['value'] == cond)) {
+        selectedCondition = cond;
+      }
+      if (data['price_negotiable'] == true) {
+        isPriceNegotiable = true;
       }
       if (data['city'] != null && cities.contains(data['city'])) {
         selectedCity = data['city'];
@@ -81,6 +101,7 @@ class _MarketFormState extends ConsumerState<MarketForm> {
     areaController.dispose();
     contactNameController.dispose();
     contactPhoneController.dispose();
+    contactWhatsappController.dispose();
     super.dispose();
   }
 
@@ -102,9 +123,11 @@ class _MarketFormState extends ConsumerState<MarketForm> {
   }
 
   Future<void> submit() async {
-    if (titleController.text.isEmpty || descriptionController.text.isEmpty || 
-        priceController.text.isEmpty || contactNameController.text.isEmpty || 
-        contactPhoneController.text.isEmpty) {
+    if (titleController.text.trim().isEmpty || 
+        descriptionController.text.trim().isEmpty || 
+        priceController.text.trim().isEmpty || 
+        contactNameController.text.trim().isEmpty || 
+        contactPhoneController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Row(children: [
@@ -124,17 +147,20 @@ class _MarketFormState extends ConsumerState<MarketForm> {
     try {
       final repo = ClassifiedsRepository(ref.read(apiClientProvider));
       final payload = {
-        'title': titleController.text,
-        'title_bn': titleController.text,
-        'description': descriptionController.text,
-        'description_bn': descriptionController.text,
+        'title': titleController.text.trim(),
+        'title_bn': titleController.text.trim(),
+        'description': descriptionController.text.trim(),
+        'description_bn': descriptionController.text.trim(),
         'category': selectedCategory,
-        'price': double.tryParse(priceController.text) ?? 0,
+        'condition': selectedCondition,
+        'price': double.tryParse(priceController.text.trim()) ?? 0,
         'currency': 'OMR',
+        'price_negotiable': isPriceNegotiable,
         'city': selectedCity,
-        'area': areaController.text,
-        'contact_name': contactNameController.text,
-        'contact_phone': contactPhoneController.text,
+        'area': areaController.text.trim(),
+        'contact_name': contactNameController.text.trim(),
+        'contact_phone': contactPhoneController.text.trim(),
+        'contact_whatsapp': contactWhatsappController.text.trim(),
         'status': 'PUBLISHED',
       };
 
@@ -149,7 +175,7 @@ class _MarketFormState extends ConsumerState<MarketForm> {
           SnackBar(
             content: Row(children: [
               const Icon(Icons.check_circle_outline_rounded, color: Colors.white), 
-              const SizedBox(width: 8), 
+              SizedBox(width: 8), 
               Text(widget.editId != null ? 'মার্কেটের তথ্য আপডেট হয়েছে!' : 'মার্কেটে আইটেম পোস্ট হয়েছে!'),
             ]),
             backgroundColor: const Color(0xFFF59E0B),
@@ -196,6 +222,7 @@ class _MarketFormState extends ConsumerState<MarketForm> {
             boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2))],
           ),
           child: DropdownButtonFormField<String>(
+            isExpanded: true,
             value: value,
             items: items,
             onChanged: onChanged,
@@ -220,17 +247,16 @@ class _MarketFormState extends ConsumerState<MarketForm> {
           CustomTextField(controller: titleController, label: 'আইটেমের নাম *', hint: 'যেমন: iPhone 13 Pro Max'),
           const SizedBox(height: 20),
           
+          _buildDropdownField(
+            label: 'ক্যাটাগরি *',
+            value: selectedCategory,
+            items: categories.map((c) => DropdownMenuItem(value: c['value'], child: Text(c['label']!, overflow: TextOverflow.ellipsis))).toList(),
+            onChanged: (val) => setState(() => selectedCategory = val!),
+          ),
+          const SizedBox(height: 20),
+
           Row(
             children: [
-              Expanded(
-                child: _buildDropdownField(
-                  label: 'ক্যাটাগরি',
-                  value: selectedCategory,
-                  items: categories.map((c) => DropdownMenuItem(value: c['value'], child: Text(c['label']!))).toList(),
-                  onChanged: (val) => setState(() => selectedCategory = val!),
-                ),
-              ),
-              const SizedBox(width: 16),
               Expanded(
                 child: CustomTextField(
                   controller: priceController,
@@ -239,9 +265,43 @@ class _MarketFormState extends ConsumerState<MarketForm> {
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 ),
               ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildDropdownField(
+                  label: 'পণ্যের অবস্থা *',
+                  value: selectedCondition,
+                  items: conditions.map((c) => DropdownMenuItem(value: c['value'], child: Text(c['label']!, overflow: TextOverflow.ellipsis))).toList(),
+                  onChanged: (val) => setState(() => selectedCondition = val!),
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
+
+          // Price Negotiable checkbox
+          InkWell(
+            onTap: () => setState(() => isPriceNegotiable = !isPriceNegotiable),
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                children: [
+                  Checkbox(
+                    value: isPriceNegotiable,
+                    activeColor: const Color(0xFFF59E0B),
+                    onChanged: (val) => setState(() => isPriceNegotiable = val ?? false),
+                  ),
+                  const Expanded(
+                    child: Text(
+                      'মূল্য আলোচনা সাপেক্ষ (Price Negotiable)',
+                      style: TextStyle(fontSize: 14, color: Color(0xFF334155), fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
           
           CustomTextField(controller: descriptionController, label: 'বিস্তারিত বর্ণনা *', hint: 'আইটেম সম্পর্কে বিস্তারিত লিখুন...', maxLines: 5),
           const SizedBox(height: 24),
@@ -267,11 +327,14 @@ class _MarketFormState extends ConsumerState<MarketForm> {
           ),
           const SizedBox(height: 20),
           
+          CustomTextField(controller: contactNameController, label: 'যোগাযোগের নাম *', hint: 'আপনার নাম'),
+          const SizedBox(height: 20),
+
           Row(
             children: [
-              Expanded(child: CustomTextField(controller: contactNameController, label: 'যোগাযোগের নাম *', hint: 'আপনার নাম')),
-              const SizedBox(width: 16),
               Expanded(child: CustomTextField(controller: contactPhoneController, label: 'ফোন নম্বর *', hint: '+968 ...', keyboardType: TextInputType.phone)),
+              const SizedBox(width: 16),
+              Expanded(child: CustomTextField(controller: contactWhatsappController, label: 'হোয়াটসঅ্যাপ নম্বর', hint: '+968 ... (ঐচ্ছিক)', keyboardType: TextInputType.phone)),
             ],
           ),
           const SizedBox(height: 24),

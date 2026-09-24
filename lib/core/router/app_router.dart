@@ -135,7 +135,26 @@ final appRouter = GoRouter(
         ),
         GoRoute(
           path: '/my-listings',
-          pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const MyListingsScreen()),
+          pageBuilder: (context, state) {
+            final tab = state.uri.queryParameters['tab'];
+            int initialIndex = 0;
+            if (tab == 'favorites' || tab == 'fav' || tab == '3') {
+              initialIndex = 3;
+            } else if (tab == 'applicants' || tab == '1') {
+              initialIndex = 1;
+            } else if (tab == 'questions' || tab == '2') {
+              initialIndex = 2;
+            }
+            return _buildPageWithUniqueKey(context, state, MyListingsScreen(initialIndex: initialIndex));
+          },
+        ),
+        GoRoute(
+          path: '/favorites',
+          pageBuilder: (context, state) => _buildPageWithUniqueKey(
+            context,
+            state,
+            const MyListingsScreen(initialIndex: 3),
+          ),
         ),
         GoRoute(
           path: '/messages',

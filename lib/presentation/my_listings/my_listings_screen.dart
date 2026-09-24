@@ -13,14 +13,12 @@ import '../community/community_detail_screen.dart';
 import '../../core/api/api_client.dart';
 import '../auth/auth_provider.dart';
 import '../post/edit_post_screen.dart';
-import '../classifieds/classifieds_provider.dart';
-import '../classifieds/widgets/job_list_card.dart';
-import '../classifieds/widgets/market_card.dart';
 import '../chat/widgets/chat_initiator_button.dart';
 import 'widgets/favorite_item_card.dart';
 
 class MyListingsScreen extends ConsumerStatefulWidget {
-  const MyListingsScreen({super.key});
+  final int initialIndex;
+  const MyListingsScreen({super.key, this.initialIndex = 0});
 
   @override
   ConsumerState<MyListingsScreen> createState() => _MyListingsScreenState();
@@ -33,7 +31,23 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(
+      length: 4,
+      vsync: this,
+      initialIndex: (widget.initialIndex >= 0 && widget.initialIndex < 4)
+          ? widget.initialIndex
+          : 0,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant MyListingsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialIndex != widget.initialIndex &&
+        widget.initialIndex >= 0 &&
+        widget.initialIndex < 4) {
+      _tabController.animateTo(widget.initialIndex);
+    }
   }
 
   @override
@@ -87,6 +101,9 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen>
           type == 'community') {
         final res = await apiClient.dio.get('/community/forum/posts/$id/');
         nextScreen = CommunityDetailScreen(post: Post.fromJson(res.data));
+      } else if (type == 'market' || type == 'marketitem' || type == 'classified') {
+        final res = await apiClient.dio.get('/community/classifieds/$id/');
+        nextScreen = MarketItemDetailScreen(item: MarketItem.fromJson(res.data));
       } else {
         if (!context.mounted) return;
         if (isDialogShowing) Navigator.of(context, rootNavigator: true).pop();
@@ -1083,13 +1100,11 @@ class _FavoritesTab extends ConsumerWidget {
   const _FavoritesTab();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final jobsAsync = ref.watch(jobsProvider);
-    final marketAsync = ref.watch(marketItemsProvider);
     final favoritesAsync = ref.watch(myFavoritesProvider);
 
     return favoritesAsync.when(
       loading: () => const Center(
-        child: CircularProgressIndicator(color: Color(0xFF7C3AED)),
+        child: CircularProgressIndicator(color: Color(0xFF0056D2)),
       ),
       error: (err, stack) => Center(child: Text('Error: $err')),
       data: (items) {
@@ -1100,64 +1115,35 @@ class _FavoritesTab extends ConsumerWidget {
             subtitle: 'পছন্দে যোগ করলে এখানে দেখাবে',
           );
         }
-        return ListView.builder(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 100),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            final String contentType =
-                item['favorite_type'] ?? item['content_type'] ?? '';
-            final String contentIdStr =
-                (item['favorite_id'] ?? item['content_id'] ?? '').toString();
-            final int favId = item['id'];
+        return RefreshIndicator(
+          onRefresh: () async => ref.refresh(myFavoritesProvider),
+          child: ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            padding: const EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 20,
+              bottom: 100,
+            ),
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              final String contentType =
+                  item['favorite_type'] ?? item['content_type'] ?? '';
+              final String contentIdStr =
+                  (item['favorite_id'] ?? item['content_id'] ?? '').toString();
+              final int favId = item['id'];
 
-            Widget contentWidget;
-
-            if (contentType == 'job' && jobsAsync.hasValue) {
-              final job = jobsAsync.value!
-                  .where((j) => j.id.toString() == contentIdStr)
-                  .firstOrNull;
-              if (job != null) {
-                contentWidget = JobListCardWidget(job: job);
-              } else {
-                contentWidget = FavoriteItemCard(
-                  item: item,
-                  favId: favId,
-                  contentType: contentType,
-                  contentIdStr: contentIdStr,
-                );
-              }
-            } else if ((contentType == 'market' ||
-                    contentType == 'marketitem' ||
-                    contentType == 'property' ||
-                    contentType == 'vehicle' ||
-                    contentType == 'service') &&
-                marketAsync.hasValue) {
-              final marketItem = marketAsync.value!
-                  .where((m) => m.id.toString() == contentIdStr)
-                  .firstOrNull;
-              if (marketItem != null) {
-                contentWidget = MarketCardWidget(item: marketItem);
-              } else {
-                contentWidget = FavoriteItemCard(
-                  item: item,
-                  favId: favId,
-                  contentType: contentType,
-                  contentIdStr: contentIdStr,
-                );
-              }
-            } else {
-              contentWidget = FavoriteItemCard(
+              return FavoriteItemCard(
                 item: item,
                 favId: favId,
                 contentType: contentType,
                 contentIdStr: contentIdStr,
               );
-            }
-
-            return contentWidget;
-          },
+            },
+          ),
         );
       },
     );

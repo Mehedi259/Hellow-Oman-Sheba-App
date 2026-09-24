@@ -110,8 +110,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             CircleAvatar(
                               radius: 16,
                               backgroundColor: Colors.blue.shade100,
-                              backgroundImage: (avatarUrl != null && avatarUrl!.isNotEmpty) ? NetworkImage(avatarUrl!) : null,
-                              child: (avatarUrl == null || avatarUrl!.isEmpty)
+                              backgroundImage: (avatarUrl != null && avatarUrl.isNotEmpty) ? NetworkImage(avatarUrl) : null,
+                              child: (avatarUrl == null || avatarUrl.isEmpty)
                                 ? Text(
                                     widget.title.isNotEmpty ? widget.title[0].toUpperCase() : '?',
                                     style: TextStyle(color: Colors.blue.shade800, fontSize: 14, fontWeight: FontWeight.bold),
@@ -190,10 +190,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
             child: Row(
               children: [
-                IconButton(
-                  icon: Icon(Icons.attach_file, color: Colors.grey.shade600),
-                  onPressed: () {},
-                ),
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),

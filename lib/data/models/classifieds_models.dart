@@ -220,13 +220,19 @@ class MarketItem {
   final String title;
   final String description;
   final String categoryName;
+  final String categorySlug;
   final String price;
   final String currency;
   final String condition;
+  final String rawCondition;
   final String city;
   final String area;
   final List<String> images;
   final int? ownerId;
+  final String? contactName;
+  final String? contactPhone;
+  final String? contactWhatsapp;
+  final bool priceNegotiable;
   final DateTime createdAt;
 
   MarketItem({
@@ -234,25 +240,54 @@ class MarketItem {
     required this.title,
     required this.description,
     required this.categoryName,
+    this.categorySlug = '',
     required this.price,
     required this.currency,
     required this.condition,
+    this.rawCondition = '',
     required this.city,
     required this.area,
     this.images = const [],
     this.ownerId,
+    this.contactName,
+    this.contactPhone,
+    this.contactWhatsapp,
+    this.priceNegotiable = false,
     required this.createdAt,
   });
 
+  String get location => area.isNotEmpty ? '$area, $city' : city;
+
+  static String formatCondition(String? cond) {
+    if (cond == null || cond.isEmpty || cond == 'N/A') return 'N/A';
+    switch (cond.toUpperCase()) {
+      case 'NEW':
+        return 'নতুন';
+      case 'LIKE_NEW':
+        return 'নতুনের মতো';
+      case 'GOOD':
+        return 'ভালো';
+      case 'FAIR':
+        return 'চলনসই / মোটামুটি';
+      case 'POOR':
+        return 'পুরনো';
+      default:
+        return cond;
+    }
+  }
+
   factory MarketItem.fromJson(Map<String, dynamic> json) {
+    final rawCond = json['condition']?.toString() ?? '';
     return MarketItem(
       id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
       title: json['title_bn']?.toString() ?? json['title']?.toString() ?? '',
       description: json['description_bn']?.toString() ?? json['description']?.toString() ?? '',
       categoryName: json['category_name']?.toString() ?? json['category']?.toString() ?? 'সাধারণ',
+      categorySlug: (json['category'] ?? json['category_slug'] ?? '').toString().toLowerCase(),
       price: json['price']?.toString() ?? '0',
       currency: json['currency']?.toString() ?? 'OMR',
-      condition: (json['condition']?.toString().isEmpty ?? true) ? 'N/A' : json['condition'].toString(),
+      condition: formatCondition(rawCond),
+      rawCondition: rawCond,
       city: json['city']?.toString() ?? '',
       area: json['area']?.toString() ?? '',
       images: (json['images'] as List?)?.map((e) {
@@ -261,6 +296,10 @@ class MarketItem {
         return '';
       }).where((e) => e.isNotEmpty).toList() ?? [],
       ownerId: json['owner'] ?? json['user'] ?? json['user_id'] ?? json['owner_id'],
+      contactName: json['contact_name']?.toString(),
+      contactPhone: json['contact_phone']?.toString(),
+      contactWhatsapp: json['contact_whatsapp']?.toString(),
+      priceNegotiable: json['price_negotiable'] == true,
       createdAt: json['created_at'] != null 
           ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now() 
           : DateTime.now(),

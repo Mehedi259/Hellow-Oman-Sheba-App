@@ -20,7 +20,7 @@ final favoriteImageUrlProvider = FutureProvider.family<String?, String>((ref, ke
   else if (type == 'service') endpoint = '/classifieds/services/$id/';
   else if (type == 'job_seeker') endpoint = '/classifieds/job-seekers/$id/';
   else if (type == 'post' || type == 'forum_post' || type == 'community') endpoint = '/community/forum/posts/$id/';
-  else if (type == 'market' || type == 'marketitem') endpoint = '/community/classifieds/$id/';
+  else if (type == 'market' || type == 'marketitem' || type == 'classified') endpoint = '/community/classifieds/$id/';
   
   if (endpoint.isEmpty) return null;
   
@@ -56,14 +56,19 @@ class FavoriteItemCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final Map<String, dynamic>? details = item['item_details'];
     
-    final String title = details?['title'] ?? details?['title_bn'] ?? item['title'] ?? item['favorite_type'] ?? 'Favorite Item';
+    final String title = details?['title_bn']?.toString().isNotEmpty == true
+        ? details!['title_bn']
+        : details?['title'] ?? item['title'] ?? item['favorite_type'] ?? 'Favorite Item';
     final String description = details?['description'] ?? 'ID: ${item['favorite_id'] ?? item['content_id'] ?? ''}';
     final String? location = details?['location'];
     final String? price = details?['price'];
     final String iconStr = details?['icon'] ?? '❤️';
+    final String? backendImage = details?['image'];
     
     final imageUrlAsync = ref.watch(favoriteImageUrlProvider('$contentType:$contentIdStr'));
-    final String? imageUrl = imageUrlAsync.value;
+    final String? imageUrl = (backendImage != null && backendImage.isNotEmpty)
+        ? backendImage
+        : imageUrlAsync.value;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),

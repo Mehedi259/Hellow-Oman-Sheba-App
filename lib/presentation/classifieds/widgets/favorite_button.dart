@@ -49,6 +49,7 @@ class _FavoriteButtonState extends ConsumerState<FavoriteButton> {
       // Remove
       try {
         await ref.read(authRepositoryProvider).removeFavorite(favoriteId!);
+        if (!mounted) return;
         setState(() {
           isFavorite = false;
           favoriteId = null;
@@ -56,12 +57,14 @@ class _FavoriteButtonState extends ConsumerState<FavoriteButton> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Removed from favorites')));
         ref.invalidate(myFavoritesProvider);
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
       }
     } else {
       // Add
       try {
         await ref.read(authRepositoryProvider).addFavorite(widget.contentType, widget.contentId);
+        if (!mounted) return;
         setState(() {
           isFavorite = true;
         });
@@ -69,6 +72,7 @@ class _FavoriteButtonState extends ConsumerState<FavoriteButton> {
         ref.invalidate(myFavoritesProvider);
         _checkFavoriteStatus(); // To get the new ID
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
@@ -80,15 +84,15 @@ class _FavoriteButtonState extends ConsumerState<FavoriteButton> {
       return OutlinedButton(
         onPressed: _toggleFavorite,
         style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(12),
           ),
           side: BorderSide(color: Colors.grey.shade300),
         ),
         child: Icon(
-          isFavorite ? Icons.favorite : Icons.favorite_border,
-          color: isFavorite ? Colors.red : Colors.grey.shade600,
+          isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+          color: isFavorite ? Colors.red : Colors.grey.shade700,
         ),
       );
     }

@@ -27,7 +27,6 @@ class CategoriesScreen extends StatelessWidget {
     [Color(0xFF64748B), Color(0xFF475569)],     // পুলিশ - Slate
     [Color(0xFFD946EF), Color(0xFFC026D3)],     // জরুরী - Fuchsia
     [Color(0xFF2563EB), Color(0xFF1E40AF)],     // সংবাদ - Blue-Dark
-    [Color(0xFF3B82F6), Color(0xFF2563EB)],     // হ্যালো প্রবাস - FB Blue
     [Color(0xFFF97316), Color(0xFFEA580C)],     // সালতানাত - Orange
   ];
 
@@ -50,7 +49,6 @@ class CategoriesScreen extends StatelessWidget {
     Icons.local_police_rounded,       // পুলিশ
     Icons.phone_in_talk_rounded,      // জরুরী
     Icons.newspaper_rounded,          // সংবাদ
-    Icons.facebook_rounded,           // হ্যালো প্রবাস
     Icons.mosque_rounded,             // সালতানাত
   ];
 

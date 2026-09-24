@@ -1444,18 +1444,10 @@ class _MarketItemDetailScreenState extends State<MarketItemDetailScreen> {
           child: Row(
             children: [
               Expanded(
-                child: OutlinedButton(
-                  onPressed: () {
-                    // TODO: Add to favorites
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: BorderSide(color: Colors.grey.shade300),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Icon(Icons.favorite_border, color: Colors.black87),
+                child: FavoriteButton(
+                  contentType: 'market',
+                  contentId: widget.item.id,
+                  isOutlined: true,
                 ),
               ),
               const SizedBox(width: 16),

@@ -695,8 +695,6 @@ class _FavoritesTab extends ConsumerWidget {
   const _FavoritesTab();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final jobsAsync = ref.watch(jobsProvider);
-    final marketAsync = ref.watch(marketItemsProvider);
     final favoritesAsync = ref.watch(myFavoritesProvider);
 
     return favoritesAsync.when(
@@ -706,53 +704,26 @@ class _FavoritesTab extends ConsumerWidget {
         if (items.isEmpty) {
           return _buildEmptyState(Icons.favorite_rounded, 'পছন্দের তালিকায় কোনো আইটেম নেই', 'পছন্দে যোগ করলে এখানে দেখাবে');
         }
-        return ListView.builder(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            final String contentType = item['favorite_type'] ?? item['content_type'] ?? '';
-            final String contentIdStr = (item['favorite_id'] ?? item['content_id'] ?? '').toString();
-            final int favId = item['id'];
+        return RefreshIndicator(
+          onRefresh: () async => ref.refresh(myFavoritesProvider),
+          child: ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+            padding: const EdgeInsets.all(20),
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              final String contentType = item['favorite_type'] ?? item['content_type'] ?? '';
+              final String contentIdStr = (item['favorite_id'] ?? item['content_id'] ?? '').toString();
+              final int favId = item['id'];
 
-            Widget contentWidget;
-
-            if (contentType == 'job' && jobsAsync.hasValue) {
-              final job = jobsAsync.value!.where((j) => j.id.toString() == contentIdStr).firstOrNull;
-              if (job != null) {
-                contentWidget = JobListCardWidget(job: job);
-              } else {
-                contentWidget = FavoriteItemCard(
-                  item: item, 
-                  favId: favId, 
-                  contentType: contentType, 
-                  contentIdStr: contentIdStr,
-                );
-              }
-            } else if ((contentType == 'market' || contentType == 'marketitem' || contentType == 'property' || contentType == 'vehicle' || contentType == 'service') && marketAsync.hasValue) {
-              final marketItem = marketAsync.value!.where((m) => m.id.toString() == contentIdStr).firstOrNull;
-              if (marketItem != null) {
-                contentWidget = MarketCardWidget(item: marketItem);
-              } else {
-                contentWidget = FavoriteItemCard(
-                  item: item, 
-                  favId: favId, 
-                  contentType: contentType, 
-                  contentIdStr: contentIdStr,
-                );
-              }
-            } else {
-              contentWidget = FavoriteItemCard(
+              return FavoriteItemCard(
                 item: item, 
                 favId: favId, 
                 contentType: contentType, 
                 contentIdStr: contentIdStr,
               );
-            }
-
-            return contentWidget;
-          },
+            },
+          ),
         );
       },
     );
