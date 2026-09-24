@@ -17,6 +17,7 @@ import 'vehicles_widget.dart';
 import 'market_widget.dart';
 import 'community_widget.dart';
 import 'latest_news_widget.dart';
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class HomeTabSectionWidget extends ConsumerStatefulWidget {
   const HomeTabSectionWidget({super.key});
@@ -175,25 +176,25 @@ class _HomeTabSectionWidgetState extends ConsumerState<HomeTabSectionWidget> wit
         if (_tabController.index == 0)
           _TabContent(
             asyncValue: jobsAsync,
-            onSeeAll: () => context.push('/classifieds?tab=jobs'),
+            onSeeAll: () => context.safePushRoute('/classifieds?tab=jobs'),
             buildContent: (jobs) => _JobsContent(jobs: jobs as List<Job>),
           )
         else if (_tabController.index == 1)
           _TabContent(
             asyncValue: workersAsync,
-            onSeeAll: () => context.push('/classifieds?tab=workers'),
+            onSeeAll: () => context.safePushRoute('/classifieds?tab=workers'),
             buildContent: (workers) => _WorkersContent(workers: workers as List<JobSeeker>),
           )
         else if (_tabController.index == 2)
           _TabContent(
             asyncValue: propertiesAsync,
-            onSeeAll: () => context.push('/classifieds?tab=properties'),
+            onSeeAll: () => context.safePushRoute('/classifieds?tab=properties'),
             buildContent: (props) => PropertiesWidget(properties: props as List<Property>),
           )
         else if (_tabController.index == 3)
           _TabContent(
             asyncValue: marketAsync,
-            onSeeAll: () => context.push('/classifieds?tab=market'),
+            onSeeAll: () => context.safePushRoute('/classifieds?tab=market'),
             buildContent: (items) => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: MarketWidget(items: items as List<MarketItem>),
@@ -223,7 +224,7 @@ class _HomeTabSectionWidgetState extends ConsumerState<HomeTabSectionWidget> wit
         else
           _TabContent(
             asyncValue: vehiclesAsync,
-            onSeeAll: () => context.push('/classifieds?tab=vehicles'),
+            onSeeAll: () => context.safePushRoute('/classifieds?tab=vehicles'),
             buildContent: (vehicles) => VehiclesWidget(vehicles: vehicles as List<Vehicle>),
           ),
       ],
@@ -293,7 +294,7 @@ class _JobsContentState extends State<_JobsContent> {
           subtitle: 'আপনার স্বপ্নের চাকরি খুঁজুন',
           icon: Icons.work_outline_rounded,
           color: const Color(0xFF0056D2),
-          onSeeAllPressed: () => context.push('/classifieds?tab=jobs'),
+          onSeeAllPressed: () => context.safePushRoute('/classifieds?tab=jobs'),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -345,7 +346,7 @@ class _WorkersContentState extends State<_WorkersContent> {
           subtitle: 'দক্ষ কর্মী খুঁজে নিন',
           icon: Icons.person_search_outlined,
           color: const Color(0xFF10B981),
-          onSeeAllPressed: () => context.push('/classifieds?tab=workers'),
+          onSeeAllPressed: () => context.safePushRoute('/classifieds?tab=workers'),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),

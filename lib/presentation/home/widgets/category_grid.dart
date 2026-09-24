@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class CategoryItem {
   final String nameBn;
@@ -94,7 +95,7 @@ class _CategoryGridWidgetState extends State<CategoryGridWidget> with SingleTick
         await launchUrl(uri);
       }
     } else if (category.route != null) {
-      context.push(category.route!);
+      context.safePushRoute(category.route!);
     }
   }
 

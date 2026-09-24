@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../auth/auth_provider.dart';
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class MainScaffold extends ConsumerWidget {
   final Widget child;
@@ -26,7 +27,7 @@ class MainScaffold extends ConsumerWidget {
               title: const Text('About Us'),
               onTap: () {
                 Navigator.pop(context);
-                context.push('/about');
+                context.safePushRoute('/about');
               },
             ),
             ListTile(
@@ -34,7 +35,7 @@ class MainScaffold extends ConsumerWidget {
               title: const Text('About Oman'),
               onTap: () {
                 Navigator.pop(context);
-                context.push('/about-oman');
+                context.safePushRoute('/about-oman');
               },
             ),
           ],
@@ -49,9 +50,9 @@ class MainScaffold extends ConsumerWidget {
           final authState = ref.read(authStateProvider);
           final user = authState.value;
           if (user == null) {
-            context.push('/login');
+            context.safePushRoute('/login');
           } else {
-            context.push('/post/create');
+            context.safePushRoute('/post/create');
           }
         },
       ),

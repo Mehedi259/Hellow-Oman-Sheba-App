@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:ui'; // for ImageFilter
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class AboutOmanScreen extends StatelessWidget {
   const AboutOmanScreen({super.key});
@@ -327,16 +328,6 @@ class AboutOmanScreen extends StatelessWidget {
                           subtitle: 'পুলিশ, এম্বুলেন্স ও হাসপাতাল',
                           route: '/emergency',
                         ),
-                        const Divider(height: 1, indent: 64),
-                        _buildLinkTile(
-                          context: context,
-                          icon: Icons.work_outline,
-                          iconColor: Colors.orange.shade600,
-                          iconBgColor: Colors.orange.shade100,
-                          title: 'কর্মসংস্থান',
-                          subtitle: 'ওমানে নতুন চাকরির খবর',
-                          route: '/classifieds?tab=jobs',
-                        ),
                       ],
                     ),
                   ),
@@ -544,7 +535,7 @@ class AboutOmanScreen extends StatelessWidget {
     required String route,
   }) {
     return InkWell(
-      onTap: () => context.push(route),
+      onTap: () => context.safePushRoute(route),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
         child: Row(

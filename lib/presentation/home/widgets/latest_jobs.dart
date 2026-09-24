@@ -5,6 +5,7 @@ import '../../classifieds/widgets/job_card.dart';
 
 import 'section_header.dart';
 import 'animated_see_more_button.dart';
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class LatestJobsWidget extends StatefulWidget {
   final List<Job> jobs;
@@ -57,7 +58,7 @@ class _LatestJobsWidgetState extends State<LatestJobsWidget> {
           icon: Icons.work_outline_rounded,
           color: const Color(0xFF0056D2), // Logo Blue
           onSeeAllPressed: () {
-            context.push('/classifieds');
+            context.safePushRoute('/classifieds');
           },
         ),
         Padding(

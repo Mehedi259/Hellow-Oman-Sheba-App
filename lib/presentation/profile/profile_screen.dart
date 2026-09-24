@@ -19,6 +19,7 @@ import 'faq_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../chat/widgets/chat_initiator_button.dart';
 import '../../core/api/api_client.dart';
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -961,7 +962,7 @@ class _SettingsTab extends ConsumerWidget {
                 iconColor: const Color(0xFF7C3AED),
                 title: 'দেশ পরিবর্তন করুন',
                 subtitle: 'Change Country',
-                onTap: () => context.push('/country-select'),
+                onTap: () => context.safePushRoute('/country-select'),
               ),
               Divider(height: 1, color: Colors.grey.shade100, indent: 70),
               _buildSettingsItem(

@@ -5,6 +5,7 @@ import '../../community/community_detail_screen.dart';
 
 import 'section_header.dart';
 import 'animated_see_more_button.dart';
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class CommunityWidget extends StatefulWidget {
   final List<Post> posts;
@@ -33,7 +34,7 @@ class _CommunityWidgetState extends State<CommunityWidget> {
           icon: Icons.forum_outlined,
           color: const Color(0xFFF59E0B), // Amber/Orange
           onSeeAllPressed: () {
-            context.push('/community');
+            context.safePushRoute('/community');
           },
         ),
         Padding(

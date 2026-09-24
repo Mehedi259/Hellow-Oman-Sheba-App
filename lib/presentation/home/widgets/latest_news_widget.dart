@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../data/models/news_article.dart';
 import '../../news/news_detail_screen_new.dart';
 import 'section_header.dart';
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class LatestNewsWidget extends StatelessWidget {
   final List<NewsArticle> articles;
@@ -29,7 +30,7 @@ class LatestNewsWidget extends StatelessWidget {
           icon: Icons.newspaper_outlined,
           color: const Color(0xFFCC0000), // Red color
           onSeeAllPressed: () {
-            context.push('/news');
+            context.safePushRoute('/news');
           },
         ),
         SizedBox(

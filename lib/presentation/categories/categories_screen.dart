@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../home/widgets/category_grid.dart';
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen({super.key});
@@ -60,7 +61,7 @@ class CategoriesScreen extends StatelessWidget {
         await launchUrl(uri);
       }
     } else if (category.route != null) {
-      context.push(category.route!);
+      context.safePushRoute(category.route!);
     }
   }
 
@@ -215,7 +216,7 @@ class CategoriesScreen extends StatelessWidget {
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(
-                              onTap: () => context.push('/community'),
+                              onTap: () => context.safePushRoute('/community'),
                               borderRadius: BorderRadius.circular(14),
                               child: const Center(
                                 child: Row(
@@ -243,7 +244,7 @@ class CategoriesScreen extends StatelessWidget {
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(
-                              onTap: () => context.push('/about'),
+                              onTap: () => context.safePushRoute('/about'),
                               borderRadius: BorderRadius.circular(14),
                               child: const Center(
                                 child: Row(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class CallToActionWidget extends StatelessWidget {
   const CallToActionWidget({super.key});
@@ -53,7 +54,7 @@ class CallToActionWidget extends StatelessWidget {
               onPressed: () {
                 // Navigate to registration or auth screen
                 // For now just sending to profile/auth 
-                context.push('/profile');
+                context.safePushRoute('/profile');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,

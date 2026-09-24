@@ -25,61 +25,64 @@ import '../../presentation/special_services/special_services_screen.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
+Page<dynamic> _buildPageWithUniqueKey(BuildContext context, GoRouterState state, Widget child) {
+  final extra = state.extra;
+  String uniqueId = '';
+  if (extra is Map && extra.containsKey('_internal_push_id')) {
+    uniqueId = extra['_internal_push_id'].toString();
+  }
+  return MaterialPage(
+    key: ValueKey('${state.pageKey.value}_${state.uri.toString()}_$uniqueId'),
+    child: child,
+  );
+}
+
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
   redirect: (context, state) async {
-    // Only check redirect if we are not already going to country-select
     final isGoingToCountrySelect = state.matchedLocation == '/country-select';
-    
-    // We check shared preferences synchronously if possible, but redirect is async.
-    // However, GoRouter's async redirect can cause a flicker.
-    // For a cleaner solution, we use async redirect.
     final prefs = await SharedPreferences.getInstance();
     final country = prefs.getString('selected_country');
-    
-    // If no country is selected, force them to the country select screen
     if (country == null && !isGoingToCountrySelect) {
       return '/country-select';
     }
-    
     return null;
   },
   routes: [
     GoRoute(
       path: '/country-select',
-      builder: (context, state) => const CountrySelectScreen(),
+      pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const CountrySelectScreen()),
     ),
     GoRoute(
       path: '/login',
-      builder: (context, state) => const LoginScreen(),
+      pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const LoginScreen()),
     ),
-
     GoRoute(
       path: '/emergency',
-      builder: (context, state) => const EmergencyScreen(),
+      pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const EmergencyScreen()),
     ),
     GoRoute(
       path: '/search',
-      builder: (context, state) => const SearchScreen(),
+      pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const SearchScreen()),
     ),
     GoRoute(
       path: '/about',
-      builder: (context, state) => const AboutScreen(),
+      pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const AboutScreen()),
     ),
     GoRoute(
       path: '/about-oman',
-      builder: (context, state) => const AboutOmanScreen(),
+      pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const AboutOmanScreen()),
     ),
     GoRoute(
       path: '/embassy',
-      builder: (context, state) => const EmbassyScreen(),
+      pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const EmbassyScreen()),
     ),
     GoRoute(
       path: '/services/:slug',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final slug = state.pathParameters['slug']!;
-        return ServiceListScreen(slug: slug);
+        return _buildPageWithUniqueKey(context, state, ServiceListScreen(slug: slug));
       },
     ),
     ShellRoute(
@@ -90,53 +93,53 @@ final appRouter = GoRouter(
       routes: [
         GoRoute(
           path: '/post/create',
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final category = state.uri.queryParameters['category'];
-            return CreatePostScreen(initialCategory: category);
+            return _buildPageWithUniqueKey(context, state, CreatePostScreen(initialCategory: category));
           },
         ),
         GoRoute(
           path: '/',
-          builder: (context, state) => const HomeScreen(),
+          pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const HomeScreen()),
         ),
         GoRoute(
           path: '/categories',
-          builder: (context, state) => const CategoriesScreen(),
+          pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const CategoriesScreen()),
         ),
         GoRoute(
           path: '/special-services',
-          builder: (context, state) => const SpecialServicesScreen(),
+          pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const SpecialServicesScreen()),
         ),
         GoRoute(
           path: '/classifieds',
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final tab = state.uri.queryParameters['tab'];
-            return ClassifiedsScreen(key: ValueKey('classifieds_$tab'), initialTab: tab);
+            return _buildPageWithUniqueKey(context, state, ClassifiedsScreen(key: ValueKey('classifieds_$tab'), initialTab: tab));
           },
         ),
         GoRoute(
           path: '/community',
-          builder: (context, state) => const CommunityScreen(),
+          pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const CommunityScreen()),
         ),
         GoRoute(
           path: '/news',
-          builder: (context, state) => const NewsFeedScreen(),
+          pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const NewsFeedScreen()),
         ),
         GoRoute(
           path: '/profile',
-          builder: (context, state) => const ProfileScreen(),
+          pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const ProfileScreen()),
         ),
         GoRoute(
           path: '/notifications',
-          builder: (context, state) => const NotificationsScreen(),
+          pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const NotificationsScreen()),
         ),
         GoRoute(
           path: '/my-listings',
-          builder: (context, state) => const MyListingsScreen(),
+          pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const MyListingsScreen()),
         ),
         GoRoute(
           path: '/messages',
-          builder: (context, state) => const MessagesScreen(),
+          pageBuilder: (context, state) => _buildPageWithUniqueKey(context, state, const MessagesScreen()),
         ),
       ],
     ),

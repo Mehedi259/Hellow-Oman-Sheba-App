@@ -185,7 +185,7 @@ class AuthRepository {
 
   Future<void> markNotificationRead(int id) async {
     try {
-      await apiClient.dio.put('/users/notifications/$id/', data: {'read': true});
+      await apiClient.dio.patch('/users/notifications/$id/', data: {'read': true});
     } catch (e) {
       // ignore
     }

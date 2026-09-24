@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../data/models/classifieds_models.dart';
 import '../../classifieds/classifieds_detail_screens.dart';
 import 'section_header.dart';
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class PropertiesWidget extends StatelessWidget {
   final List<Property> properties;
@@ -25,7 +26,7 @@ class PropertiesWidget extends StatelessWidget {
           icon: Icons.apartment_rounded,
           color: const Color(0xFF0056D2), // Logo Blue
           onSeeAllPressed: () {
-            context.push('/classifieds?tab=properties');
+            context.safePushRoute('/classifieds?tab=properties');
           },
         ),
         Padding(

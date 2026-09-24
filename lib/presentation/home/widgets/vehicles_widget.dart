@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../data/models/classifieds_models.dart';
 import '../../classifieds/classifieds_detail_screens.dart';
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class VehiclesWidget extends StatelessWidget {
   final List<Vehicle> vehicles;
@@ -49,7 +50,7 @@ class VehiclesWidget extends StatelessWidget {
               ),
               OutlinedButton(
                 onPressed: () {
-                  context.push('/classifieds?tab=vehicles');
+                  context.safePushRoute('/classifieds?tab=vehicles');
                 },
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: Colors.grey.shade300),

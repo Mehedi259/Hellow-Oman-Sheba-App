@@ -5,6 +5,7 @@ import '../../classifieds/widgets/market_card.dart';
 
 import 'section_header.dart';
 import 'animated_see_more_button.dart';
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class MarketWidget extends StatefulWidget {
   final List<MarketItem> items;
@@ -44,7 +45,7 @@ class _MarketWidgetState extends State<MarketWidget> {
           icon: Icons.storefront_outlined,
           color: const Color(0xFF0056D2), // Logo Blue
           onSeeAllPressed: () {
-            context.push('/classifieds');
+            context.safePushRoute('/classifieds');
           },
         ),
         Padding(

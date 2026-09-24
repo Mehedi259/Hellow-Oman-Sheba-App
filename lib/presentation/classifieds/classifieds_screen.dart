@@ -14,6 +14,7 @@ import 'find_jobs_provider.dart';
 import 'market_provider.dart';
 import 'widgets/job_list_card.dart';
 import 'widgets/market_card.dart';
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class ClassifiedsScreen extends StatelessWidget {
   final String? initialTab;
@@ -430,7 +431,7 @@ class _JobsViewState extends ConsumerState<JobsView> {
       children: [
         // Compact profile prompt row
         InkWell(
-          onTap: () => context.push('/post/create?category=job_seeker'),
+          onTap: () => context.safePushRoute('/post/create?category=job_seeker'),
           borderRadius: BorderRadius.circular(10),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -1504,7 +1505,7 @@ class MarketView extends ConsumerWidget {
                           ),
                           child: TextButton.icon(
                             onPressed: () {
-                              context.push('/post/create?category=classified');
+                              context.safePushRoute('/post/create?category=classified');
                             },
                             icon: const Icon(
                               Icons.add,

@@ -14,6 +14,7 @@ import '../community/community_provider.dart';
 import '../../data/repositories/news_repository.dart';
 
 import '../../core/services/fcm_service.dart';
+import 'package:hellow_oman_sheba_app/core/utils/router_utils.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -57,7 +58,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.notifications_none_rounded, color: Colors.black87, size: 26),
-                    onPressed: () => context.push('/notifications'),
+                    onPressed: () => context.safePushRoute('/notifications'),
                   ),
                   if (unreadCount > 0)
                     Positioned(
@@ -120,42 +121,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       title: const Text('চাকরি'),
                       onTap: () {
                         Navigator.pop(context);
-                        context.push('/classifieds?tab=jobs');
+                        context.safePushRoute('/classifieds?tab=jobs');
                       },
                     ),
                     ListTile(
                       title: const Text('বাসা ভাড়া'),
                       onTap: () {
                         Navigator.pop(context);
-                        context.push('/classifieds?tab=properties');
+                        context.safePushRoute('/classifieds?tab=properties');
                       },
                     ),
                     ListTile(
                       title: const Text('গাড়ি'),
                       onTap: () {
                         Navigator.pop(context);
-                        context.push('/classifieds?tab=vehicles');
+                        context.safePushRoute('/classifieds?tab=vehicles');
                       },
                     ),
                     ListTile(
                       title: const Text('সেবা'),
                       onTap: () {
                         Navigator.pop(context);
-                        context.push('/classifieds?tab=services');
+                        context.safePushRoute('/classifieds?tab=services');
                       },
                     ),
                     ListTile(
                       title: const Text('কমিউনিটি'),
                       onTap: () {
                         Navigator.pop(context);
-                        context.push('/community');
+                        context.safePushRoute('/community');
                       },
                     ),
                     ListTile(
                       title: const Text('মার্কেট'),
                       onTap: () {
                         Navigator.pop(context);
-                        context.push('/classifieds?tab=market');
+                        context.safePushRoute('/classifieds?tab=market');
                       },
                     ),
                     const Divider(),
@@ -173,7 +174,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       title: const Text('নোটিফিকেশন'),
                       onTap: () {
                         Navigator.pop(context);
-                        context.push('/notifications');
+                        context.safePushRoute('/notifications');
                       },
                     ),
                     ListTile(
@@ -181,7 +182,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       title: const Text('প্রোফাইল'),
                       onTap: () {
                         Navigator.pop(context);
-                        context.push('/profile');
+                        context.safePushRoute('/profile');
                       },
                     ),
                     ListTile(
@@ -203,9 +204,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       Navigator.pop(context);
                       final user = ref.read(authStateProvider).value;
                       if (user == null) {
-                        context.push('/login');
+                        context.safePushRoute('/login');
                       } else {
-                        context.push('/post/create');
+                        context.safePushRoute('/post/create');
                       }
                     },
                     style: ElevatedButton.styleFrom(
