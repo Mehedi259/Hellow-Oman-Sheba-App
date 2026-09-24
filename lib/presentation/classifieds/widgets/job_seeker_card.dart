@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../widgets/custom_cached_image.dart';
 import '../../../data/models/job_seeker.dart';
+import '../worker_detail_screen.dart';
 
 class JobSeekerCardWidget extends StatelessWidget {
   final JobSeeker jobSeeker;
 
   const JobSeekerCardWidget({super.key, required this.jobSeeker});
+
+  void _openProfile(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WorkerDetailScreen(jobSeeker: jobSeeker),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,11 +24,25 @@ class JobSeekerCardWidget extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => _openProfile(context),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -153,35 +178,50 @@ class JobSeekerCardWidget extends StatelessWidget {
                 )
               else
                 const Spacer(),
-              if (jobSeeker.userPhone != null && jobSeeker.userPhone!.isNotEmpty)
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: call phone
+              if (jobSeeker.userPhone != null && jobSeeker.userPhone!.isNotEmpty) ...[
+                IconButton(
+                  onPressed: () async {
+                    final uri = Uri.parse('tel:${jobSeeker.userPhone}');
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri);
+                    }
                   },
-                  icon: const Icon(Icons.phone, size: 16),
-                  label: const Text('কল করুন'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  icon: const Icon(Icons.phone_in_talk_rounded, size: 20),
+                  color: Colors.green.shade600,
+                  tooltip: 'কল করুন',
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.green.shade50,
+                    padding: const EdgeInsets.all(8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: BorderSide(color: Colors.green.shade200),
+                    ),
                   ),
-                )
-              else
-                OutlinedButton(
-                  onPressed: () {
-                    // TODO: view profile
-                  },
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                    side: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  child: const Text('প্রোফাইল দেখুন'),
                 ),
+                const SizedBox(width: 8),
+              ],
+              OutlinedButton(
+                onPressed: () => _openProfile(context),
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  side: BorderSide(color: Colors.grey.shade300),
+                  foregroundColor: const Color(0xFF0056D2),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                ),
+                child: const Text(
+                  'প্রোফাইল দেখুন',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                ),
+              ),
             ],
           ),
         ],
       ),
-    );
+    ),
+  ),
+),
+);
   }
 }

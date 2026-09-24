@@ -6,7 +6,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../data/models/classifieds_models.dart';
 import '../classifieds/classifieds_provider.dart';
 import '../classifieds/widgets/favorite_button.dart';
-import '../chat/widgets/chat_initiator_button.dart';
 
 const Map<String, Map<String, dynamic>> serviceCategoriesData = {
   'ambulance': {
@@ -197,7 +196,7 @@ class ServiceListScreen extends ConsumerWidget {
           slivers: [
             // ─── SliverAppBar ───
             SliverAppBar(
-              expandedHeight: 160,
+              expandedHeight: 195,
               pinned: true,
               backgroundColor: catColor,
               leading: IconButton(
@@ -218,7 +217,7 @@ class ServiceListScreen extends ConsumerWidget {
                   ),
                   child: SafeArea(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 18),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -256,10 +255,12 @@ class ServiceListScreen extends ConsumerWidget {
                                     Text(
                                       categoryData['description'] as String,
                                       style: TextStyle(
-                                        color: Colors.white.withOpacity(0.8),
-                                        fontSize: 12,
+                                        color: Colors.white.withOpacity(0.9),
+                                        fontSize: 12.5,
+                                        height: 1.35,
                                       ),
-                                      maxLines: 2,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
                                 ),
