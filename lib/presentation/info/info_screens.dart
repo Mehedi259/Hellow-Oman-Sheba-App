@@ -126,6 +126,33 @@ class AboutScreen extends StatelessWidget {
                     ),
                   ),
                   
+                  const SizedBox(height: 32),
+                  const Text(
+                    'উপদেষ্টা মণ্ডলী',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 160,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        _buildAdvisorCard(
+                          name: 'উপদেষ্টার নাম ১',
+                          title: 'পদবি / পরিচয়',
+                        ),
+                        _buildAdvisorCard(
+                          name: 'উপদেষ্টার নাম ২',
+                          title: 'পদবি / পরিচয়',
+                        ),
+                        _buildAdvisorCard(
+                          name: 'উপদেষ্টার নাম ৩',
+                          title: 'পদবি / পরিচয়',
+                        ),
+                      ],
+                    ),
+                  ),
+                  
                   const SizedBox(height: 40),
                   Center(
                     child: Column(
@@ -197,6 +224,39 @@ class AboutScreen extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdvisorCard({required String name, required String title, String? imageUrl}) {
+    return Container(
+      width: 120,
+      margin: const EdgeInsets.only(right: 16),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 40,
+            backgroundColor: Colors.grey.shade200,
+            backgroundImage: imageUrl != null ? NetworkImage(imageUrl) : null,
+            child: imageUrl == null ? const Icon(Icons.person, size: 40, color: Colors.grey) : null,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            name,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF1E293B)),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
