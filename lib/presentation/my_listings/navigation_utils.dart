@@ -56,12 +56,13 @@ Future<void> navigateToFavoriteItem(BuildContext context, WidgetRef ref, String 
       return;
     }
     
-    if (!context.mounted) return;
-    if (isDialogShowing) {
-      Navigator.of(context, rootNavigator: true).pop();
+    final screen = nextScreen;
+    if (screen != null && context.mounted) {
+      if (isDialogShowing) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+      Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
     }
-    
-    Navigator.push(context, MaterialPageRoute(builder: (_) => nextScreen!));
   } catch (e) {
     debugPrint('Navigation error: $e');
     if (!context.mounted) return;

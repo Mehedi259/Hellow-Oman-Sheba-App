@@ -250,7 +250,7 @@ class _MarketFormState extends ConsumerState<MarketForm> {
           _buildDropdownField(
             label: 'ক্যাটাগরি *',
             value: selectedCategory,
-            items: categories.map((c) => DropdownMenuItem(value: c['value'], child: Text(c['label']!, overflow: TextOverflow.ellipsis))).toList(),
+            items: categories.map((c) => DropdownMenuItem(value: c['value'], child: FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: Text(c['label']!)))).toList(),
             onChanged: (val) => setState(() => selectedCategory = val!),
           ),
           const SizedBox(height: 20),
@@ -270,7 +270,7 @@ class _MarketFormState extends ConsumerState<MarketForm> {
                 child: _buildDropdownField(
                   label: 'পণ্যের অবস্থা *',
                   value: selectedCondition,
-                  items: conditions.map((c) => DropdownMenuItem(value: c['value'], child: Text(c['label']!, overflow: TextOverflow.ellipsis))).toList(),
+                  items: conditions.map((c) => DropdownMenuItem(value: c['value'], child: FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: Text(c['label']!)))).toList(),
                   onChanged: (val) => setState(() => selectedCondition = val!),
                 ),
               ),

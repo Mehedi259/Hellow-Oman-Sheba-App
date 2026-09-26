@@ -1506,198 +1506,115 @@ class MarketView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final marketAsync = ref.watch(filteredMarketItemsProvider);
     final filterState = ref.watch(marketStateProvider);
+    final allMarketItems = ref.watch(marketItemsProvider).value ?? [];
 
-    return marketAsync.when(
-      data: (data) {
-        final List<MarketItem> items = data['items'] ?? [];
-        final int totalItems = data['totalItems'] ?? 0;
-        final int totalPages = data['totalPages'] ?? 0;
-        final int currentPage = data['currentPage'] ?? 1;
+    String getCategoryCount(String slug) {
+      final s = slug.toLowerCase();
+      final count = allMarketItems.where((i) {
+        final catSlug = i.categorySlug.toLowerCase().trim();
+        final catName = i.categoryName.toLowerCase().trim();
+        return catSlug == s ||
+            catName == s ||
+            catSlug.replaceAll('-', ' ') == s.replaceAll('-', ' ') ||
+            catName.replaceAll('-', ' ') == s.replaceAll('-', ' ') ||
+            catName.replaceAll('&', 'and').replaceAll(' ', '') ==
+                s.replaceAll('&', 'and').replaceAll('-', '').replaceAll(' ', '');
+      }).length;
+      return count.toString();
+    }
 
-        final allMarketItems = ref.watch(marketItemsProvider).value ?? [];
-        String getCategoryCount(String slug) {
-          final s = slug.toLowerCase();
-          final count = allMarketItems.where((i) {
-            final catSlug = i.categorySlug.toLowerCase().trim();
-            final catName = i.categoryName.toLowerCase().trim();
-            return catSlug == s ||
-                catName == s ||
-                catSlug.replaceAll('-', ' ') == s.replaceAll('-', ' ') ||
-                catName.replaceAll('-', ' ') == s.replaceAll('-', ' ') ||
-                catName.replaceAll('&', 'and').replaceAll(' ', '') ==
-                    s.replaceAll('&', 'and').replaceAll('-', '').replaceAll(' ', '');
-          }).length;
-          return count.toString();
-        }
-
-        return RefreshIndicator(
-          onRefresh: () async {
-            ref.invalidate(marketItemsProvider);
-          },
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 1. Minimized Search Banner
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color(0xFF0F9D58),
-                        Color(0xFF0F9D58),
-                      ], // Solid green to match screenshot
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: const _MarketSearchBar(),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Container(
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: TextButton.icon(
-                            onPressed: () {
-                              context.safePushRoute('/post/create?category=classified');
-                            },
-                            icon: const Icon(
-                              Icons.add,
-                              color: Color(0xFF0F9D58),
-                            ),
-                            label: const Text(
-                              'বিজ্ঞাপন দিন',
-                              style: TextStyle(color: Color(0xFF0F9D58)),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(marketItemsProvider);
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 1. Minimized Search Banner
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF0F9D58), Color(0xFF0F9D58)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
-
-                // 2. Categories in ExpansionTile
-                Theme(
-                  data: Theme.of(
-                    context,
-                  ).copyWith(dividerColor: Colors.transparent),
-                  child: ExpansionTile(
-                    title: const Text(
-                      'ক্যাটাগরি সমূহ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    leading: const Icon(
-                      Icons.category,
-                      color: Color(0xFF0F9D58),
-                    ),
-                    initiallyExpanded: false,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 8.0,
-                        ),
-                        child: GridView.count(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          crossAxisCount: 2,
-                          childAspectRatio:
-                              2.0, // Flatter buttons to save space
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          children: [
-                            _buildCategoryItem(
-                              'electronics',
-                              'ইলেকট্রনিক্স',
-                              Icons.phone_android,
-                              getCategoryCount('electronics'),
-                              filterState,
-                              ref,
-                            ),
-                            _buildCategoryItem(
-                              'computer',
-                              'কম্পিউটার',
-                              Icons.laptop,
-                              getCategoryCount('computer'),
-                              filterState,
-                              ref,
-                            ),
-                            _buildCategoryItem(
-                              'furniture',
-                              'ফার্নিচার',
-                              Icons.home,
-                              getCategoryCount('furniture'),
-                              filterState,
-                              ref,
-                            ),
-                            _buildCategoryItem(
-                              'clothing',
-                              'পোশাক',
-                              Icons.checkroom,
-                              getCategoryCount('clothing'),
-                              filterState,
-                              ref,
-                            ),
-                            _buildCategoryItem(
-                              'baby-products',
-                              'শিশু সামগ্রী',
-                              Icons.child_care,
-                              getCategoryCount('baby-products'),
-                              filterState,
-                              ref,
-                            ),
-                            _buildCategoryItem(
-                              'tools-machinery',
-                              'যন্ত্রপাতি',
-                              Icons.build,
-                              getCategoryCount('tools-machinery'),
-                              filterState,
-                              ref,
-                            ),
-                            _buildCategoryItem(
-                              'books',
-                              'বই',
-                              Icons.menu_book,
-                              getCategoryCount('books'),
-                              filterState,
-                              ref,
-                            ),
-                            _buildCategoryItem(
-                              'sports',
-                              'খেলাধুলা',
-                              Icons.sports_soccer_rounded,
-                              getCategoryCount('sports'),
-                              filterState,
-                              ref,
-                            ),
-                            _buildCategoryItem(
-                              'others',
-                              'অন্যান্য',
-                              Icons.category_outlined,
-                              getCategoryCount('others'),
-                              filterState,
-                              ref,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: const _MarketSearchBar(),
                   ),
-                ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: TextButton.icon(
+                        onPressed: () {
+                          context.safePushRoute('/post/create?category=classified');
+                        },
+                        icon: const Icon(Icons.add, color: Color(0xFF0F9D58)),
+                        label: const Text('বিজ্ঞাপন দিন', style: TextStyle(color: Color(0xFF0F9D58))),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
-                const Divider(thickness: 1, color: Color(0xFFEEEEEE)),
+            // 2. Categories in ExpansionTile
+            Theme(
+              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+              child: ExpansionTile(
+                title: const Text('ক্যাটাগরি সমূহ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                leading: const Icon(Icons.category, color: Color(0xFF0F9D58)),
+                initiallyExpanded: false,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: GridView.count(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      crossAxisCount: 2,
+                      childAspectRatio: 2.0,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      children: [
+                        _buildCategoryItem('electronics', 'ইলেকট্রনিক্স', Icons.phone_android, getCategoryCount('electronics'), filterState, ref),
+                        _buildCategoryItem('computer', 'কম্পিউটার', Icons.laptop, getCategoryCount('computer'), filterState, ref),
+                        _buildCategoryItem('furniture', 'ফার্নিচার', Icons.home, getCategoryCount('furniture'), filterState, ref),
+                        _buildCategoryItem('clothing', 'পোশাক', Icons.checkroom, getCategoryCount('clothing'), filterState, ref),
+                        _buildCategoryItem('baby-products', 'শিশু সামগ্রী', Icons.child_care, getCategoryCount('baby-products'), filterState, ref),
+                        _buildCategoryItem('tools-machinery', 'যন্ত্রপাতি', Icons.build, getCategoryCount('tools-machinery'), filterState, ref),
+                        _buildCategoryItem('books', 'বই', Icons.menu_book, getCategoryCount('books'), filterState, ref),
+                        _buildCategoryItem('sports', 'খেলাধুলা', Icons.sports_soccer_rounded, getCategoryCount('sports'), filterState, ref),
+                        _buildCategoryItem('others', 'অন্যান্য', Icons.category_outlined, getCategoryCount('others'), filterState, ref),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(thickness: 1, color: Color(0xFFEEEEEE)),
+
+            // 3. Market Items Content
+            marketAsync.when(
+              data: (data) {
+                final List<MarketItem> items = data['items'] ?? [];
+                final int totalItems = data['totalItems'] ?? 0;
+                final int totalPages = data['totalPages'] ?? 0;
+                final int currentPage = data['currentPage'] ?? 1;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
 
                 // 3. Latest Ads Section
                 Padding(
@@ -1900,20 +1817,24 @@ class MarketView extends ConsumerWidget {
                               ),
                             ],
                           ),
-                        ),
-                    ],
-                  ),
+                  ],
+                );
+              },
+              loading: () => const Padding(
+                padding: EdgeInsets.all(32.0),
+                child: Center(
+                  child: CircularProgressIndicator(color: Color(0xFF0F9D58)),
                 ),
-                const SizedBox(height: 120),
-              ],
+              ),
+              error: (e, _) => Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Center(child: Text('Error: $e')),
+              ),
             ),
-          ),
-        );
-      },
-      loading: () => const Center(
-        child: CircularProgressIndicator(color: Color(0xFF0F9D58)),
+            const SizedBox(height: 120),
+          ],
+        ),
       ),
-      error: (e, _) => Center(child: Text('Error: $e')),
     );
   }
 
