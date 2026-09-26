@@ -1817,8 +1817,12 @@ class MarketView extends ConsumerWidget {
                               ),
                             ],
                           ),
-                  ],
-                );
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            );
               },
               loading: () => const Padding(
                 padding: EdgeInsets.all(32.0),
